@@ -23,8 +23,10 @@ def render(report: dict, sel_p: dict, sel_s: dict) -> str:
            f"Generated {report['timestamp_utc']}. All numbers below are from the **validation** split only. "
            "No test-split outcome has been read: test rows were filtered out of every parquet part at read time.\n",
            "**S_or is the final-answer-preserving headroom** (earliest loop after which the answer never changes before "
-           "loop 4), **not the maximum possible accuracy-preserving saving**: the earliest-correct oracle (reference row "
-           "below) can save more.\n",
+           "loop 4), **not the maximum possible accuracy-preserving saving**: a policy could stop at an earlier answer that "
+           "differs from the final one and still match fixed-4 accuracy. The earliest-correct oracle (reference row below) "
+           "is a different, label-using reference: it raises accuracy but runs never-correct questions to loop 4, so its "
+           "saving can be lower than S_or.\n",
            "Macro = unweighted mean over benchmarks; question-weighted numbers are secondary (in the JSON report).\n",
            "## Selection rules\n", sel_p["rules"] + "\n",
            f"## Primary ({', '.join(p['benchmarks'])})\n",
