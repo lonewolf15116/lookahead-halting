@@ -15,3 +15,5 @@ data/extracted/
 *.bin
 checkpoints/
 hf_cache/
+.pytest_cache/
+*.egg-info/

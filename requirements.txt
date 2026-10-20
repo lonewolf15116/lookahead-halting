@@ -1,0 +1,13 @@
+numpy
+scipy
+pandas
+pyarrow
+scikit-learn
+matplotlib
+pyyaml
+pytest
+safetensors
+transformers
+accelerate
+datasets
+huggingface_hub

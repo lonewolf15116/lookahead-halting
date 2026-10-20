@@ -1,0 +1,6 @@
+repo_id: ByteDance/Ouro-1.4B
+revision: null            # scripts/inspect_ouro.py resolves the commit SHA; pin it here afterwards
+local_dir: hf_cache/ouro-1.4b
+dtype: bfloat16
+total_ut_steps: 4         # loops Ouro was trained with
+trust_remote_code: true   # Ouro ships its own modeling code
