@@ -150,7 +150,7 @@ def test_targets_check_catches_wrong_values(root, tiny4, tok, monkeypatch):
     bad[1]["D"] += 1e-3
     bad[2]["T"] = "CW" if bad[2]["T"] != "CW" else "WC"
     errs, mism = ver.check_targets(q, bad)
-    assert errs["D"] >= 1e-3 and any("next flip/transition" in m for m in mism)
+    assert errs["D"] >= 0.99e-3 and any("next flip/transition" in m for m in mism)  # 1e-3 minus float rounding
 
 
 def test_vocab_targets_match_context_only_pass(root, tiny4):
