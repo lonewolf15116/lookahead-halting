@@ -40,3 +40,7 @@
 - Primary: S_or 0.564 [0.552, 0.575], R 0.633 [0.617, 0.648] (native_gate) -> PASS. Sensitivity without OpenBookQA: S_or 0.568, R 0.653 -> PASS.
 - Test macro loss exceeds 1 pp for confidence, entropy, native_gate and deployable_kl (constraint violations, reported; they stay in R as the plan specifies). R_unc 0.553. Per-benchmark R above 0.75 on ARC-C, HellaSwag, CSQA and OBQA.
 - Output: docs/GATE1_REPORT.md, results/gate1/gate1_test_report.json, results/gate1/TEST_EVALUATED.json.
+
+## 2026-10-21 Gate 1 accepted; Gate 2 preparation
+- Reviewer accepted Gate 1 PASS under the frozen rule, with the wording that four of five qualified baselines violated the 1 pp loss limit on test and that R_unc is diagnostic only. Reviewer: GO for Gate 2 preparation and probe training; do not tune on Gate 1 test results; prefer a separate confirmation set for new policies.
+- Tagged `gate1-final` at a6590fa. Drafted docs/GATE2_PLAN.md (not run; pass rule and confirmation set await reviewer decision).
