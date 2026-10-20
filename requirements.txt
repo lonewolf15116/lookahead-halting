@@ -7,7 +7,9 @@ matplotlib
 pyyaml
 pytest
 safetensors
-transformers
+# Ouro's model card says to use transformers<4.56 (4.54.1 recommended). transformers 5.x fails to build the model
+# ("OuroConfig has no attribute pad_token_id"), as seen on 2026-10-20.
+transformers==4.54.1
+huggingface_hub>=0.34,<1.0
 accelerate
 datasets
-huggingface_hub

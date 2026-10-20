@@ -12,6 +12,9 @@ Working title: *Predicting the Value of Another Thought: Future-State Forecastin
 
 Phase 0 (setup) in progress. Gate 0 is not yet passed.
 
+- Loop-by-loop adapter written and checked against Ouro's own code on a tiny random model (CPU). The check on the real weights is next.
+- Gate 0 reference: Ouro paper Table 10, ARC-C 25-shot, loops 1-4 = 37.63 / 54.86 / 59.47 / 60.92 (see docs/DECISIONS.md).
+
 ## Run Phase 0 on the laptop
 
 ```powershell

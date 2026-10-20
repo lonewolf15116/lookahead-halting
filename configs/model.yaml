@@ -1,5 +1,5 @@
 repo_id: ByteDance/Ouro-1.4B
-revision: null            # scripts/inspect_ouro.py resolves the commit SHA; pin it here afterwards
+revision: 574fa66cb8bf5abdc979642d01cf2b79b16bfab1   # pinned 2026-10-20
 local_dir: hf_cache/ouro-1.4b
 dtype: bfloat16
 total_ut_steps: 4         # loops Ouro was trained with

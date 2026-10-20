@@ -28,6 +28,9 @@ $py = Join-Path $Root '.venv\Scripts\python.exe'
 # 4. Gate 0 probes. The download comes first because it needs no GPU.
 & $py scripts\inspect_ouro.py; Check 'Ouro download'
 & $py scripts\check_environment.py; Check 'environment check'
-& $py scripts\smoke_stock.py; Check 'stock Ouro smoke test'
+# Both run even if the first fails, so one rerun shows everything that is wrong.
+& $py scripts\smoke_stock.py; $smoke = $LASTEXITCODE
+& $py scripts\verify_adapter.py; $verify = $LASTEXITCODE
+if ($smoke -ne 0 -or $verify -ne 0) { throw "Gate 0 probes failed (smoke test exit $smoke, adapter check exit $verify). Details are in results\gate0." }
 
 Write-Host "Phase 0 setup done. Results are in $Root\results\gate0"
