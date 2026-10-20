@@ -1,0 +1,17 @@
+# Environments
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Large artifacts stay out of git
+data/raw/
+data/extracted/
+*.npy
+*.npz
+*.parquet
+*.safetensors
+*.pt
+*.bin
+checkpoints/
+hf_cache/
