@@ -1,0 +1,166 @@
+{
+  "ms_per_token_loop": 0.1533,
+  "rows": [
+    {
+      "benchmark": "arc_challenge",
+      "questions": 1172,
+      "options": {
+        "3": 4,
+        "4": 1165,
+        "5": 3
+      },
+      "ctx_mean": 982.6,
+      "ctx_p50": 977,
+      "ctx_p95": 1135,
+      "ctx_max": 1308,
+      "packed_mean": 1002.4,
+      "packed_p95": 1155,
+      "packed_max": 1326,
+      "packed_tokens_total": 1174765,
+      "per_option_tokens_total": 4628463,
+      "est_packed_h": 0.2,
+      "est_per_option_h": 0.79,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "arc_easy",
+      "questions": 2376,
+      "options": {
+        "3": 7,
+        "4": 2365,
+        "5": 4
+      },
+      "ctx_mean": 291.8,
+      "ctx_p50": 288,
+      "ctx_p95": 367,
+      "ctx_max": 522,
+      "packed_mean": 305.2,
+      "packed_p95": 385,
+      "packed_max": 524,
+      "packed_tokens_total": 725253,
+      "per_option_tokens_total": 2804495,
+      "est_packed_h": 0.12,
+      "est_per_option_h": 0.48,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "hellaswag",
+      "questions": 10042,
+      "options": {
+        "4": 10042
+      },
+      "ctx_mean": 839.2,
+      "ctx_p50": 841,
+      "ctx_p95": 993,
+      "ctx_max": 1168,
+      "packed_mean": 953.6,
+      "packed_p95": 1131,
+      "packed_max": 1315,
+      "packed_tokens_total": 9576152,
+      "per_option_tokens_total": 34856771,
+      "est_packed_h": 1.63,
+      "est_per_option_h": 5.94,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "mmlu",
+      "questions": 14042,
+      "options": {
+        "4": 14042
+      },
+      "ctx_mean": 722.6,
+      "ctx_p50": 543,
+      "ctx_p95": 1762,
+      "ctx_max": 3147,
+      "packed_mean": 722.6,
+      "packed_p95": 1762,
+      "packed_max": 3147,
+      "packed_tokens_total": 10146612,
+      "per_option_tokens_total": 40586448,
+      "est_packed_h": 1.73,
+      "est_per_option_h": 6.91,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "commonsense_qa",
+      "questions": 1221,
+      "options": {
+        "5": 1221
+      },
+      "ctx_mean": 512.6,
+      "ctx_p50": 511,
+      "ctx_p95": 552,
+      "ctx_max": 617,
+      "packed_mean": 512.6,
+      "packed_p95": 552,
+      "packed_max": 617,
+      "packed_tokens_total": 625826,
+      "per_option_tokens_total": 3129130,
+      "est_packed_h": 0.11,
+      "est_per_option_h": 0.53,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "openbookqa",
+      "questions": 500,
+      "options": {
+        "4": 500
+      },
+      "ctx_mean": 11.6,
+      "ctx_p50": 9,
+      "ctx_p95": 27,
+      "ctx_max": 66,
+      "packed_mean": 21.0,
+      "packed_p95": 42,
+      "packed_max": 86,
+      "packed_tokens_total": 10484,
+      "per_option_tokens_total": 27908,
+      "est_packed_h": 0.0,
+      "est_per_option_h": 0.0,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "modarith",
+      "questions": 2000,
+      "options": {
+        "7": 2000
+      },
+      "ctx_mean": 132.4,
+      "ctx_p50": 143,
+      "ctx_p95": 182,
+      "ctx_max": 184,
+      "packed_mean": 132.4,
+      "packed_p95": 182,
+      "packed_max": 184,
+      "packed_tokens_total": 264755,
+      "per_option_tokens_total": 1853285,
+      "est_packed_h": 0.05,
+      "est_per_option_h": 0.32,
+      "over_max_length": 0
+    },
+    {
+      "benchmark": "parity",
+      "questions": 2000,
+      "options": {
+        "2": 2000
+      },
+      "ctx_mean": 168,
+      "ctx_p50": 177,
+      "ctx_p95": 201,
+      "ctx_max": 201,
+      "packed_mean": 168,
+      "packed_p95": 201,
+      "packed_max": 201,
+      "packed_tokens_total": 336000,
+      "per_option_tokens_total": 672000,
+      "est_packed_h": 0.06,
+      "est_per_option_h": 0.11,
+      "over_max_length": 0
+    }
+  ],
+  "total": {
+    "questions": 33353,
+    "est_packed_h": 3.9,
+    "est_per_option_h": 15.08
+  }
+}

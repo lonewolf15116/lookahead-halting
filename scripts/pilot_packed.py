@@ -26,7 +26,7 @@ from lookahead.ouro_adapter import OuroLoopRunner, load_ouro
 from lookahead.packed import PackedScorer, build_packed
 from lookahead.questions import load_lm_eval_questions, predictions, primary_scores
 
-LOOPS, N_HIDDEN, TIMEOUT_S = 4, 200, 60.0
+LOOPS, N_HIDDEN, N_ISOLATION, TIMEOUT_S = 4, 200, 100, 60.0
 
 
 def sync():
@@ -75,6 +75,8 @@ def main() -> int:
     scorer, runner = PackedScorer(model), OuroLoopRunner(model)
     for q in qs[:3]:  # warm-up, not timed
         list(scorer.loops(build_packed(q.context_enc, q.cont_encs)))
+    if torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
 
     rows, failures = [], {}
     started = time.time()
@@ -98,6 +100,17 @@ def main() -> int:
             elif sum(ms) / 1000 > TIMEOUT_S:
                 rec["status"] = "timeout"
             rec.update(packed_ll=lls, ref_ll=[[cache[k][t] for k in keys[i]] for t in range(LOOPS)], loop_ms=ms, gate=gates)
+            if i < N_ISOLATION and len(q.cont_encs) >= 2:
+                # P2 on the real backend: replace the last option's tokens (same length, then 3 tokens longer);
+                # every other option's score and the shared hidden state must not move
+                gen = torch.Generator().manual_seed(i)
+                d_ll, d_h = 0.0, 0.0
+                for extra in (0, 3):
+                    alt = torch.randint(0, model.config.vocab_size, (len(q.cont_encs[-1]) + extra,), generator=gen).tolist()
+                    for t, o in enumerate(scorer.loops(build_packed(q.context_enc, q.cont_encs[:-1] + [alt]))):
+                        d_ll = max(d_ll, max(abs(x - y) for x, y in zip(o.option_ll[:-1], lls[t][:-1])))
+                        d_h = max(d_h, float((o.hidden.float() - hid[t].float()).abs().max()))
+                rec.update(isolation_ll_maxabs=d_ll, isolation_hidden_maxabs=d_h)
             if i < N_HIDDEN:  # P4: shared hidden state against a context-only pass, in bf16
                 state = runner.start(torch.tensor([q.context_enc], device=scorer.device))
                 diffs, coss = [], []
@@ -171,6 +184,11 @@ def main() -> int:
     b, a = np.polyfit(xs, ys, 1) if len(ok) > 2 else (float("nan"), float("nan"))
     res["timing"] = {"ms_per_loop_intercept": float(a), "ms_per_loop_per_token": float(b),
                      "mean_s_per_question": float(np.mean(ys) * LOOPS / 1000) if len(ok) else None}
+    iso_ll = [r["isolation_ll_maxabs"] for _, r in ok if "isolation_ll_maxabs" in r]
+    iso_h = [r["isolation_hidden_maxabs"] for _, r in ok if "isolation_hidden_maxabs" in r]
+    res["P2_isolation_gpu"] = {"n": len(iso_ll), "ll_maxabs": max(iso_ll, default=None),
+                               "hidden_maxabs": max(iso_h, default=None)}
+    res["peak_vram_gb"] = round(torch.cuda.max_memory_allocated() / 1e9, 3) if torch.cuda.is_available() else None
     tc = out_dir / "token_counts.json"
     if tc.exists():
         rows_tc = json.loads(tc.read_text(encoding="utf-8"))["rows"]
@@ -183,6 +201,8 @@ def main() -> int:
         "P6_top_identical_ge_99pct": all(r["top_identical_acc_norm"] >= 0.99 for r in res["per_loop"]),
         "P7_accuracy_within_0.5": all(abs(r["acc_norm_gap"]) <= 0.5 and abs(r["acc_gap"]) <= 0.5 for r in res["per_loop"]),
         "P8_flip_agreement_ge_98pct": all(t["flip_agreement"] >= 0.98 for t in targets),
+        # the untouched options run the same computation, so this should be exact; 1e-3 only allows kernel noise
+        "P2_isolation_gpu": bool(iso_ll) and max(iso_ll) <= 1e-3 and max(iso_h) <= 1e-3,
     }
     res["hard_criteria"] = hard
     res["passed"] = all(hard.values())
@@ -199,6 +219,9 @@ def main() -> int:
               f"|dll| p99 {r['ll_absdiff']['p99']:.4f} max {r['ll_absdiff']['max']:.4f}  {r['ms_mean'] or 0:.0f} ms")
     for t in targets:
         print(f"{t['step']}: flip agreement {100 * t['flip_agreement']:.2f}%  D spearman {t['D_spearman']:.4f}")
+    iso = res["P2_isolation_gpu"]
+    print(f"P2 isolation ({iso['n']} q): max |dll| {iso['ll_maxabs']}, max |dh| {iso['hidden_maxabs']}; "
+          f"peak VRAM {res['peak_vram_gb']} GB")
     if "runtime_estimate_h" in res:
         print(f"Runtime estimate (packed, measured): {res['runtime_estimate_h']}")
     print(f"Hard criteria: {hard}\n{'PASSED' if res['passed'] else 'NOT PASSED'}")

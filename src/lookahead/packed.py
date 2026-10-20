@@ -105,8 +105,8 @@ class PackedScorer:
             tok_ll = logp.gather(1, tgt[:, None]).squeeze(1)
             tok_greedy = logp.argmax(-1) == tgt
             ll = torch.zeros(packed.n_options, device=dev).index_add_(0, opt, tok_ll)
-            greedy = torch.ones(packed.n_options, dtype=torch.bool, device=dev)
-            greedy.scatter_reduce_(0, opt, tok_greedy, reduce="amin")
+            misses = torch.zeros(packed.n_options, dtype=torch.long, device=dev).index_add_(0, opt, (~tok_greedy).long())
+            greedy = misses == 0  # greedy iff every continuation token is the argmax (bool scatter is CPU-only)
             first = logp[0] if packed.score_pos[0] == packed.n_context - 1 else None
             vocab_logp = first if first is not None else torch.log_softmax(self.runner.readout(state.hidden, last)[0], -1)
             yield LoopOutput(

@@ -1,0 +1,119 @@
+{
+  "benchmarks": {
+    "arc_challenge": {
+      "n_questions": 1172,
+      "question_set_sha256": "c6653ea67830f45fcd49934a86f5cecff0323e893dee1405f3b392442aac8e86",
+      "hf_dataset": "allenai/ai2_arc",
+      "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+      "shots": 25,
+      "metric": "acc_norm",
+      "limit": null
+    },
+    "arc_easy": {
+      "n_questions": 2376,
+      "question_set_sha256": "df988c4dab1c9c503998f3420b06e7f51c607577439ac6859e22ebd084fc4b98",
+      "hf_dataset": "allenai/ai2_arc",
+      "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+      "shots": 8,
+      "metric": "acc_norm",
+      "limit": null
+    },
+    "hellaswag": {
+      "n_questions": 10042,
+      "question_set_sha256": "496d688a49427d9b719ef6b9164fdcfb75257a2f2dff1e9c49cebc1811951bb0",
+      "hf_dataset": "Rowan/hellaswag",
+      "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+      "shots": 10,
+      "metric": "acc_norm",
+      "limit": null
+    },
+    "mmlu": {
+      "n_questions": 14042,
+      "question_set_sha256": "b8966dde63ab381ce908791ac6b98492ea5a538f0a1cb293ed071bf315fb4765",
+      "hf_dataset": "cais/mmlu",
+      "hf_revision": "c30699e8356da336a370243923dbaf21066bb9fe",
+      "shots": 5,
+      "metric": "acc",
+      "limit": null
+    },
+    "commonsense_qa": {
+      "n_questions": 1221,
+      "question_set_sha256": "f213b63eb668f25c28dd241ed8f86e9b56376936c22d86033bbae18e65b33979",
+      "hf_dataset": "tau/commonsense_qa",
+      "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+      "shots": 10,
+      "metric": "acc",
+      "limit": null
+    },
+    "openbookqa": {
+      "n_questions": 500,
+      "question_set_sha256": "d3f4183ec4c9baef9ab8bf7b9c85e85006eb71857c1c214e5b06b74820c7e167",
+      "hf_dataset": "allenai/openbookqa",
+      "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+      "shots": 0,
+      "metric": "acc_norm",
+      "limit": null
+    },
+    "modarith": {
+      "n_questions": 2000,
+      "question_set_sha256": "e99b6d0976ea077a354df087b2acd4d9129adcef0a1afabcbdcdc4ac48d21dbb",
+      "hf_dataset": "generated (data/synthetic)",
+      "hf_revision": null,
+      "shots": 5,
+      "metric": "acc",
+      "limit": null
+    },
+    "parity": {
+      "n_questions": 2000,
+      "question_set_sha256": "c9ed59361186a6944918604b350e98f630afd2eb88e0aaaafe6d2faff0a2a688",
+      "hf_dataset": "generated (data/synthetic)",
+      "hf_revision": null,
+      "shots": 5,
+      "metric": "acc",
+      "limit": null
+    }
+  },
+  "splits_sha256": "89fbab6684bd2bb52e247fe9e8807faf6be73ed9122cf757656eb0bc3bf0712e",
+  "split_counts": {
+    "arc_challenge": {
+      "train": 703,
+      "test": 235,
+      "validation": 234
+    },
+    "arc_easy": {
+      "train": 1426,
+      "validation": 475,
+      "test": 475
+    },
+    "hellaswag": {
+      "train": 6025,
+      "test": 2009,
+      "validation": 2008
+    },
+    "mmlu": {
+      "test": 2805,
+      "train": 8428,
+      "validation": 2809
+    },
+    "commonsense_qa": {
+      "test": 244,
+      "train": 733,
+      "validation": 244
+    },
+    "openbookqa": {
+      "validation": 100,
+      "train": 300,
+      "test": 100
+    },
+    "modarith": {
+      "train": 1200,
+      "test": 400,
+      "validation": 400
+    },
+    "parity": {
+      "train": 1200,
+      "validation": 400,
+      "test": 400
+    }
+  }
+}

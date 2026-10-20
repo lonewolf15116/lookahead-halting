@@ -60,6 +60,7 @@ def test_pilot_runs_and_passes_against_per_option_cache(tmp_path, monkeypatch, t
         assert row["ll_absdiff"]["max"] <= 1e-4 and row["top_identical_acc_norm"] == 1.0
         assert row["hidden_maxabs"]["max"] <= 1e-5
     assert all(t["flip_agreement"] == 1.0 for t in res["targets"])
+    assert res["P2_isolation_gpu"]["n"] > 0 and res["P2_isolation_gpu"]["ll_maxabs"] <= 1e-5
 
 
 def test_prepare_runs_on_synthetic(tmp_path, monkeypatch):

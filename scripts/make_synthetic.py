@@ -44,7 +44,7 @@ def main():
         for m in fails[:5]:
             print("FAIL", m)
     manifest["token_boundary_failures_total"] = total_fail
-    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(manifest, indent=2))
     return 1 if total_fail else 0
 
