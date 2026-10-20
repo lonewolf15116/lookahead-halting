@@ -44,3 +44,4 @@
 ## 2026-10-21 Gate 1 accepted; Gate 2 preparation
 - Reviewer accepted Gate 1 PASS under the frozen rule, with the wording that four of five qualified baselines violated the 1 pp loss limit on test and that R_unc is diagnostic only. Reviewer: GO for Gate 2 preparation and probe training; do not tune on Gate 1 test results; prefer a separate confirmation set for new policies.
 - Tagged `gate1-final` at a6590fa. Drafted docs/GATE2_PLAN.md (not run; pass rule and confirmation set await reviewer decision).
+- Gate 2 plan v2: confirmation set from never-scored labelled questions (ARC/MMLU/OBQA validation splits; HellaSwag/CSQA train items never used as exemplars); verdict on loss-budget saving S(1 pp) vs best baseline with PASS/PARTIAL/FAIL separating learned halting from h_t lookahead; v1's 90th-percentile risk margin dropped (near-vacuous given ~±1.3 pp macro-loss CIs). Awaiting reviewer sign-off.
