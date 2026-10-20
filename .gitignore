@@ -18,3 +18,4 @@ hf_cache/
 .pytest_cache/
 *.egg-info/
 results/gate0/arc_cache.jsonl
+data/questions/

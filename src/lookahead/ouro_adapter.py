@@ -74,20 +74,36 @@ class OuroLoopRunner:
         self.total_loops = self.core.total_ut_steps
 
     @torch.no_grad()
-    def start(self, input_ids: torch.Tensor, attention_mask: torch.Tensor | None = None) -> LoopState:
+    def start(self, input_ids: torch.Tensor, attention_mask: torch.Tensor | None = None,
+              position_ids: torch.Tensor | None = None, and_mask_function=None) -> LoopState:
+        """Embed the input and build masks and rotary embeddings.
+
+        position_ids (optional) are the RoPE positions; by default 0..L-1. and_mask_function (optional) is combined with
+        the causal mask by transformers (used by packed scoring). Mask construction always sees plain 0..L-1 positions
+        and an explicit all-ones attention mask when none is given, so transformers never reinterprets non-monotonic
+        RoPE positions as separate packed documents.
+        """
         embeds = self.core.embed_tokens(input_ids)
         cache_position = torch.arange(embeds.shape[1], device=embeds.device)
-        position_ids = cache_position.unsqueeze(0)
+        mask_positions = cache_position.unsqueeze(0)
+        if position_ids is None:
+            position_ids = mask_positions
         mask_kwargs = {
             "config": self.config,
             "input_embeds": embeds,
             "attention_mask": attention_mask,
             "cache_position": cache_position,
             "past_key_values": None,
-            "position_ids": position_ids,
+            "position_ids": mask_positions,
         }
+        if and_mask_function is not None:
+            if attention_mask is None:
+                mask_kwargs["attention_mask"] = torch.ones(input_ids.shape, dtype=torch.long, device=embeds.device)
+            mask_kwargs["and_mask_function"] = and_mask_function
         masks = {"full_attention": create_causal_mask(**mask_kwargs)}
         if self.core.has_sliding_layers:
+            if and_mask_function is not None:
+                raise NotImplementedError("packed scoring assumes full attention only (true for Ouro-1.4B)")
             masks["sliding_attention"] = create_sliding_window_causal_mask(**mask_kwargs)
         return LoopState(
             hidden=embeds,

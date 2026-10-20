@@ -26,8 +26,8 @@ class LoopedOuroLM(TemplateLM):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
-        self.runner = OuroLoopRunner(model)
-        self.exit_loop = self.runner.total_loops
+        self.runner = OuroLoopRunner(model) if model is not None else None  # None: tokenisation only
+        self.exit_loop = self.runner.total_loops if self.runner else None
         self.max_length = max_length
         self.log_every = log_every
         self.cache_path = Path(cache_path) if cache_path else None
