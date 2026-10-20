@@ -146,6 +146,7 @@ Gate 1 is computed on the **test** split, with thresholds chosen on validation a
 - **PASS** if S_or ≥ 0.25 and R < 0.75, which is PROTOCOL v1.1 unchanged, judged on the point estimates. Here R is the primary, validation-qualified ratio.
 - **Uncertainty.** 95% intervals for S_or, each S_b and R come from a paired, question-level bootstrap with 2,000 resamples, stratified by benchmark, seed 0.
 - **Labelling.** If a threshold lies inside its interval, the verdict carries the label **MARGINAL** next to PASS or FAIL. A marginal result goes to you for a decision rather than being read as clear.
+- **OpenBookQA sensitivity (reviewer, 2026-10-20).** OpenBookQA stays in BF16 and in the primary six-benchmark verdict, with equal weight. Because its very short prompts carry BF16 shape noise (see DECISIONS.md), Gate 1 is also reported over the other five benchmarks as a sensitivity analysis. That analysis never replaces the primary verdict.
 - **Per benchmark.** S_or, R and the transition tables are reported per benchmark. Gate 1 can pass overall while failing on individual benchmarks, and that is reported as a finding.
 
 **Fixed-3 risk, stated now.** On ARC-C, fixed-3 loses only 0.26 points against fixed-4 (Gate 0). If it also stays within 1 point on the pooled validation set, it qualifies with a saving of exactly 25%. Then R < 0.75 needs S_or > 33.3%. A learned policy has to justify itself against simply dropping a loop.

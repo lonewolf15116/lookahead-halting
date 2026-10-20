@@ -266,6 +266,11 @@ def main(argv=None) -> int:
     name = args.report or ("extraction_check_smoke.json" if args.limit else "extraction_check.json")
     rdir = results_dir("phase1")
     (rdir / name).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
+    if not ok_all:  # stop rule: keep the failing report even if a later run rewrites the main one
+        import time
+
+        failed = rdir / name.replace(".json", f"_FAILED_{time.strftime('%Y%m%d-%H%M%S')}.json")
+        failed.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
     print(f"float32 packed vs context-only recorded and within {FP32_TOL}: {report['float32_equivalence_recorded']}")
     print(f"meta complete: {report['meta_complete']}, same code across runs: {report['code_identical_across_runs']}")
     print("ALL CHECKS PASSED" if ok_all else "CHECKS FAILED: see " + str(rdir / name))
