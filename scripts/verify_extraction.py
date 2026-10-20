@@ -5,8 +5,9 @@
 
 1 schema       every question once, 4 loop rows with every field, hidden [n, 4, hidden_size]
 2 targets      every option-level value and target recomputed from the stored option log-likelihoods with independent
-               code; on a sample per benchmark, the model is re-run (context-only pass, per-option scoring) to recompute
-               the full-vocabulary entropy and KL targets, the gate and the hidden state
+               code; on a sample per benchmark, the same packed input is run again and the full-vocabulary entropy and KL
+               targets, gate and state recomputed with separate code (must reproduce the stored values); the bf16 gap to
+               a context-only pass is reported, and the float32 equivalence from diagnose_short_context.py is required
 3 numerics     finite values, probabilities sum to 1, KL >= 0, entropies in range; failures classified, <= 1% each
 4 splits       every question has exactly one split, equal to splits.csv
 5 resume       part checksums match, no duplicate questions, no leftover temporary files
@@ -32,7 +33,9 @@ FIELDS = ["benchmark", "stratum", "doc_id", "split", "target", "n_options", "n_t
           "D", "D_vocab", "F", "T", "G", "K", "K_vocab", "F_final", "T_final"]
 META_KEYS = ["code_sha256", "git_commit", "model", "datasets", "splits_sha256", "seeds", "versions", "device"]
 TOL = 1e-6  # option-level recomputation is float64 on the same stored inputs
-VOCAB_TOL = 2e-3  # sample re-run: bf16 model, float32 log-softmax; the shared state is bit-identical in practice
+RERUN_TOL = 1e-4  # re-running the same packed input: same shapes, same kernels; fixed 2026-10-20 before any such run
+RERUN_HIDDEN_TOL = 1e-3  # stored state is float16 of a bf16 value, so the re-run must reproduce it to well under 1 ulp
+FP32_TOL = 1e-4  # float32 packed vs context-only (scripts/diagnose_short_context.py); measured ~2e-5
 
 
 def recompute_options(opt_ll, choice_lens, metric, target):
@@ -88,43 +91,77 @@ def check_targets(q, rows):
 
 
 def model_sample_check(model, qs, df, hidden, n):
-    """Re-run n questions through independent paths and compare vocabulary targets, gate, hidden state, option scores."""
+    """Re-run n questions per benchmark and compare with the stored values.
+
+    rerun   gated: the SAME packed input run again, with the entropy, KL targets, gate and state recomputed by code that
+            does not go through extract_question. Same shapes mean the same kernels, so this checks the target and storage
+            path, not bf16 kernel noise.
+    ctx     reported only: a context-only pass. In bf16 its shapes differ from the packed pass, and on very short prompts
+            that changes the matmul kernels (diagnose_short_context.py: float32 agrees to ~2e-5, bf16 does not).
+    """
     import torch
 
     from lookahead.ouro_adapter import NativeGate, OuroLoopRunner
-    from lookahead.packed import score_per_option
+    from lookahead.packed import PackedScorer, build_packed, score_per_option
 
-    runner = OuroLoopRunner(model)
+    runner, scorer = OuroLoopRunner(model), PackedScorer(model)
     dev = next(model.parameters()).device
     by_id = {q.doc_id: q for q in qs}
     ok_ids = [d for d in df.loc[(df.status == "ok") & (df.loop == 1), "doc_id"]]
     pos = {d: i for i, d in enumerate(df.loc[df.loop == 1, "doc_id"])}
-    worst = {"vent": 0.0, "D_vocab": 0.0, "K_vocab": 0.0, "gate": 0.0, "cdf": 0.0, "hidden": 0.0, "opt_ll": 0.0}
+    keys = ("vent", "D_vocab", "K_vocab", "gate", "cdf", "hidden")
+    rerun = {k: 0.0 for k in keys + ("opt_ll",)}
+    ctx = {k: 0.0 for k in keys}
+    ctx["hidden_rel_l2"] = 0.0
+
+    def vocab_stats(logps):
+        out = [{"vent": -float(np.sum(np.exp(lp) * lp))} for lp in logps]
+        for t, lp in enumerate(logps):
+            out[t]["K_vocab"] = kl(lp, logps[-1])
+            out[t]["D_vocab"] = kl(lp, logps[t + 1]) if t + 1 < len(logps) else None
+        return out
+
+    def compare(worst, stats, gates, cdfs, hs, rows, stored_h):
+        for t in range(LOOPS):
+            for k in ("vent", "K_vocab", "D_vocab"):
+                if stats[t][k] is not None:
+                    worst[k] = max(worst[k], abs(stats[t][k] - rows[t][k]))
+            worst["gate"] = max(worst["gate"], abs(gates[t] - rows[t]["gate"]))
+            worst["cdf"] = max(worst["cdf"], abs(cdfs[t] - rows[t]["cdf"]))
+            h = hs[t].float().cpu().numpy().astype(np.float16).astype(np.float64)
+            st = stored_h[t].astype(np.float64)
+            worst["hidden"] = max(worst["hidden"], float(np.abs(h - st).max()))
+            if "hidden_rel_l2" in worst:
+                worst["hidden_rel_l2"] = max(worst["hidden_rel_l2"], float(np.linalg.norm(h - st) / np.linalg.norm(st)))
+
     for doc_id in ok_ids[:: max(1, len(ok_ids) // n)][:n]:
         q = by_id[doc_id]
         rows = df[df.doc_id == doc_id].sort_values("loop").to_dict("records")
-        state = runner.start(torch.tensor([q.context_enc], device=dev))
+        stored_h = hidden[pos[doc_id]]
         last = torch.tensor([len(q.context_enc) - 1], device=dev)
-        gate = NativeGate(runner.total_loops, 1)
-        logps = []
-        for t in range(LOOPS):
+        # rerun: the same packed input again
+        gate, logps, gates, cdfs, hs = NativeGate(runner.total_loops, 1), [], [], [], []
+        for out in scorer.loops(build_packed(q.context_enc, q.cont_encs)):
+            logps.append(out.vocab_logp.double().cpu().numpy())
+            gates.append(out.gate_logit)
+            cdfs.append(float(gate.update(torch.tensor([out.gate_logit]))[0]))
+            hs.append(out.hidden)
+        compare(rerun, vocab_stats(logps), gates, cdfs, hs, rows, stored_h)
+        # ctx: a context-only pass (reported)
+        state = runner.start(torch.tensor([q.context_enc], device=dev))
+        gate, logps, gates, cdfs, hs = NativeGate(runner.total_loops, 1), [], [], [], []
+        for _ in range(LOOPS):
             runner.step(state)
-            lp = torch.log_softmax(runner.readout(state.hidden, last)[0].double(), -1).cpu().numpy()
-            logps.append(lp)
+            logps.append(torch.log_softmax(runner.readout(state.hidden, last)[0].double(), -1).cpu().numpy())
             g = float(runner.gate_logit(state.hidden, last)[0])
-            worst["gate"] = max(worst["gate"], abs(g - rows[t]["gate"]))
-            worst["cdf"] = max(worst["cdf"], abs(float(gate.update(torch.tensor([g]))[0]) - rows[t]["cdf"]))
-            h = state.hidden[0, -1].float().cpu().numpy().astype(np.float16).astype(np.float32)
-            worst["hidden"] = max(worst["hidden"], float(np.abs(h - hidden[pos[doc_id], t].astype(np.float32)).max()))
-        for t in range(LOOPS):
-            worst["vent"] = max(worst["vent"], abs(-float(np.sum(np.exp(logps[t]) * logps[t])) - rows[t]["vent"]))
-            worst["K_vocab"] = max(worst["K_vocab"], abs(kl(logps[t], logps[-1]) - rows[t]["K_vocab"]))
-            if t + 1 < LOOPS:
-                worst["D_vocab"] = max(worst["D_vocab"], abs(kl(logps[t], logps[t + 1]) - rows[t]["D_vocab"]))
+            gates.append(g)
+            cdfs.append(float(gate.update(torch.tensor([g]))[0]))
+            hs.append(state.hidden[0, -1])
+        compare(ctx, vocab_stats(logps), gates, cdfs, hs, rows, stored_h)
         ref_ll, _, _ = score_per_option(model, q.context_enc, q.cont_encs)
         for t in range(LOOPS):
-            worst["opt_ll"] = max(worst["opt_ll"], max(abs(a - b) for a, b in zip(ref_ll[t], rows[t]["opt_ll"])))
-    return worst
+            rerun["opt_ll"] = max(rerun["opt_ll"], max(abs(a - b) for a, b in zip(ref_ll[t], rows[t]["opt_ll"])))
+    return {"rerun_same_input": rerun, "vs_context_only_reported": ctx}
 
 
 def main(argv=None) -> int:
@@ -193,11 +230,12 @@ def main(argv=None) -> int:
         checks["targets_recomputed"] = not mism and all(v <= TOL for v in worst.values())
         if model is not None and args.sample:
             sample = model_sample_check(model, qs, df, hid, args.sample)
-            notes["model_sample_max_abs_err"] = sample
-            checks["vocab_targets_gate_hidden_recomputed"] = all(
-                sample[k] <= VOCAB_TOL for k in ("vent", "D_vocab", "K_vocab", "gate", "cdf", "hidden"))
+            notes["model_sample"] = sample
+            re = sample["rerun_same_input"]
+            checks["vocab_targets_gate_hidden_reproduced_on_same_input"] = (
+                all(re[k] <= RERUN_TOL for k in ("vent", "D_vocab", "K_vocab", "gate", "cdf")) and re["hidden"] <= RERUN_HIDDEN_TOL)
             # option scores against per-option scoring: bf16 differences up to ~0.45 nats were seen in the pilot (P5)
-            checks["option_ll_vs_per_option_le_1nat"] = sample["opt_ll"] <= 1.0
+            checks["option_ll_vs_per_option_le_1nat"] = re["opt_ll"] <= 1.0
         # 4 splits
         checks["splits_match_manifest"] = all(splits.get((b, r.doc_id), (None, None))[1] == r.split for r in firsts.itertuples())
         checks["one_split_per_question"] = bool((df.groupby("doc_id").split.nunique() == 1).all())
@@ -210,6 +248,15 @@ def main(argv=None) -> int:
               + ", ".join(k for k, v in checks.items() if not v), flush=True)
 
     # cross-benchmark split integrity: no (benchmark, doc_id) assigned twice is enforced by load_splits
+    diag_path = REPO_ROOT / "results" / "phase1" / "diagnose_short_context.json"
+    if diag_path.exists():
+        diag = json.loads(diag_path.read_text(encoding="utf-8"))["float32"]
+        worst = {b_: max(v[k]["maxabs_max"] for k in ("packed_vs_ctx", "packed_vs_ctxmask")) for b_, v in diag.items()}
+        report["float32_packed_vs_context_only_maxabs"] = worst
+        report["float32_equivalence_recorded"] = bool(worst) and max(worst.values()) <= FP32_TOL
+    else:
+        report["float32_equivalence_recorded"] = False
+    ok_all &= report["float32_equivalence_recorded"]
     meta_path = out / "meta.json"
     meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {"runs": []}
     report["meta_complete"] = bool(meta["runs"]) and all(all(k in run for k in META_KEYS) for run in meta["runs"])
@@ -219,6 +266,7 @@ def main(argv=None) -> int:
     name = args.report or ("extraction_check_smoke.json" if args.limit else "extraction_check.json")
     rdir = results_dir("phase1")
     (rdir / name).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
+    print(f"float32 packed vs context-only recorded and within {FP32_TOL}: {report['float32_equivalence_recorded']}")
     print(f"meta complete: {report['meta_complete']}, same code across runs: {report['code_identical_across_runs']}")
     print("ALL CHECKS PASSED" if ok_all else "CHECKS FAILED: see " + str(rdir / name))
     return 0 if ok_all else 1

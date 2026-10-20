@@ -85,6 +85,12 @@ def patch_scripts(monkeypatch, root_dir, model, tok):
                         or root_dir / "results" / sub)
     monkeypatch.setattr(oa, "load_ouro", lambda device="cuda": (model, tok))
     monkeypatch.setattr(ext, "code_identity", lambda r: {"code_sha256": "test", "git_commit": "test"})
+    # the float32 packed-vs-context-only record that verify_extraction requires (the real one comes from the laptop)
+    diag = load_script("diagnose_short_context")
+    rows = diag.compare(model, load_synthetic_questions("parity", tok)[:3])
+    rdir = root_dir / "results" / "phase1"
+    rdir.mkdir(parents=True, exist_ok=True)
+    (rdir / "diagnose_short_context.json").write_text(json.dumps({"float32": {"parity": diag.summarize(rows)}}), encoding="utf-8")
     return ext, ver
 
 
@@ -102,7 +108,9 @@ def test_end_to_end_extraction_passes_all_checks(root, tiny4, tok, monkeypatch):
     report = json.loads((root_dir / "results" / "phase1" / "extraction_check.json").read_text())
     for b, r in report["benchmarks"].items():
         assert all(r["checks"].values()), (b, r["checks"])
-        assert r["model_sample_max_abs_err"]["D_vocab"] < 1e-5 and r["model_sample_max_abs_err"]["opt_ll"] < 1e-4
+        re = r["model_sample"]["rerun_same_input"]
+        assert re["D_vocab"] < 1e-5 and re["opt_ll"] < 1e-4 and re["hidden"] == 0
+        assert r["model_sample"]["vs_context_only_reported"]["hidden_rel_l2"] < 1e-5  # float32, so exact up to rounding
     # 1 schema: 4 rows per question, hidden [n, 4, d]
     df, hid, _ = read_benchmark(out, "parity")
     assert len(df) == 4 * 30 and hid.shape == (30, 4, 64) and hid.dtype == np.float16
@@ -204,3 +212,20 @@ def test_changed_questions_or_splits_are_refused(root, monkeypatch):
     s.write_text(s.read_text().replace(",train\n", ",test\n", 1), newline="\n")
     with pytest.raises(SystemExit, match="splits.csv"):
         ext.check_inputs(root_dir, ["fake_arc"], None)
+
+
+def test_rerun_check_catches_corrupted_state_and_targets(root, tiny4, tok, monkeypatch):
+    root_dir, benches = root
+    ext, ver = patch_scripts(monkeypatch, root_dir, tiny4, tok)
+    assert run_extract(ext, monkeypatch) == 0
+    df, hid, _ = read_benchmark(root_dir / "data" / "extracted", "parity")
+    qs = benches["parity"]
+    clean = ver.model_sample_check(tiny4, qs, df, hid, 4)["rerun_same_input"]
+    assert clean["hidden"] == 0 and max(clean[k] for k in ("vent", "D_vocab", "K_vocab", "gate", "cdf")) < 1e-5
+    hid_bad = hid.copy()
+    hid_bad[:, 1, 0] += np.float16(0.5)
+    df_bad = df.copy()
+    df_bad["D_vocab"] = df_bad["D_vocab"] + 1e-2
+    df_bad["gate"] = df_bad["gate"] + 1e-2
+    bad = ver.model_sample_check(tiny4, qs, df_bad, hid_bad, 4)["rerun_same_input"]
+    assert bad["hidden"] >= 0.4 and bad["D_vocab"] >= 9e-3 and bad["gate"] >= 9e-3
