@@ -1,5 +1,8 @@
 """Load Ouro through the stock Hugging Face path and see what it exposes.
 
+use_cache=False throughout: Ouro's UniversalTransformerCache is broken on transformers 4.54.1 (seen 2026-10-20),
+and nothing in this project uses the KV cache.
+
 Each step is recorded on its own, so one failure does not hide the others. This only observes the
 model; it assumes nothing about Ouro-specific outputs. Writes results/gate0/stock_smoke.json.
 """
@@ -61,18 +64,18 @@ def main() -> int:
         state["inputs"] = inputs
         torch.cuda.reset_peak_memory_stats()
         with torch.no_grad():
-            out = state["model"](**inputs)
+            out = state["model"](**inputs, use_cache=False)
         torch.cuda.synchronize()
         return {"output": describe(out), "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1024**3, 3)}
 
     def forward_hidden():
         with torch.no_grad():
-            out = state["model"](**state["inputs"], output_hidden_states=True)
+            out = state["model"](**state["inputs"], output_hidden_states=True, use_cache=False)
         return describe(getattr(out, "hidden_states", None))
 
     def generate():
         with torch.no_grad():
-            ids = state["model"].generate(**state["inputs"], max_new_tokens=8, do_sample=False)
+            ids = state["model"].generate(**state["inputs"], max_new_tokens=8, do_sample=False, use_cache=False)
         return state["tok"].decode(ids[0], skip_special_tokens=True)
 
     step("load", load)
