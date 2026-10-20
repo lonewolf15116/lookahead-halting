@@ -22,5 +22,5 @@ function Check($what) {
 & $py scripts\pilot_packed.py --limit 25; Check 'pilot smoke test'
 & $py scripts\pilot_packed.py; $pilot = $LASTEXITCODE
 if ($pilot -eq 0) { Write-Host 'Packed pilot: all hard criteria passed.' }
-else { Write-Host "Packed pilot finished with exit $pilot: at least one criterion failed; see results\phase1\pilot_packed.json." }
+else { Write-Host "Packed pilot finished with exit ${pilot}: at least one criterion failed; see results\phase1\pilot_packed.json." }
 Write-Host "Done. Results are in $Root\results\phase1 and $Root\data\manifests"
