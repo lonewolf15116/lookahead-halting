@@ -1,0 +1,352 @@
+{
+  "out": "C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\data\\extracted_smoke",
+  "benchmarks": {
+    "arc_challenge": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 5.551115123125783e-17,
+        "conf": 5.551115123125783e-17,
+        "ent": 4.440892098500626e-16,
+        "loss": 2.220446049250313e-16,
+        "K": 4.445228907190568e-16,
+        "D": 4.445228907190568e-16,
+        "G": 4.440892098500626e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 0.0002379729633013028,
+        "D_vocab": 0.00013446948386663937,
+        "K_vocab": 1.1629730917839254e-05,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 0.22628402709960938
+      }
+    },
+    "arc_easy": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 5.551115123125783e-17,
+        "conf": 5.551115123125783e-17,
+        "ent": 4.440892098500626e-16,
+        "loss": 1.1102230246251565e-16,
+        "K": 1.1275702593849246e-16,
+        "D": 1.717376241217039e-16,
+        "G": 1.1102230246251565e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 0.00015625700576604729,
+        "D_vocab": 1.9867865629130677e-05,
+        "K_vocab": 4.374131853168706e-05,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 0.1892986297607422
+      }
+    },
+    "hellaswag": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 1.1102230246251565e-16,
+        "conf": 0.0,
+        "ent": 4.440892098500626e-16,
+        "loss": 2.220446049250313e-16,
+        "K": 1.5373986805844453e-16,
+        "D": 1.5373986805844453e-16,
+        "G": 2.220446049250313e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 0.00024822805836333117,
+        "D_vocab": 0.00017395901820727033,
+        "K_vocab": 8.05507534273886e-06,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 0.2640228271484375
+      }
+    },
+    "mmlu": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 0.0,
+        "K": 0.0,
+        "D": 0.0,
+        "G": 0.0
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 3.0520556462132475e-06,
+        "D_vocab": 1.2332785381680145e-06,
+        "K_vocab": 2.7286076963450867e-06,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 2.980232238769531e-07
+      }
+    },
+    "commonsense_qa": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 0.0,
+        "K": 0.0,
+        "D": 0.0,
+        "G": 0.0
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 0.0001535231191647224,
+        "D_vocab": 1.8112936855899098e-05,
+        "K_vocab": 1.3246665956583026e-05,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 2.47955322265625e-05
+      }
+    },
+    "openbookqa": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": false,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 5.551115123125783e-17,
+        "conf": 5.551115123125783e-17,
+        "ent": 4.440892098500626e-16,
+        "loss": 2.220446049250313e-16,
+        "K": 1.3877787807814457e-16,
+        "D": 1.0928757898653885e-16,
+        "G": 2.220446049250313e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 0.21066913275948718,
+        "D_vocab": 0.10491218589976459,
+        "K_vocab": 0.16580477953637462,
+        "gate": 0.1875,
+        "cdf": 0.01045072078704834,
+        "hidden": 0.1875,
+        "opt_ll": 0.5150489807128906
+      }
+    },
+    "modarith": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 0.0,
+        "K": 0.0,
+        "D": 0.0,
+        "G": 0.0
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 8.530870395428991e-06,
+        "D_vocab": 5.850054343836675e-06,
+        "K_vocab": 6.5807122229255555e-06,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 9.5367431640625e-07
+      }
+    },
+    "parity": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_recomputed": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 40
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 0.0,
+        "K": 0.0,
+        "D": 0.0,
+        "G": 0.0
+      },
+      "recompute_mismatches": [],
+      "model_sample_max_abs_err": {
+        "vent": 0.0005087020125219555,
+        "D_vocab": 6.0155418715917945e-05,
+        "K_vocab": 6.0155418715917945e-05,
+        "gate": 0.0,
+        "cdf": 0.0,
+        "hidden": 0.0,
+        "opt_ll": 8.606910705566406e-05
+      }
+    }
+  },
+  "meta_complete": true,
+  "code_identical_across_runs": true,
+  "passed": false
+}
