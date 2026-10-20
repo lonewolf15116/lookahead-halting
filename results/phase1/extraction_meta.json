@@ -1,0 +1,155 @@
+{
+  "runs": [
+    {
+      "started": "2026-10-20 21:58:02",
+      "args": {
+        "benchmarks": [
+          "arc_challenge",
+          "arc_easy",
+          "hellaswag",
+          "mmlu",
+          "commonsense_qa",
+          "openbookqa",
+          "modarith",
+          "parity"
+        ],
+        "limit": null,
+        "out": null,
+        "chunk": 256,
+        "stop_after": null
+      },
+      "code_sha256": "4de5cd1e290fae8d06242bd888044a7c60fd38c57ddfb1a9b4146885b22e5b58",
+      "git_commit": "ae43d90b0be362d8739cb9fab28d4b00b1fdcd22",
+      "git_dirty_code": false,
+      "model": {
+        "repo_id": "ByteDance/Ouro-1.4B",
+        "revision": "574fa66cb8bf5abdc979642d01cf2b79b16bfab1",
+        "dtype": "bfloat16"
+      },
+      "datasets": {
+        "arc_challenge": {
+          "hf_dataset": "allenai/ai2_arc",
+          "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+          "question_set_sha256": "c6653ea67830f45fcd49934a86f5cecff0323e893dee1405f3b392442aac8e86",
+          "shots": 25,
+          "metric": "acc_norm"
+        },
+        "arc_easy": {
+          "hf_dataset": "allenai/ai2_arc",
+          "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+          "question_set_sha256": "df988c4dab1c9c503998f3420b06e7f51c607577439ac6859e22ebd084fc4b98",
+          "shots": 8,
+          "metric": "acc_norm"
+        },
+        "hellaswag": {
+          "hf_dataset": "Rowan/hellaswag",
+          "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+          "question_set_sha256": "496d688a49427d9b719ef6b9164fdcfb75257a2f2dff1e9c49cebc1811951bb0",
+          "shots": 10,
+          "metric": "acc_norm"
+        },
+        "mmlu": {
+          "hf_dataset": "cais/mmlu",
+          "hf_revision": "c30699e8356da336a370243923dbaf21066bb9fe",
+          "question_set_sha256": "b8966dde63ab381ce908791ac6b98492ea5a538f0a1cb293ed071bf315fb4765",
+          "shots": 5,
+          "metric": "acc"
+        },
+        "commonsense_qa": {
+          "hf_dataset": "tau/commonsense_qa",
+          "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+          "question_set_sha256": "f213b63eb668f25c28dd241ed8f86e9b56376936c22d86033bbae18e65b33979",
+          "shots": 10,
+          "metric": "acc"
+        },
+        "openbookqa": {
+          "hf_dataset": "allenai/openbookqa",
+          "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+          "question_set_sha256": "d3f4183ec4c9baef9ab8bf7b9c85e85006eb71857c1c214e5b06b74820c7e167",
+          "shots": 0,
+          "metric": "acc_norm"
+        },
+        "modarith": {
+          "hf_dataset": "generated (data/synthetic)",
+          "hf_revision": null,
+          "question_set_sha256": "e99b6d0976ea077a354df087b2acd4d9129adcef0a1afabcbdcdc4ac48d21dbb",
+          "shots": 5,
+          "metric": "acc"
+        },
+        "parity": {
+          "hf_dataset": "generated (data/synthetic)",
+          "hf_revision": null,
+          "question_set_sha256": "c9ed59361186a6944918604b350e98f630afd2eb88e0aaaafe6d2faff0a2a688",
+          "shots": 5,
+          "metric": "acc"
+        }
+      },
+      "splits_sha256": "89fbab6684bd2bb52e247fe9e8807faf6be73ed9122cf757656eb0bc3bf0712e",
+      "seeds": {
+        "fewshot": 1234,
+        "split_salt": "lh-split-v1",
+        "synthetic": {
+          "modarith": [
+            20261020,
+            20261021
+          ],
+          "parity": [
+            20261022,
+            20261023
+          ]
+        }
+      },
+      "versions": {
+        "python": "3.12.10",
+        "torch": "2.11.0+cu128",
+        "transformers": "4.54.1"
+      },
+      "device": "NVIDIA GeForce RTX 5050 Laptop GPU",
+      "chunk": 256,
+      "benchmarks": {
+        "arc_challenge": {
+          "computed": 1172,
+          "finished": true,
+          "minutes": 11.93
+        },
+        "arc_easy": {
+          "computed": 2376,
+          "finished": true,
+          "minutes": 9.46
+        },
+        "hellaswag": {
+          "computed": 10042,
+          "finished": true,
+          "minutes": 98.15
+        },
+        "mmlu": {
+          "computed": 14042,
+          "finished": true,
+          "minutes": 111.86
+        },
+        "commonsense_qa": {
+          "computed": 1221,
+          "finished": true,
+          "minutes": 6.78
+        },
+        "openbookqa": {
+          "computed": 500,
+          "finished": true,
+          "minutes": 0.77
+        },
+        "modarith": {
+          "computed": 2000,
+          "finished": true,
+          "minutes": 5.39
+        },
+        "parity": {
+          "computed": 2000,
+          "finished": true,
+          "minutes": 6.14
+        }
+      },
+      "ended": "2026-10-21 02:08:31",
+      "peak_vram_gb": 3.157
+    }
+  ]
+}

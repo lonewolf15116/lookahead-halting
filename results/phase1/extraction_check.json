@@ -1,0 +1,447 @@
+{
+  "out": "C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\data\\extracted",
+  "benchmarks": {
+    "arc_challenge": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 1172
+      },
+      "recompute_max_abs_err": {
+        "p": 1.1102230246251565e-16,
+        "conf": 1.1102230246251565e-16,
+        "ent": 4.440892098500626e-16,
+        "loss": 4.440892098500626e-16,
+        "K": 4.445228907190568e-16,
+        "D": 4.445228907190568e-16,
+        "G": 6.661338147750939e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 9.567426992873607e-07,
+          "D_vocab": 1.0491348678698387e-07,
+          "K_vocab": 4.6950109222620995e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.2321338653564453
+        },
+        "vs_context_only_reported": {
+          "vent": 0.00012224996105114627,
+          "D_vocab": 0.00018402886591203926,
+          "K_vocab": 0.0001412642911313676,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    },
+    "arc_easy": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 2376
+      },
+      "recompute_max_abs_err": {
+        "p": 2.220446049250313e-16,
+        "conf": 2.220446049250313e-16,
+        "ent": 4.440892098500626e-16,
+        "loss": 4.440892098500626e-16,
+        "K": 8.881784197001252e-16,
+        "D": 4.440892098500626e-16,
+        "G": 4.440892098500626e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 7.607721688174252e-07,
+          "D_vocab": 4.436673401997382e-07,
+          "K_vocab": 3.664042580453497e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.1892986297607422
+        },
+        "vs_context_only_reported": {
+          "vent": 0.0003322920612776059,
+          "D_vocab": 1.0537740727702832e-05,
+          "K_vocab": 7.305898052312187e-05,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    },
+    "hellaswag": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 10042
+      },
+      "recompute_max_abs_err": {
+        "p": 1.1102230246251565e-16,
+        "conf": 5.551115123125783e-17,
+        "ent": 4.440892098500626e-16,
+        "loss": 2.220446049250313e-16,
+        "K": 2.773931258304163e-16,
+        "D": 2.7511630126819675e-16,
+        "G": 4.440892098500626e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 9.006453876025944e-07,
+          "D_vocab": 1.3518220809416448e-07,
+          "K_vocab": 3.036808604583996e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.6952362060546875
+        },
+        "vs_context_only_reported": {
+          "vent": 0.0004839964866598656,
+          "D_vocab": 0.00017395901820727033,
+          "K_vocab": 5.484512006859177e-05,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    },
+    "mmlu": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 14042
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 2.710505431213761e-20,
+        "K": 2.710505431213761e-20,
+        "D": 2.710505431213761e-20,
+        "G": 2.710505431213761e-20
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 3.4020979056137435e-07,
+          "D_vocab": 1.4326600039638038e-07,
+          "K_vocab": 2.704587771518163e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 8.344650268554688e-07
+        },
+        "vs_context_only_reported": {
+          "vent": 6.554778887668533e-06,
+          "D_vocab": 3.2001376676915605e-06,
+          "K_vocab": 3.4264736954447983e-06,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    },
+    "commonsense_qa": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 1221
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 0.0,
+        "K": 0.0,
+        "D": 0.0,
+        "G": 0.0
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 3.79965633401369e-07,
+          "D_vocab": 7.594264954668972e-07,
+          "K_vocab": 6.906643232884591e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 7.152557373046875e-07
+        },
+        "vs_context_only_reported": {
+          "vent": 6.84172738996125e-06,
+          "D_vocab": 9.091527992666215e-07,
+          "K_vocab": 1.4471992264564193e-06,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    },
+    "openbookqa": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 500
+      },
+      "recompute_max_abs_err": {
+        "p": 1.1102230246251565e-16,
+        "conf": 1.1102230246251565e-16,
+        "ent": 4.440892098500626e-16,
+        "loss": 8.881784197001252e-16,
+        "K": 4.579669976578771e-16,
+        "D": 3.95516952522712e-16,
+        "G": 8.881784197001252e-16
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 8.867341705354193e-07,
+          "D_vocab": 3.1825303636878743e-07,
+          "K_vocab": 4.208759607493562e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.24389076232910156
+        },
+        "vs_context_only_reported": {
+          "vent": 0.02576771562071478,
+          "D_vocab": 0.035217019877523015,
+          "K_vocab": 0.026145121427562312,
+          "gate": 0.0625,
+          "cdf": 0.008726358413696289,
+          "hidden": 0.125,
+          "hidden_rel_l2": 0.019395477695473742
+        }
+      }
+    },
+    "modarith": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 2000
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 0.0,
+        "loss": 0.0,
+        "K": 0.0,
+        "D": 0.0,
+        "G": 0.0
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 6.910093168777109e-07,
+          "D_vocab": 8.474133014746421e-08,
+          "K_vocab": 5.070738112733508e-08,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.1063612699508667
+        },
+        "vs_context_only_reported": {
+          "vent": 0.0008260644359530112,
+          "D_vocab": 0.0006801951344406164,
+          "K_vocab": 0.0006801951344406164,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    },
+    "parity": {
+      "checks": {
+        "all_fields": true,
+        "every_question_once": true,
+        "four_loops_each": true,
+        "hidden_shape": true,
+        "finite": true,
+        "p_sums_to_1": true,
+        "kl_nonnegative": true,
+        "entropy_in_range": true,
+        "failures_le_1pct": true,
+        "cdf_monotone_ends_at_1": true,
+        "targets_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
+        "option_ll_vs_per_option_le_1nat": "True",
+        "splits_match_manifest": true,
+        "one_split_per_question": true,
+        "no_leftover_tmp": true,
+        "done_records_match_rows": true
+      },
+      "status_counts": {
+        "ok": 2000
+      },
+      "recompute_max_abs_err": {
+        "p": 0.0,
+        "conf": 0.0,
+        "ent": 5.551115123125783e-17,
+        "loss": 5.551115123125783e-17,
+        "K": 5.551115123125783e-17,
+        "D": 5.551115123125783e-17,
+        "G": 5.551115123125783e-17
+      },
+      "recompute_mismatches": [],
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 1.7952440001245407e-07,
+          "D_vocab": 7.699712041564499e-08,
+          "K_vocab": 5.704711902865256e-08,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 2.2649765014648438e-06
+        },
+        "vs_context_only_reported": {
+          "vent": 2.1610035634611613e-05,
+          "D_vocab": 2.243525861559889e-06,
+          "K_vocab": 2.243525861559889e-06,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
+      }
+    }
+  },
+  "float32_packed_vs_context_only_maxabs": {
+    "openbookqa": 2.0742416381835938e-05,
+    "modarith": 0.0,
+    "arc_easy": 2.086162567138672e-05,
+    "commonsense_qa": 0.0
+  },
+  "float32_equivalence_recorded": true,
+  "meta_complete": true,
+  "code_identical_across_runs": true,
+  "passed": true
+}

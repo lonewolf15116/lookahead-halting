@@ -1,0 +1,337 @@
+{
+  "reproduction": {
+    "arc_challenge": {
+      "n": 1172,
+      "acc": [
+        36.95,
+        51.37,
+        55.89,
+        56.06
+      ],
+      "acc_norm": [
+        38.82,
+        54.86,
+        59.56,
+        59.9
+      ],
+      "primary": [
+        38.82,
+        54.86,
+        59.56,
+        59.9
+      ],
+      "paper": [
+        37.63,
+        54.86,
+        59.47,
+        60.92
+      ],
+      "diff_acc": [
+        -0.68,
+        -3.49,
+        -3.58,
+        -4.86
+      ],
+      "within_2.0_acc": false,
+      "diff_acc_norm": [
+        1.19,
+        0.0,
+        0.09,
+        -1.02
+      ],
+      "within_2.0_acc_norm": true,
+      "within_tolerance_either": true
+    },
+    "arc_easy": {
+      "n": 2376,
+      "acc": [
+        64.23,
+        80.13,
+        83.5,
+        83.63
+      ],
+      "acc_norm": [
+        58.38,
+        80.6,
+        84.22,
+        84.01
+      ],
+      "primary": [
+        58.38,
+        80.6,
+        84.22,
+        84.01
+      ],
+      "paper": [
+        63.85,
+        80.3,
+        83.33,
+        83.96
+      ],
+      "diff_acc": [
+        0.38,
+        -0.17,
+        0.17,
+        -0.33
+      ],
+      "within_2.0_acc": true,
+      "diff_acc_norm": [
+        -5.47,
+        0.3,
+        0.89,
+        0.05
+      ],
+      "within_2.0_acc_norm": false,
+      "within_tolerance_either": true
+    },
+    "hellaswag": {
+      "n": 10042,
+      "acc": [
+        41.81,
+        54.34,
+        55.06,
+        55.02
+      ],
+      "acc_norm": [
+        55.33,
+        71.49,
+        73.96,
+        74.45
+      ],
+      "primary": [
+        55.33,
+        71.49,
+        73.96,
+        74.45
+      ],
+      "paper": [
+        55.24,
+        71.15,
+        74.07,
+        74.29
+      ],
+      "diff_acc": [
+        -13.43,
+        -16.81,
+        -19.01,
+        -19.27
+      ],
+      "within_2.0_acc": false,
+      "diff_acc_norm": [
+        0.09,
+        0.34,
+        -0.11,
+        0.16
+      ],
+      "within_2.0_acc_norm": true,
+      "within_tolerance_either": true
+    },
+    "mmlu": {
+      "n": 14042,
+      "acc": [
+        41.37,
+        60.3,
+        66.69,
+        67.48
+      ],
+      "acc_norm": [
+        41.37,
+        60.3,
+        66.69,
+        67.48
+      ],
+      "primary": [
+        41.37,
+        60.3,
+        66.69,
+        67.48
+      ],
+      "acc_subject_macro": [
+        42.53,
+        62.1,
+        67.92,
+        68.74
+      ],
+      "paper": [
+        41.21,
+        60.43,
+        66.71,
+        67.45
+      ],
+      "diff_acc": [
+        0.16,
+        -0.13,
+        -0.02,
+        0.03
+      ],
+      "within_2.0_acc": true,
+      "diff_acc_norm": [
+        0.16,
+        -0.13,
+        -0.02,
+        0.03
+      ],
+      "within_2.0_acc_norm": true,
+      "within_tolerance_either": true
+    },
+    "commonsense_qa": {
+      "n": 1221,
+      "acc": [
+        44.39,
+        68.88,
+        75.35,
+        76.41
+      ],
+      "acc_norm": [
+        44.39,
+        68.88,
+        75.35,
+        76.41
+      ],
+      "primary": [
+        44.39,
+        68.88,
+        75.35,
+        76.41
+      ],
+      "paper": [
+        44.64,
+        67.98,
+        74.37,
+        75.43
+      ],
+      "diff_acc": [
+        -0.25,
+        0.9,
+        0.98,
+        0.98
+      ],
+      "within_2.0_acc": true,
+      "diff_acc_norm": [
+        -0.25,
+        0.9,
+        0.98,
+        0.98
+      ],
+      "within_2.0_acc_norm": true,
+      "within_tolerance_either": true
+    },
+    "openbookqa": {
+      "n": 500,
+      "acc": [
+        21.4,
+        26.6,
+        29.4,
+        29.4
+      ],
+      "acc_norm": [
+        34.6,
+        40.4,
+        41.0,
+        41.4
+      ],
+      "primary": [
+        34.6,
+        40.4,
+        41.0,
+        41.4
+      ]
+    },
+    "modarith": {
+      "n": 2000,
+      "acc": [
+        16.4,
+        14.95,
+        16.8,
+        17.0
+      ],
+      "acc_norm": [
+        16.4,
+        14.95,
+        16.8,
+        17.0
+      ],
+      "primary": [
+        16.4,
+        14.95,
+        16.8,
+        17.0
+      ]
+    },
+    "parity": {
+      "n": 2000,
+      "acc": [
+        51.2,
+        50.65,
+        50.25,
+        50.1
+      ],
+      "acc_norm": [
+        51.05,
+        50.45,
+        50.95,
+        50.1
+      ],
+      "primary": [
+        51.2,
+        50.65,
+        50.25,
+        50.1
+      ]
+    }
+  },
+  "learnability": {
+    "modarith": {
+      "modarith-2": {
+        "loop4_acc": 20.4,
+        "majority_class": 18.4,
+        "bar": 28.4,
+        "solved": false
+      },
+      "modarith-3": {
+        "loop4_acc": 15.4,
+        "majority_class": 17.8,
+        "bar": 27.8,
+        "solved": false
+      },
+      "modarith-4": {
+        "loop4_acc": 14.2,
+        "majority_class": 18.2,
+        "bar": 28.2,
+        "solved": false
+      },
+      "modarith-5": {
+        "loop4_acc": 18.0,
+        "majority_class": 20.6,
+        "bar": 30.6,
+        "solved": false
+      }
+    },
+    "parity": {
+      "parity-10": {
+        "loop4_acc": 51.0,
+        "majority_class": 50.0,
+        "bar": 60.0,
+        "solved": false
+      },
+      "parity-12": {
+        "loop4_acc": 48.2,
+        "majority_class": 50.0,
+        "bar": 60.0,
+        "solved": false
+      },
+      "parity-16": {
+        "loop4_acc": 50.2,
+        "majority_class": 50.0,
+        "bar": 60.0,
+        "solved": false
+      },
+      "parity-20": {
+        "loop4_acc": 51.0,
+        "majority_class": 50.0,
+        "bar": 60.0,
+        "solved": false
+      }
+    }
+  }
+}

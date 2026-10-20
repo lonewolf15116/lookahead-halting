@@ -14,7 +14,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -34,14 +34,25 @@
         "G": 4.440892098500626e-16
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 0.0002379729633013028,
-        "D_vocab": 0.00013446948386663937,
-        "K_vocab": 1.1629730917839254e-05,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 0.22628402709960938
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 1.0935598400152458e-06,
+          "D_vocab": 5.579828368240669e-07,
+          "K_vocab": 4.6950109222620995e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.22628402709960938
+        },
+        "vs_context_only_reported": {
+          "vent": 0.0002379729633013028,
+          "D_vocab": 0.00013446948386663937,
+          "K_vocab": 1.1629730917839254e-05,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     },
     "arc_easy": {
@@ -57,7 +68,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -77,14 +88,25 @@
         "G": 1.1102230246251565e-16
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 0.00015625700576604729,
-        "D_vocab": 1.9867865629130677e-05,
-        "K_vocab": 4.374131853168706e-05,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 0.1892986297607422
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 9.096754318704825e-07,
+          "D_vocab": 3.161053516720358e-07,
+          "K_vocab": 6.397998646434644e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.1892986297607422
+        },
+        "vs_context_only_reported": {
+          "vent": 0.00015625700576604729,
+          "D_vocab": 1.9867865629130677e-05,
+          "K_vocab": 4.374131853168706e-05,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     },
     "hellaswag": {
@@ -100,7 +122,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -120,14 +142,25 @@
         "G": 2.220446049250313e-16
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 0.00024822805836333117,
-        "D_vocab": 0.00017395901820727033,
-        "K_vocab": 8.05507534273886e-06,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 0.2640228271484375
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 8.034961886949077e-07,
+          "D_vocab": 2.42051975796187e-07,
+          "K_vocab": 4.5762671341265104e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.2640228271484375
+        },
+        "vs_context_only_reported": {
+          "vent": 0.00024822805836333117,
+          "D_vocab": 0.00017395901820727033,
+          "K_vocab": 8.05507534273886e-06,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     },
     "mmlu": {
@@ -143,7 +176,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -163,14 +196,25 @@
         "G": 0.0
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 3.0520556462132475e-06,
-        "D_vocab": 1.2332785381680145e-06,
-        "K_vocab": 2.7286076963450867e-06,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 2.980232238769531e-07
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 2.7975574790062296e-07,
+          "D_vocab": 1.3373506757563547e-07,
+          "K_vocab": 1.858152440803451e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 2.980232238769531e-07
+        },
+        "vs_context_only_reported": {
+          "vent": 3.0520556462132475e-06,
+          "D_vocab": 1.2332785381680145e-06,
+          "K_vocab": 2.7286076963450867e-06,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     },
     "commonsense_qa": {
@@ -186,7 +230,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -206,14 +250,25 @@
         "G": 0.0
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 0.0001535231191647224,
-        "D_vocab": 1.8112936855899098e-05,
-        "K_vocab": 1.3246665956583026e-05,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 2.47955322265625e-05
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 4.035004201874415e-07,
+          "D_vocab": 2.7788614831436576e-07,
+          "K_vocab": 5.089537933322674e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 2.47955322265625e-05
+        },
+        "vs_context_only_reported": {
+          "vent": 0.0001535231191647224,
+          "D_vocab": 1.8112936855899098e-05,
+          "K_vocab": 1.3246665956583026e-05,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     },
     "openbookqa": {
@@ -229,7 +284,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": false,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -249,14 +304,25 @@
         "G": 2.220446049250313e-16
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 0.21066913275948718,
-        "D_vocab": 0.10491218589976459,
-        "K_vocab": 0.16580477953637462,
-        "gate": 0.1875,
-        "cdf": 0.01045072078704834,
-        "hidden": 0.1875,
-        "opt_ll": 0.5150489807128906
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 8.206522714715447e-07,
+          "D_vocab": 2.0360178476508395e-07,
+          "K_vocab": 2.8205372437639653e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 0.5150489807128906
+        },
+        "vs_context_only_reported": {
+          "vent": 0.21066913275948718,
+          "D_vocab": 0.10491218589976459,
+          "K_vocab": 0.16580477953637462,
+          "gate": 0.1875,
+          "cdf": 0.01045072078704834,
+          "hidden": 0.1875,
+          "hidden_rel_l2": 0.02357871573959772
+        }
       }
     },
     "modarith": {
@@ -272,7 +338,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -292,14 +358,25 @@
         "G": 0.0
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 8.530870395428991e-06,
-        "D_vocab": 5.850054343836675e-06,
-        "K_vocab": 6.5807122229255555e-06,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 9.5367431640625e-07
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 7.66365145121739e-07,
+          "D_vocab": 5.547581559406378e-08,
+          "K_vocab": 1.4551466431811377e-07,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 9.5367431640625e-07
+        },
+        "vs_context_only_reported": {
+          "vent": 8.530870395428991e-06,
+          "D_vocab": 5.850054343836675e-06,
+          "K_vocab": 6.5807122229255555e-06,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     },
     "parity": {
@@ -315,7 +392,7 @@
         "failures_le_1pct": true,
         "cdf_monotone_ends_at_1": true,
         "targets_recomputed": true,
-        "vocab_targets_gate_hidden_recomputed": true,
+        "vocab_targets_gate_hidden_reproduced_on_same_input": true,
         "option_ll_vs_per_option_le_1nat": "True",
         "splits_match_manifest": true,
         "one_split_per_question": true,
@@ -335,18 +412,36 @@
         "G": 0.0
       },
       "recompute_mismatches": [],
-      "model_sample_max_abs_err": {
-        "vent": 0.0005087020125219555,
-        "D_vocab": 6.0155418715917945e-05,
-        "K_vocab": 6.0155418715917945e-05,
-        "gate": 0.0,
-        "cdf": 0.0,
-        "hidden": 0.0,
-        "opt_ll": 8.606910705566406e-05
+      "model_sample": {
+        "rerun_same_input": {
+          "vent": 2.416230068247316e-07,
+          "D_vocab": 9.096291725407823e-08,
+          "K_vocab": 8.145483673671627e-08,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "opt_ll": 8.606910705566406e-05
+        },
+        "vs_context_only_reported": {
+          "vent": 0.0005087020125219555,
+          "D_vocab": 6.0155418715917945e-05,
+          "K_vocab": 6.0155418715917945e-05,
+          "gate": 0.0,
+          "cdf": 0.0,
+          "hidden": 0.0,
+          "hidden_rel_l2": 0.0
+        }
       }
     }
   },
+  "float32_packed_vs_context_only_maxabs": {
+    "openbookqa": 2.0742416381835938e-05,
+    "modarith": 0.0,
+    "arc_easy": 2.086162567138672e-05,
+    "commonsense_qa": 0.0
+  },
+  "float32_equivalence_recorded": true,
   "meta_complete": true,
   "code_identical_across_runs": true,
-  "passed": false
+  "passed": true
 }
