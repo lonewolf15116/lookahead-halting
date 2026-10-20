@@ -20,3 +20,6 @@ hf_cache/
 results/gate0/arc_cache.jsonl
 data/questions/
 data/extracted_smoke/
+data/questions_confirm/
+data/extracted_confirm/
+hf_cache

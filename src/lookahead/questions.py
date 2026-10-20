@@ -70,10 +70,18 @@ def primary_scores(q: Question, option_ll: list[float]) -> np.ndarray:
     return ll
 
 
-def load_lm_eval_questions(benchmark: str, lm, limit=None, task_manager=None, spec=None) -> list[Question]:
+def load_lm_eval_questions(benchmark: str, lm, limit=None, task_manager=None, spec=None, *, on_task=None,
+                           on_doc=None, samples_for=None) -> list[Question]:
     """Build one benchmark's questions with lm_eval, mirroring simple_evaluate's task setup.
 
     spec defaults to BENCHMARKS[benchmark]; task_manager defaults to lm_eval's (tests pass one with a local task).
+
+    Optional hooks (all off by default, in which case behaviour and output are exactly as before):
+      on_task(task)               after the shots and few-shot seed are set, before any request is built
+      samples_for(task_name)      list of eval-doc indices to build, or None for every doc; an empty list skips the task.
+                                  lm_eval renumbers the built docs 0..k-1 in dataset order, so the doc_id suffix is then
+                                  the position within the sorted selection, not the dataset index
+      on_doc(question, task, doc) after each question is built and tokenised (it may edit the question)
     """
     import torch
     from lm_eval.tasks import TaskManager
@@ -89,7 +97,14 @@ def load_lm_eval_questions(benchmark: str, lm, limit=None, task_manager=None, sp
         if task.get_config("num_fewshot") != 0:  # simple_evaluate never overrides a task whose config pins 0
             task.set_config(key="num_fewshot", value=spec["shots"])
         task.set_fewshot_seed(seed=FEWSHOT_SEED)
-        task.build_all_requests(limit=limit, rank=0, world_size=1, cache_requests=False, rewrite_requests_cache=False,
+        if on_task is not None:
+            on_task(task)
+        samples = None
+        if samples_for is not None:
+            samples = samples_for(task_name)
+            if samples is not None and len(samples) == 0:
+                continue  # an empty list would make lm_eval build every doc
+        task.build_all_requests(limit=limit, samples=None if samples is None else sorted(set(samples)), rank=0, world_size=1, cache_requests=False, rewrite_requests_cache=False,
                                 system_instruction=None, apply_chat_template=False, fewshot_as_multiturn=False,
                                 chat_template=None, tokenizer_name="")
         by_doc = {}
@@ -110,6 +125,8 @@ def load_lm_eval_questions(benchmark: str, lm, limit=None, task_manager=None, sp
             q = Question(benchmark, task_name, f"{task_name}/{doc_id}", insts[0].args[0], [i.args[1] for i in insts],
                          list(choices), gold, spec["metric"])
             encode_lm_eval(q, lm)
+            if on_doc is not None:
+                on_doc(q, task, doc)
             out.append(q)
     return out
 

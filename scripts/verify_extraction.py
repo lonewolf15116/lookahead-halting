@@ -2,6 +2,7 @@
 
     python scripts/verify_extraction.py --out data/extracted_smoke --limit 40
     python scripts/verify_extraction.py                         # data/extracted, everything
+    python scripts/verify_extraction.py --set confirmation      # data/extracted_confirm against data/questions_confirm
 
 1 schema       every question once, 4 loop rows with every field, hidden [n, 4, hidden_size]
 2 targets      every option-level value and target recomputed from the stored option log-likelihoods with independent
@@ -167,14 +168,26 @@ def model_sample_check(model, qs, df, hidden, n):
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=None)
-    ap.add_argument("--benchmarks", nargs="*", default=ALL)
+    ap.add_argument("--set", dest="which", choices=("phase1", "confirmation"), default="phase1")
+    ap.add_argument("--benchmarks", nargs="*", default=None)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--sample", type=int, default=10, help="questions per benchmark re-run through the model")
     ap.add_argument("--report", default=None)
     ap.add_argument("--no-model", action="store_true", help="skip the model re-run (CPU-only check of stored files)")
     args = ap.parse_args(argv)
-    out = Path(args.out) if args.out else REPO_ROOT / "data" / ("extracted_smoke" if args.limit else "extracted")
-    splits = load_splits(REPO_ROOT / "data" / "manifests" / "splits.csv")
+    conf = args.which == "confirmation"
+    args.benchmarks = args.benchmarks or (list(BENCHMARKS) if conf else ALL)
+    default_out = ("extracted_confirm_smoke" if args.limit else "extracted_confirm") if conf else (
+        "extracted_smoke" if args.limit else "extracted")
+    out = Path(args.out) if args.out else REPO_ROOT / "data" / default_out
+    qdir = REPO_ROOT / "data" / ("questions_confirm" if conf else "questions")
+    if conf:  # frozen-input checks: ids and audit shas, question hashes (SystemExit on any mismatch)
+        from lookahead.confirm import check_confirmation_inputs
+
+        check_confirmation_inputs(REPO_ROOT, args.benchmarks)
+        splits = load_splits(REPO_ROOT / "data" / "manifests" / "confirmation_ids.csv", allowed=("confirmation",))
+    else:
+        splits = load_splits(REPO_ROOT / "data" / "manifests" / "splits.csv")
 
     model = None
     if not args.no_model:
@@ -187,7 +200,7 @@ def main(argv=None) -> int:
 
     report, ok_all = {"out": str(out), "benchmarks": {}}, True
     for b in args.benchmarks:
-        qs = load_questions(REPO_ROOT / "data" / "questions" / f"{b}.jsonl.gz")
+        qs = load_questions(qdir / f"{b}.jsonl.gz")
         qs = qs[: args.limit] if args.limit else qs
         df, hid, dones = read_benchmark(out, b)  # 5: raises on any checksum mismatch
         checks, notes = {}, {}
@@ -264,7 +277,9 @@ def main(argv=None) -> int:
     ok_all &= report["meta_complete"] and report["code_identical_across_runs"]
     report["passed"] = bool(ok_all)
     name = args.report or ("extraction_check_smoke.json" if args.limit else "extraction_check.json")
-    rdir = results_dir("phase1")
+    if conf:
+        name = name.replace("extraction_check", "extraction_check_confirm")
+    rdir = results_dir("gate2" if conf else "phase1")
     (rdir / name).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
     if not ok_all:  # stop rule: keep the failing report even if a later run rewrites the main one
         import time

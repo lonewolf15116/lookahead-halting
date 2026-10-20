@@ -18,7 +18,7 @@ Two claims are kept separate:
 | confirmation | new extraction, section 3 | the one-time Gate 2 verdict |
 
 ## 3. Confirmation set (new extraction)
-Gate 1 test outcomes are visible, so a new policy is confirmed on questions that have never been scored. Verified against the lm_eval 0.4.9 task configs, these labelled questions are unused:
+Gate 1 test outcomes are visible, so a new policy is confirmed on questions that have never been scored. Verified against the lm_eval task configs (0.4.13, the pinned version; identical to 0.4.9 for these tasks apart from dataset names), these labelled questions are unused:
 
 | benchmark | Phase 1 scored | unused labelled pool | exemplar pool | confirmation take |
 |---|---|---|---|---|

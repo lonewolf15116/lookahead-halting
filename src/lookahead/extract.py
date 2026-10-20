@@ -122,7 +122,7 @@ def load_questions(path: Path) -> list[Question]:
         return [Question(**json.loads(line)) for line in f]
 
 
-def load_splits(path: Path) -> dict:
+def load_splits(path: Path, allowed=("train", "validation", "test")) -> dict:
     out = {}
     lines = Path(path).read_text(encoding="utf-8").splitlines()
     if lines[0] != "benchmark,stratum,doc_id,split":
@@ -135,7 +135,7 @@ def load_splits(path: Path) -> dict:
         key = (bench, doc_id)
         if key in out:
             raise ValueError(f"question in more than one split row: {key}")
-        if split not in ("train", "validation", "test"):
+        if split not in allowed:
             raise ValueError(f"bad split {split!r} for {key}")
         out[key] = (stratum, split)
     return out

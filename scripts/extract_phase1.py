@@ -23,6 +23,7 @@ from lookahead.extract import load_questions, load_splits, run_benchmark, sha256
 from lookahead.questions import BENCHMARKS, SYNTHETIC, question_set_hash
 
 ALL = list(BENCHMARKS) + list(SYNTHETIC)
+SETS = ("phase1", "confirmation")  # confirmation: six natural benchmarks only (data/questions_confirm, plan Gate 2 section 3)
 
 
 def code_identity(root: Path) -> dict:
@@ -42,7 +43,11 @@ def code_identity(root: Path) -> dict:
     return out
 
 
-def check_inputs(root: Path, benches, limit):
+def check_inputs(root: Path, benches, limit, which="phase1"):
+    if which == "confirmation":
+        from lookahead.confirm import check_confirmation_inputs
+
+        return check_confirmation_inputs(root, benches, limit)
     mdir = root / "data" / "manifests"
     manifest = json.loads((mdir / "questions.json").read_text(encoding="utf-8"))
     split_text_sha = sha256_file(mdir / "splits.csv")
@@ -66,7 +71,8 @@ def check_inputs(root: Path, benches, limit):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--benchmarks", nargs="*", default=ALL)
+    ap.add_argument("--set", dest="which", choices=SETS, default="phase1", help="question set (confirmation -> data/extracted_confirm)")
+    ap.add_argument("--benchmarks", nargs="*", default=None)
     ap.add_argument("--limit", type=int, default=None, help="first N questions per benchmark (smoke run)")
     ap.add_argument("--out", default=None)
     ap.add_argument("--chunk", type=int, default=256)
@@ -74,9 +80,13 @@ def main() -> int:
     args = ap.parse_args()
 
     root = REPO_ROOT
-    out = Path(args.out) if args.out else root / "data" / ("extracted_smoke" if args.limit else "extracted")
+    conf = args.which == "confirmation"
+    args.benchmarks = args.benchmarks or (list(BENCHMARKS) if conf else ALL)
+    default_out = ("extracted_confirm_smoke" if args.limit else "extracted_confirm") if conf else (
+        "extracted_smoke" if args.limit else "extracted")
+    out = Path(args.out) if args.out else root / "data" / default_out
     out.mkdir(parents=True, exist_ok=True)
-    manifest, split_sha, splits, questions = check_inputs(root, args.benchmarks, args.limit)
+    manifest, split_sha, splits, questions = check_inputs(root, args.benchmarks, args.limit, args.which)
 
     from lookahead.ouro_adapter import load_ouro
     from lookahead.packed import PackedScorer
