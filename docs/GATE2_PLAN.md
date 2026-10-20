@@ -1,4 +1,4 @@
-# Gate 2 plan (v2, for reviewer sign-off; nothing has been run)
+# Gate 2 plan (v3, frozen on reviewer sign-off; nothing has been run)
 
 Gate 1 is frozen (tag `gate1-final`: validation freeze f5fb931, test evaluation a6590fa). No probe has been trained. This plan, including the pass rule in section 7, must be signed off and committed before any probe is fit.
 
@@ -35,6 +35,15 @@ About 4,900 questions; estimated about 1 h on the laptop using the same writer a
 - The sample ids are drawn by sha256 order (salt `lh-confirm-v1`), fixed and committed before extraction.
 - The confirmation outcomes are read once, by a guarded script (same pattern as `gate1_test.py`).
 
+### 3a. Contamination audit (must pass before extraction; output committed)
+`scripts/prepare_confirmation.py` writes `results/gate2/confirmation_audit.json` and refuses to write the manifest unless every check passes with zero overlap.
+1. **Actual exemplars, not a presumed seed.** Phase 1 questions are rebuilt through the same pipeline with lm_eval's sampler instrumented to record every exemplar doc it returns. The rebuild must reproduce each benchmark's frozen `question_set_sha256`; otherwise the audit stops. Every recorded exemplar's text must also be found verbatim in the stored context of the question it was recorded for (`data/questions/*.jsonl.gz`), so the list is checked against what the model actually saw.
+2. **No identity overlap.** Confirmation items share no dataset-native id (ARC/OBQA/CSQA `id`, HellaSwag `ind` plus split) with any Phase 1 question (all three splits) or any recorded exemplar.
+3. **No overlap under another identifier.** A normalised text hash of question plus choices (lower-case, whitespace collapsed) is compared against all Phase 1 questions and all exemplars, across benchmarks. Any collision excludes the confirmation item and is listed.
+4. **No leakage into probe data.** The audit asserts that no confirmation `doc_id` or text hash appears in the Phase 1 extraction records that the probes train or validate on.
+5. **Fingerprints.** Recorded: lm_eval version, sha256 of each task YAML used, HF dataset name and revision sha for each source split, the sampling salt, and the sha256 of the final manifest.
+6. **Disclosure.** The HellaSwag/CSQA items come from the train split, and ARC/MMLU/OBQA from validation. This is a distribution shift from Phase 1, so the confirmation set is a fresh, independent sample, but not a draw from the original evaluation distribution. Stated in the report.
+
 ## 4. Probe targets
 For each question and loop t in {1,2,3}:
 - **Primary policy target**: S_t = 1[answer at t equals the answer at every later loop through 4], meaning stopping at t keeps the final answer. Stopping at the first t with predicted S_t above a threshold is the learned version of the Gate 1 oracle.
@@ -42,49 +51,64 @@ For each question and loop t in {1,2,3}:
 - **Change vs improvement** (reviewer's distinction): flips split into WC and CW, with the probe's discrimination of each reported separately. A probe that predicts "will change" but not "will improve" is reported as such.
 - C_t (answer correct at t) is a diagnostic only.
 
-## 5. Probe families (closed list; one is chosen on validation and is the only one confirmed)
-1. L2-logistic on h_t, one model per loop.
-2. L2-logistic on h_t with a shared model and a loop indicator.
-3. MLP, one hidden layer of 256, one per loop, with early stopping on a 10% slice of train.
+## 5. Probe families and frozen training settings
+Closed list. One configuration is chosen on validation (section 6), and only that one is confirmed.
+1. L2-logistic on h_t, one model per loop t in {1,2,3}.
+2. L2-logistic on h_t, one shared model with a one-hot loop indicator.
+3. MLP 2048 -> 256 -> 1 (ReLU, dropout 0.1), one per loop.
 
-Inputs: h_t (2048-d, standardised on train). Regularisation is chosen by 5-fold CV on train, with folds grouped by question.
+Inputs: h_t in float32, standardised with train mean and sd. Controls, trained with identical settings:
+- (a) cheap-features probe: confidence, entropy, vocabulary entropy, native gate cdf, loop indicator, number of options, log context length
+- (b) h_t plus the cheap features
+- (c) h_t with labels shuffled within (benchmark, loop), shuffle seed 0
 
-Controls, trained the same way:
-- (a) **cheap-features probe**: confidence, entropy, vocabulary entropy, native gate cdf, loop, number of options, log context length.
-- (b) h_t plus the cheap features.
-- (c) h_t with labels shuffled within benchmark and loop.
+Frozen before any fit:
+- Seeds: global seed 0 (numpy, torch, sklearn).
+- CV folds: 5 folds by `int(sha256("lh-fold-v1|"+doc_id),16) % 5`, so a question's loops never span folds.
+- Logistic: sklearn `LogisticRegression(solver="lbfgs", max_iter=5000)`, C in {1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 1}, chosen by mean CV log-loss; ties go to the smaller C. Refit on all of train.
+- Regression targets (log D_t, clipped G_t): ridge with alpha in {1e-2, 1e-1, 1, 10, 100, 1e3, 1e4}, chosen by mean CV MSE; ties go to the larger alpha.
+- MLP: AdamW, lr 1e-3, batch 512, float32, weight decay in {1e-4, 1e-3, 1e-2}, at most 50 epochs.
+  - Early stopping: patience 5 on BCE over a train-only 10% slice (`sha256("lh-es-v1|"+doc_id) % 10 == 0`); the best epoch's weights are kept.
+  - Weight decay is chosen by early-stopping-slice BCE, with ties going to the larger decay. Refit is not done: the early-stopping model is final.
+- Nothing is tuned on validation except the closed choice in section 6.
 
-The family, and whether (b) replaces h_t-only, is chosen by the validation criterion in section 6, then frozen.
+Overhead, reported in two separate forms:
+- Measured: probe inference wall-clock on the laptop (RTX 5050), median over 1,000 repeats, on the same device and dtype path as deployment, in ms per question per loop, next to the measured mean ms of a loop.
+- Estimated: probe multiply-adds converted to loop-equivalents. Net saving = loop saving − probe loop-equivalents.
 
-Overhead: the probe's multiply-adds and measured ms per question go into the comparison. A linear probe is about 2k multiply-adds per loop, against about 1.4 GFLOP per token per loop for Ouro, so it is negligible. It is still measured, not assumed. Savings are reported net of probe cost in loop-equivalents.
+## 6. Policies and selection (validation only)
+- **Policies**: learned probe P, cheap-features probe Q, fixed-3, native gate, confidence, entropy, and deployable measured-KL (pays for loop t+1). Retrospective KL and the oracles are reference only.
+- **Grids**: each policy's thresholds are the 50 quantiles of its pooled validation statistic over loops 1-3, as in Gate 1. Fixed-k is a single point.
+- **Operating point**: exactly the Gate 1 rule. Take the max-saving grid point whose macro validation loss is ≤ 1 pp; ties go to the smaller loss, then the most conservative threshold. A policy with no qualifying point is not qualified.
+- **Probe choice**: among the 3 families × {h_t only, (b) h_t plus cheap features}, take the one with the largest validation operating-point saving. Ties go to the smaller validation loss, then the simpler model (1 < 2 < 3, h_t only < (b)). Q is fit and selected the same way, with family fixed to 1 for its 7 features.
+- **Freeze**: every threshold, the chosen probe's weights, and their sha256 are written to `results/gate2/frozen_selection.json` and committed before any confirmation outcome is read.
 
-## 6. Policies and selection
-- **Policies**: learned probe, cheap-features probe, fixed-3, native gate, confidence, entropy, and deployable measured-KL (pays for the extra loop). Retrospective KL and the oracles are reference only.
-- **Grids**: thresholds are the 50 quantiles of each policy's pooled validation statistic over loops 1-3, as in Gate 1. Fixed-k is a single point.
-- **Saving at budget ℓ, S_π(ℓ)**: the largest macro saving among a policy's grid points whose macro loss is ≤ ℓ (0 if none qualify). It is computed the same way for every policy, so no policy gets a selection advantage. The paired bootstrap recomputes it inside each resample, so the selection effect is in the CI.
-- **Probe choice**: the family and control variant with the largest validation S(1 pp). Ties go to the simpler model (1 < 2 < 3).
-- **Operating point (secondary, deployment realism)**: each policy's threshold is picked on validation by the exact Gate 1 rule (max saving with macro validation loss ≤ 1 pp) and applied unchanged on confirmation. Confirmation loss and saving are reported, and violations are flagged as in Gate 1.
-- **Change from v1**: the draft's 90th-percentile risk margin is dropped. On Gate 1 test the macro loss CIs were about ±1.3 pp wide, so requiring the upper bound to be ≤ 1 pp would have disqualified nearly every policy. Budget curves plus the honest operating-point report answer the generalisation concern more directly.
+## 7. Gate 2 decision rule (confirmatory; frozen thresholds applied once to confirmation)
+Each frozen policy is applied unchanged to the confirmation set. Its macro loss and net macro saving are reported with paired-bootstrap 95% CIs (2,000 resamples, stratified by benchmark, seed 0; six benchmarks, equal weight).
 
-## 7. Gate 2 decision rule (on confirmation, read once)
-Let B(ℓ) = max over baselines (fixed-3, native gate, confidence, entropy, deployable KL) of S_b(ℓ), and let P, Q be the chosen probe and the cheap-features probe. Δ_base = S_P(1 pp) − B(1 pp), Δ_ctrl = S_P(1 pp) − S_Q(1 pp), net of probe cost.
+Comparator: B = the largest confirmation saving among all validation-qualified baselines, including any baseline that exceeds 1 pp loss on confirmation. This is conservative toward the probe: a baseline buying saving with extra accuracy loss still sets the bar. The comparison against loss-compliant baselines only is reported as secondary.
 
-- **PASS** (lookahead from h_t works): Δ_base ≥ 0.03 with paired-bootstrap 95% CI lower bound > 0, AND Δ_ctrl CI lower bound > 0.
-- **PARTIAL** (learned halting works, but h_t adds nothing measurable): Δ_base passes but Δ_ctrl does not.
-- **FAIL**: Δ_base fails. Reported as a negative result; no further tuning on these questions.
+Three conditions:
+- **L (budget)**: P's confirmation macro loss point estimate ≤ 1.00 pp.
+- **E (effect)**: Δ_base = S_P − S_B ≥ 0.03, and the paired-bootstrap 95% CI lower bound of Δ_base > 0. B is re-determined inside each resample.
+- **H (hidden state)**: the paired-bootstrap 95% CI lower bound of Δ_ctrl = S_P − S_Q > 0.
 
-Rationale for 0.03: the native gate leaves about 0.21 of loop budget to the oracle on Gate 1 test, and 0.03 is about 15% of that gap. Smaller gains are within what threshold choice alone moves.
+Outcomes, exhaustive:
+| L | E | H | verdict |
+|---|---|---|---|
+| yes | yes | yes | **PASS**: lookahead from h_t gives a deployable improvement |
+| yes | yes | no | **PARTIAL**: learned halting improves on the baselines; a hidden-state benefit beyond cheap features is *not demonstrated* (not "shown to be absent": failing to reject a difference is not evidence of equivalence) |
+| no | any | any | **FAIL** (probe exceeds the accuracy budget) |
+| yes | no | any | **FAIL**, which includes 0 < Δ_base < 0.03 and Δ_base ≥ 0.03 with a CI lower bound ≤ 0; the observed Δ and CI are reported as a secondary result |
 
-Statistics: 2,000 paired resamples, stratified by benchmark, seed 0. Macro over six benchmarks with equal weight. OpenBookQA stays in the primary verdict, and its exclusion is reported as a sensitivity analysis only.
+The 0.03 margin is a project-specific practical-significance criterion, not a statistical convention. It is about 15% of the 0.207 native-gate-to-oracle gap observed on Gate 1 test. OpenBookQA stays in the primary verdict; its exclusion is reported as a sensitivity analysis only.
 
-Secondary, reported but not in the verdict:
-- curves of S_π(ℓ) for ℓ in {0.5, 1, 2} pp
-- the section 6 operating points
-- per-benchmark results
-- question-weighted results
-- leave-one-benchmark-out probes (trained on five benchmarks, tested on the sixth, on confirmation)
-- predictive quality of D, F, G, and WC vs CW
-- the Gate 1 test development check
+### 7a. Secondary and retrospective analyses (never change the verdict)
+- **Accuracy-budget frontier (retrospective diagnostic)**: S_π(ℓ) is the best confirmation saving among grid points with confirmation macro loss ≤ ℓ, for ℓ in {0.5, 1, 2} pp, with reselection inside each bootstrap resample. It uses confirmation labels to pick thresholds, so it is not deployable and is labelled as such.
+- Comparison against loss-compliant baselines only; per-benchmark and question-weighted results; sensitivity without OpenBookQA.
+- Leave-one-benchmark-out probes (fit on five benchmarks' train, frozen thresholds from the five benchmarks' validation, applied to the sixth on confirmation).
+- Predictive quality on confirmation: AUROC for S_t, F_t, WC vs CW; Spearman for log D_t and G_t; each against the cheap-features model.
+- Gate 1 test as an exploratory development check, run after the confirmation verdict is written.
 
 ## 8. What is not allowed
 - No confirmation outcome is read before the selections in sections 5-6 are committed.
@@ -93,7 +117,11 @@ Secondary, reported but not in the verdict:
 - If a check fails, stop, keep the artifacts, and investigate (standing rule).
 
 ## 9. Order of work
-1. Reviewer signs off this plan, then it is committed.
-2. Confirmation-set preparation: replay the exemplars, draw the ids, commit the manifest (CPU, laptop). Then extract plus verify (GPU, about 1 h). The outcomes are written but not analysed.
+1. Plan v3 committed (reviewer conditional approval, amendments A/B and the engineering freeze applied).
+2. Confirmation-set preparation and contamination audit (section 3a; CPU, laptop). The manifest and audit are committed. Then extract plus verify (GPU, about 1 h). The outcomes are written but not analysed.
 3. Probe data loader, training, controls and validation selection (laptop; minutes per model). Frozen and committed.
 4. One-time guarded confirmation run, then `docs/GATE2_REPORT.md`.
+
+## Change log
+- v1 draft (88ce902). v2 (e7ca404): fresh confirmation set and the loss-budget comparison.
+- v3: on reviewer review, (A) primary verdict uses validation-frozen operating points, and the confirmation-optimised frontier is retrospective only; (B) the PASS/PARTIAL/FAIL table is made exhaustive, with "not demonstrated" wording; contamination audit specified (3a); training seeds, grids, early-stopping split and tie-breaks frozen (section 5); measured vs estimated overhead separated.
