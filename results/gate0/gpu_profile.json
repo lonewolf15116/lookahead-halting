@@ -1,0 +1,42 @@
+{
+  "device": "NVIDIA GeForce RTX 5050 Laptop GPU",
+  "dtype": "torch.bfloat16",
+  "weights_gb": 2.672,
+  "torch": "2.11.0+cu128",
+  "transformers": "4.54.1",
+  "profile": [
+    {
+      "batch": 1,
+      "tokens": 512,
+      "loop_ms": [
+        78.0,
+        77.5,
+        77.4,
+        77.2
+      ],
+      "peak_vram_gb": 2.705
+    },
+    {
+      "batch": 1,
+      "tokens": 1536,
+      "loop_ms": [
+        234.9,
+        234.1,
+        234.6,
+        234.0
+      ],
+      "peak_vram_gb": 2.755
+    },
+    {
+      "batch": 4,
+      "tokens": 1536,
+      "loop_ms": [
+        1018.4,
+        1023.8,
+        1020.4,
+        1019.9
+      ],
+      "peak_vram_gb": 2.977
+    }
+  ]
+}

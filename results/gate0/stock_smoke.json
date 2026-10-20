@@ -1,0 +1,38 @@
+{
+  "load": {
+    "ok": true,
+    "seconds": 1.888,
+    "result": {
+      "class": "OuroForCausalLM",
+      "parameters_m": 1434.7,
+      "config_total_ut_steps": 4,
+      "peak_vram_gb": 2.672
+    }
+  },
+  "forward": {
+    "ok": true,
+    "seconds": 0.472,
+    "result": {
+      "output": {
+        "logits": {
+          "tensor": [
+            1,
+            14,
+            49152
+          ],
+          "dtype": "torch.bfloat16"
+        }
+      },
+      "peak_vram_gb": 2.682
+    }
+  },
+  "forward_with_hidden_states": {
+    "ok": false,
+    "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\scripts\\smoke_stock.py\", line 43, in step\n    result = fn()\n             ^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\scripts\\smoke_stock.py\", line 73, in forward_hidden\n    out = state[\"model\"](**state[\"inputs\"], output_hidden_states=True, use_cache=False)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\.venv\\Lib\\site-packages\\transformers\\utils\\generic.py\", line 961, in wrapper\n    output = func(self, *args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\.cache\\huggingface\\modules\\transformers_modules\\ouro-1.4b\\modeling_ouro.py\", line 696, in forward\n    outputs, hidden_states_list, gate_list = self.model(\n                                             ^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Mahesh Reddy\\Projects\\lookahead-halting\\.venv\\Lib\\site-packages\\transformers\\utils\\generic.py\", line 1083, in wrapper\n    outputs[key] = collected_outputs[key]\n    ~~~~~~~^^^^^\nTypeError: 'tuple' object does not support item assignment\n"
+  },
+  "generate_8_tokens": {
+    "ok": true,
+    "seconds": 0.689,
+    "result": "Question: What is 17 times 8?\nAnswer: 136\n\n18."
+  }
+}

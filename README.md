@@ -10,7 +10,7 @@ Working title: *Predicting the Value of Another Thought: Future-State Forecastin
 
 ## Status
 
-Phase 0 (setup) in progress. Gate 0 is not yet passed.
+Phase 0 done: **Gate 0 passed** on 2026-10-20 (ARC-C acc_norm within 2 points of the paper at all four loops; see docs/GATE0_REPORT.md). Next: Phase 1, extraction and the Gate 1 headroom report.
 
 - Loop-by-loop adapter written and checked against Ouro's own code on a tiny random model (CPU). The check on the real weights is next.
 - Gate 0 reference: Ouro paper Table 10, ARC-C 25-shot, loops 1-4 = 37.63 / 54.86 / 59.47 / 60.92 (see docs/DECISIONS.md).

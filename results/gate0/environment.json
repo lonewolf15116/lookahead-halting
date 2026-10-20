@@ -1,0 +1,35 @@
+{
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "packages": {
+    "torch": "2.11.0+cu128",
+    "transformers": "4.54.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.0.6",
+    "pyarrow": "26.0.0",
+    "huggingface-hub": "0.36.2",
+    "accelerate": "1.15.0",
+    "datasets": "5.0.1",
+    "PyYAML": "6.0.3"
+  },
+  "cuda": {
+    "torch_cuda_build": "12.8",
+    "available": true,
+    "name": "NVIDIA GeForce RTX 5050 Laptop GPU",
+    "compute_capability": "12.0",
+    "total_vram_gb": 7.96,
+    "bf16_supported": true,
+    "arch_list": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "matmul_bf16_ok": true,
+    "usable": true
+  }
+}
