@@ -19,3 +19,4 @@ hf_cache/
 *.egg-info/
 results/gate0/arc_cache.jsonl
 data/questions/
+data/extracted_smoke/

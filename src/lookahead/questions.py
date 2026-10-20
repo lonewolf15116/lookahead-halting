@@ -4,6 +4,8 @@ lm_eval tasks are built exactly the way lm_eval.simple_evaluate builds them (sam
 (context, continuation) pair is tokenised with the harness's own `_encode_pair`, so a question's tokens are the ones
 Gate 0 scored. Synthetic items are tokenised directly (context, then context + choice), as their generator checked.
 """
+import hashlib
+import json
 import random
 from dataclasses import dataclass, field
 
@@ -42,6 +44,14 @@ class Question:
     @property
     def per_option_tokens(self) -> int:
         return sum(len(self.context_enc) + len(c) - 1 for c in self.cont_encs)
+
+
+def question_set_hash(qs) -> str:
+    """Identity of a benchmark's question set: tokens, targets and choice text, in order."""
+    h = hashlib.sha256()
+    for q in qs:
+        h.update(json.dumps([q.doc_id, q.context_enc, q.cont_encs, q.target, q.choice_text], separators=(",", ":")).encode())
+    return h.hexdigest()
 
 
 def predictions(q: Question, option_ll: list[float]) -> dict:

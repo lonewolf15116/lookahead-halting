@@ -21,20 +21,14 @@ from collections import Counter
 from pathlib import Path
 
 from lookahead.config import REPO_ROOT, load_config, results_dir
-from lookahead.questions import BENCHMARKS, SYNTHETIC, load_lm_eval_questions, load_synthetic_questions
+from lookahead.questions import (BENCHMARKS, SYNTHETIC, load_lm_eval_questions, load_synthetic_questions,
+                                 question_set_hash)
 from lookahead.splits import assign_splits
 
 HF_DATASETS = {"arc_challenge": "allenai/ai2_arc", "arc_easy": "allenai/ai2_arc", "hellaswag": "Rowan/hellaswag",
                "mmlu": "cais/mmlu", "commonsense_qa": "tau/commonsense_qa", "openbookqa": "allenai/openbookqa"}
 MS_PER_TOKEN_LOOP = 0.1533  # RTX 5050, batch 1, bf16 (gpu_profile.json: 77.5 ms @ 512, 234.4 ms @ 1536); the pilot replaces it
 LOOPS, MAX_LENGTH = 4, 4096
-
-
-def question_set_hash(qs):
-    h = hashlib.sha256()
-    for q in qs:
-        h.update(json.dumps([q.doc_id, q.context_enc, q.cont_encs, q.target, q.choice_text], separators=(",", ":")).encode())
-    return h.hexdigest()
 
 
 def dataset_revision(repo):
