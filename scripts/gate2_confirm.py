@@ -117,6 +117,9 @@ def main(argv=None) -> int:
     ap.add_argument("--root", default=".")
     ap.add_argument("--confirm-one-time-gate2-evaluation", action="store_true")
     ap.add_argument("--rehearsal-on-validation", action="store_true")
+    ap.add_argument("--check-confirmation-identity", action="store_true",
+                    help="metadata/byte-hash check that the extracted confirmation data is the audited, verified artifact; "
+                         "writes nothing, reads no outcomes")
     ap.add_argument("--frozen-sha")
     ap.add_argument("--baseline-sha")
     ap.add_argument("--reviewer-approval-ref")
@@ -125,13 +128,22 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     root = Path(args.root).resolve()
     real = args.confirm_one_time_gate2_evaluation
-    if real == args.rehearsal_on_validation:
-        print("refusing: pass exactly one of --confirm-one-time-gate2-evaluation or --rehearsal-on-validation",
-              file=sys.stderr)
+    if sum([real, args.rehearsal_on_validation, args.check_confirmation_identity]) != 1:
+        print("refusing: pass exactly one of --confirm-one-time-gate2-evaluation, --rehearsal-on-validation or "
+              "--check-confirmation-identity", file=sys.stderr)
         return 2
 
     frozen, base, sha_f, sha_b = load_frozen(root)
     benchmarks = list(frozen["benchmarks"])
+    if args.check_confirmation_identity:
+        bad = ev.confirmation_identity_preflight(root, benchmarks)
+        if bad:
+            print("IDENTITY CHECK FAILED:\n  " + "\n  ".join(bad), file=sys.stderr)
+            return 3
+        print("confirmation identity confirmed: counts 299/570/1000/1500/1000/500 (4,869), id set equals the committed list "
+              "(sha256 4cc7aac3febc...), 0 failed records, part hashes equal the verified extraction evidence "
+              "(combined 98f7cbd6a749...). Metadata and byte hashes only; no outcomes read.")
+        return 0
     out_dir = root / "results" / ("gate2" if real else "gate2_rehearsal")
     started, evaluated = root / "results/gate2/CONFIRMATION_STARTED.json", root / "results/gate2/CONFIRMATION_EVALUATED.json"
     git = git_state(root)
@@ -153,6 +165,13 @@ def main(argv=None) -> int:
                   file=sys.stderr)
             return 2
 
+    if real:
+        bad = ev.confirmation_identity_preflight(root, benchmarks)
+        if bad:
+            print("IDENTITY PRE-FLIGHT FAILED; the confirmation outcomes were NOT opened:\n  " + "\n  ".join(bad),
+                  file=sys.stderr)
+            return 3
+        print("pre-flight: confirmation data is the audited, verified artifact (counts, id set, 0 failed, hashes)", flush=True)
     gclip = tuple(frozen["provenance"]["g_clip_train"])
     P = ev.load_frozen_probe(root, frozen["P"])
     Q = ev.load_frozen_probe(root, frozen["Q"])

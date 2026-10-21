@@ -13,6 +13,8 @@ change the verdict.
 from __future__ import annotations
 
 import contextlib
+import hashlib
+import json
 from pathlib import Path
 
 import numpy as np
@@ -393,3 +395,106 @@ def render(rep: dict, title: str) -> str:
         L += ["", "AUROC for S_t (loops 1-3), pooled: " + "; ".join(
             f"{k}: " + ", ".join(_f(x) for x in v["pooled"]) for k, v in rep["auroc"].items())]
     return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------- confirmation identity (metadata only)
+EXPECTED_CONFIRMATION_COUNTS = {"arc_challenge": 299, "arc_easy": 570, "hellaswag": 1000, "mmlu": 1500,
+                                "commonsense_qa": 1000, "openbookqa": 500}
+# Hashes recorded in docs/DECISIONS.md (confirmation prep, audit pass and extraction evidence entries).
+PINNED_CONFIRMATION_HASHES = {
+    "ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+    "manifest_sha256": "eac4680d39abf0c4d418117b88648896d912f69d5f6615602dfc1d77da35e0a0",
+    "audit_sha256": "72e3b57f8a1f9d554a6814a18457cd0bb53c959a42b1c6f95c5189d5c5d3ddce",
+    "check_report_sha256": "8efafa5fcc7de0f899d4a740b9d0e7fdb87d3b9ce3c8479c19aa9a95cb8ef575",
+    "combined_parts_sha256": "98f7cbd6a7495d5e3d7dacead7b186c5092fd70ad2aa71c9d945bde0b44d6213"}
+
+
+def confirmation_identity_preflight(root, benchmarks, expected_counts=None, pinned=None) -> list:
+    """Is the extracted confirmation data exactly the artifact that was audited and verified? Uses committed manifests,
+    done.json metadata (doc ids, statuses, counts, hashes) and file byte hashes only: no correctness, no outcomes.
+    Returns a list of failures (empty = identity confirmed)."""
+    root = Path(root)
+    exp = EXPECTED_CONFIRMATION_COUNTS if expected_counts is None else expected_counts
+    pin = PINNED_CONFIRMATION_HASHES if pinned is None else pinned
+    bad = []
+
+    def sha(path):
+        return g.sha256_file(path)
+
+    man_p, ids_p = root / "data/manifests/confirmation.json", root / "data/manifests/confirmation_ids.csv"
+    aud_p = root / "results/gate2/confirmation_audit.json"
+    evd_p = root / "results/gate2/confirmation_extraction_evidence.json"
+    chk_p = root / "results/gate2/extraction_check_confirm.json"
+    for name, path, key in (("ids csv", ids_p, "ids_sha256"), ("manifest", man_p, "manifest_sha256"),
+                            ("audit", aud_p, "audit_sha256"), ("extraction check report", chk_p, "check_report_sha256")):
+        if not path.exists():
+            bad.append(f"{name} missing: {path}")
+        elif sha(path) != pin[key]:
+            bad.append(f"{name} sha256 {sha(path)} != pinned {pin[key]}")
+    if bad:
+        return bad
+    manifest = json.loads(man_p.read_text(encoding="utf-8"))
+    evidence = json.loads(evd_p.read_text(encoding="utf-8"))
+    for k_m, k_p in (("ids_sha256", "ids_sha256"), ("audit_sha256", "audit_sha256")):
+        if manifest[k_m] != pin[k_p]:
+            bad.append(f"manifest.{k_m} != pinned")
+    for k in ("ids_sha256", "manifest_sha256", "check_report_sha256", "combined_parts_sha256"):
+        if evidence[k] != pin[k]:
+            bad.append(f"extraction evidence {k} != pinned")
+    if evidence.get("outcomes_inspected") is not False:
+        bad.append("extraction evidence does not say outcomes_inspected is false")
+    if evidence["total_records"] != sum(exp.values()):
+        bad.append(f"evidence total_records {evidence['total_records']} != {sum(exp.values())}")
+
+    # ids from the committed csv, grouped by benchmark
+    import csv
+    ids = {b: [] for b in benchmarks}
+    with open(ids_p, newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            if row["benchmark"] not in ids:
+                bad.append(f"csv has benchmark {row['benchmark']!r} outside the six")
+                continue
+            if row["split"] != "confirmation":
+                bad.append(f"csv row with split {row['split']!r}")
+            ids[row["benchmark"]].append(row["doc_id"])
+    comb = hashlib.sha256()
+    for b in benchmarks:
+        if len(ids[b]) != exp[b] or len(set(ids[b])) != len(ids[b]):
+            bad.append(f"{b}: csv has {len(ids[b])} ids ({len(set(ids[b]))} distinct), expected {exp[b]}")
+        if manifest["benchmarks"][b]["n_questions"] != exp[b]:
+            bad.append(f"{b}: manifest n_questions {manifest['benchmarks'][b]['n_questions']} != {exp[b]}")
+
+    # extracted parts: ids, statuses, hashes
+    for b in benchmarks:
+        bdir = root / "data" / "extracted_confirm" / b
+        done_paths = sorted(bdir.glob("part-*.done.json"))
+        ev_parts = evidence["parts"][b]
+        if len(done_paths) != len(ev_parts):
+            bad.append(f"{b}: {len(done_paths)} parts on disk, {len(ev_parts)} in the evidence")
+            continue
+        got_ids, n_failed = [], 0
+        for dp, evp in zip(done_paths, ev_parts):
+            d = json.loads(dp.read_text(encoding="utf-8"))
+            stem = str(dp)[: -len(".done.json")]
+            if dp.name[: -len(".done.json")] != evp["part"] or d["n"] != evp["n"]:
+                bad.append(f"{b}/{dp.name}: part name or n differs from the evidence")
+            for key, ext in (("parquet_sha256", ".parquet"), ("hidden_sha256", ".hidden.npy")):
+                if d[key] != evp[key]:
+                    bad.append(f"{b}/{dp.name}: done.json {key} differs from the evidence")
+                elif sha(Path(stem + ext)) != evp[key]:
+                    bad.append(f"{b}/{dp.name}: file {ext} bytes differ from the verified hash")
+            got_ids += list(d["doc_ids"])
+            n_failed += sum(1 for s_ in d["statuses"] if s_ != "ok")
+        if n_failed:
+            bad.append(f"{b}: {n_failed} failed records (expected 0)")
+        if len(got_ids) != exp[b] or set(got_ids) != set(ids[b]) or len(set(got_ids)) != len(got_ids):
+            bad.append(f"{b}: extracted doc-id set differs from the committed id list "
+                       f"({len(got_ids)} extracted, {len(ids[b])} listed, {len(set(got_ids) ^ set(ids[b]))} differ)")
+    # combined hash over the parts, in the evidence's order (as when it was recorded)
+    for b in evidence["parts"]:
+        for evp in evidence["parts"][b]:
+            comb.update(evp["parquet_sha256"].encode())
+            comb.update(evp["hidden_sha256"].encode())
+    if comb.hexdigest() != pin["combined_parts_sha256"]:
+        bad.append("combined parts hash differs from the pinned value")
+    return bad

@@ -107,3 +107,20 @@ Q-B -0.014 [-0.021, -0.007], control-B -0.011 [-0.014, -0.007].
   0.8222508742366401). Exit code 3 and no STARTED marker if any differs. The rehearsal runs the same pre-flight.
 - Source bundle for source-level review: `gate2_source_review.zip` (the four requested files, the two frozen JSON files, gate1.py
   and the tests, with a sha256 manifest).
+
+## 8. Confirmation-manifest identity check (reviewer's source-level review: the one required correction)
+`gate2_eval.confirmation_identity_preflight` runs in the real run **before** the validation pre-flight and **before**
+`CONFIRMATION_STARTED.json` is written; it can also be run alone: `python scripts/gate2_confirm.py --check-confirmation-identity`
+(writes nothing). It uses committed manifests, `done.json` metadata and file byte hashes only, never outcomes. It requires:
+- the pinned hashes (constants in `gate2_eval.py`, taken from DECISIONS): ids csv `4cc7aac3febc...`, manifest `eac4680d39ab...`,
+  audit `72e3b57f8a1f...`, extraction check report `8efafa5fcc7d...`, combined part hashes `98f7cbd6a749...`; and the extraction
+  evidence agreeing with them and stating `outcomes_inspected: false`;
+- exact counts ARC-C 299, ARC-E 570, HellaSwag 1,000, MMLU 1,500, CSQA 1,000, OBQA 500 (4,869), both in the manifest and in the
+  committed id list, with no duplicate ids;
+- for each benchmark, the document-id set in the extracted `done.json` files equals the committed id list exactly;
+- zero records with a status other than `ok`;
+- part names, counts and hashes in `done.json` equal the evidence, and the actual `.parquet` / `.hidden.npy` bytes hash to them.
+Result on the laptop's real extracted data (code revision below): identity confirmed, no marker written.
+Tests (`tests/test_gate2_eval.py`): accepts a consistent synthetic artifact; rejects wrong counts, a swapped document id,
+a failed record, changed file bytes and a wrong pinned hash; the real pinned constants equal the committed manifests; the mode is
+exclusive and writes nothing.

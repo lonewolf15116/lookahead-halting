@@ -164,3 +164,108 @@ def test_refuses_with_modified_tracked_files_and_no_override(fake_root, monkeypa
     monkeypatch.setattr(cf, "git_state", lambda root: {"head": "x", "modified_tracked": [" M src/lookahead/gate2.py"]})
     assert cf.main(_args(fake_root)) == 2
     assert not (fake_root / "results/gate2/CONFIRMATION_STARTED.json").exists()
+
+
+# --------------------------------------------------------------------- confirmation identity pre-flight
+BENCH = ["arc_easy", "openbookqa"]
+COUNTS = {"arc_easy": 5, "openbookqa": 3}
+
+
+def _build_confirm_tree(root: Path):
+    """Synthetic confirmation artifact: ids csv, manifest, audit, evidence, check report, two parts per benchmark."""
+    import csv
+    import hashlib
+    (root / "data/manifests").mkdir(parents=True)
+    (root / "results/gate2").mkdir(parents=True)
+    ids, parts, comb = {}, {}, hashlib.sha256()
+    for b in BENCH:
+        ids[b] = [f"confirm:{b}/{i}" for i in range(COUNTS[b])]
+        bdir = root / "data/extracted_confirm" / b
+        bdir.mkdir(parents=True)
+        parts[b] = []
+        for k, chunk in enumerate((ids[b][:2], ids[b][2:])):
+            stem = bdir / f"part-{k:05d}"
+            (Path(str(stem) + ".parquet")).write_bytes(f"pq-{b}-{k}".encode())
+            (Path(str(stem) + ".hidden.npy")).write_bytes(f"hid-{b}-{k}".encode())
+            ph, hh = g.sha256_file(str(stem) + ".parquet"), g.sha256_file(str(stem) + ".hidden.npy")
+            (Path(str(stem) + ".done.json")).write_text(json.dumps(
+                {"n": len(chunk), "doc_ids": chunk, "statuses": ["ok"] * len(chunk), "parquet_sha256": ph,
+                 "hidden_sha256": hh}), encoding="utf-8")
+            parts[b].append({"part": f"part-{k:05d}", "n": len(chunk), "parquet_sha256": ph, "hidden_sha256": hh})
+            comb.update(ph.encode())
+            comb.update(hh.encode())
+    with open(root / "data/manifests/confirmation_ids.csv", "w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["benchmark", "stratum", "doc_id", "split"])
+        for b in BENCH:
+            for d in ids[b]:
+                w.writerow([b, b, d, "confirmation"])
+    (root / "results/gate2/confirmation_audit.json").write_text("{}", encoding="utf-8")
+    (root / "results/gate2/extraction_check_confirm.json").write_text('{"ok": true}', encoding="utf-8")
+    pin = {"ids_sha256": g.sha256_file(root / "data/manifests/confirmation_ids.csv"),
+           "audit_sha256": g.sha256_file(root / "results/gate2/confirmation_audit.json"),
+           "check_report_sha256": g.sha256_file(root / "results/gate2/extraction_check_confirm.json"),
+           "combined_parts_sha256": comb.hexdigest()}
+    manifest = {"ids_sha256": pin["ids_sha256"], "audit_sha256": pin["audit_sha256"],
+                "benchmarks": {b: {"n_questions": COUNTS[b]} for b in BENCH}}
+    (root / "data/manifests/confirmation.json").write_text(json.dumps(manifest), encoding="utf-8")
+    pin["manifest_sha256"] = g.sha256_file(root / "data/manifests/confirmation.json")
+    evidence = {"ids_sha256": pin["ids_sha256"], "manifest_sha256": pin["manifest_sha256"],
+                "check_report_sha256": pin["check_report_sha256"], "combined_parts_sha256": pin["combined_parts_sha256"],
+                "outcomes_inspected": False, "total_records": sum(COUNTS.values()), "parts": parts}
+    (root / "results/gate2/confirmation_extraction_evidence.json").write_text(json.dumps(evidence), encoding="utf-8")
+    return pin
+
+
+def test_identity_preflight_accepts_the_audited_artifact(tmp_path):
+    pin = _build_confirm_tree(tmp_path)
+    assert ev.confirmation_identity_preflight(tmp_path, BENCH, COUNTS, pin) == []
+
+
+def test_identity_preflight_rejects_wrong_counts(tmp_path):
+    pin = _build_confirm_tree(tmp_path)
+    assert ev.confirmation_identity_preflight(tmp_path, BENCH, {"arc_easy": 6, "openbookqa": 3}, pin)
+
+
+def test_identity_preflight_rejects_a_swapped_document_id(tmp_path):
+    pin = _build_confirm_tree(tmp_path)
+    dp = tmp_path / "data/extracted_confirm/arc_easy/part-00000.done.json"
+    d = json.loads(dp.read_text(encoding="utf-8"))
+    d["doc_ids"][0] = "confirm:arc_easy/INTRUDER"
+    dp.write_text(json.dumps(d), encoding="utf-8")
+    bad = ev.confirmation_identity_preflight(tmp_path, BENCH, COUNTS, pin)
+    assert any("doc-id set differs" in b for b in bad)
+
+
+def test_identity_preflight_rejects_a_failed_record(tmp_path):
+    pin = _build_confirm_tree(tmp_path)
+    dp = tmp_path / "data/extracted_confirm/openbookqa/part-00001.done.json"
+    d = json.loads(dp.read_text(encoding="utf-8"))
+    d["statuses"][0] = "timeout"
+    dp.write_text(json.dumps(d), encoding="utf-8")
+    assert any("failed records" in b for b in ev.confirmation_identity_preflight(tmp_path, BENCH, COUNTS, pin))
+
+
+def test_identity_preflight_rejects_changed_file_bytes_and_a_wrong_pinned_hash(tmp_path):
+    pin = _build_confirm_tree(tmp_path)
+    (tmp_path / "data/extracted_confirm/arc_easy/part-00001.hidden.npy").write_bytes(b"tampered")
+    assert any("bytes differ" in b for b in ev.confirmation_identity_preflight(tmp_path, BENCH, COUNTS, pin))
+    pin2 = _build_confirm_tree(tmp_path / "other")
+    pin2["ids_sha256"] = "0" * 64
+    assert ev.confirmation_identity_preflight(tmp_path / "other", BENCH, COUNTS, pin2)
+
+
+def test_the_real_pinned_constants_match_the_committed_manifests():
+    pin = ev.PINNED_CONFIRMATION_HASHES
+    assert sum(ev.EXPECTED_CONFIRMATION_COUNTS.values()) == 4869
+    assert g.sha256_file(REPO / "data/manifests/confirmation_ids.csv") == pin["ids_sha256"]
+    assert g.sha256_file(REPO / "data/manifests/confirmation.json") == pin["manifest_sha256"]
+    assert g.sha256_file(REPO / "results/gate2/confirmation_audit.json") == pin["audit_sha256"]
+    assert g.sha256_file(REPO / "results/gate2/extraction_check_confirm.json") == pin["check_report_sha256"]
+
+
+def test_script_modes_are_exclusive_and_identity_mode_writes_nothing(fake_root):
+    assert cf.main(["--root", str(fake_root), "--check-confirmation-identity", "--rehearsal-on-validation"]) == 2
+    before = sorted(p.name for p in (fake_root / "results/gate2").iterdir())
+    cf.main(["--root", str(fake_root), "--check-confirmation-identity"])      # fails (no data in the fake root), exit 3
+    assert sorted(p.name for p in (fake_root / "results/gate2").iterdir()) == before
