@@ -23,3 +23,5 @@ data/extracted_smoke/
 data/questions_confirm/
 data/extracted_confirm/
 hf_cache
+data/extracted_confirm_smoke/
+data/questions_confirm_limit*/
