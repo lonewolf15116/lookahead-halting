@@ -350,6 +350,7 @@ def build_confirmation_questions(benchmark, lm, n_take, phase1_exclusion: Exclus
     index_of = {t: sorted(cs, key=lambda c: c.index) for t, cs in by_task.items()}
     violations = []
     renamed = {}
+    built = []
     with record_exemplars() as rec:
         def on_task(task):
             switch_eval_split(task, split)
@@ -370,6 +371,7 @@ def build_confirmation_questions(benchmark, lm, n_take, phase1_exclusion: Exclus
             new = f"confirm:{cand.task_name}/{cand.native_id or cand.text_hash[:16]}@r{cand.index}"
             rec.rekey(q.doc_id, new)
             renamed[new] = cand
+            built.append((new, cand))  # kept as a list: a repeated id must not hide which docs shared it
             q.doc_id = new
 
         qs = load_lm_eval_questions(benchmark, lm, task_manager=tm, spec=spec, on_task=on_task, on_doc=on_doc,
@@ -378,7 +380,12 @@ def build_confirmation_questions(benchmark, lm, n_take, phase1_exclusion: Exclus
     order = {id(c): n for n, c in enumerate(selected)}
     qs.sort(key=lambda q: order[id(renamed[q.doc_id])])
     if len(qs) != len(selected) or len({q.doc_id for q in qs}) != len(qs):
-        raise RuntimeError(f"{benchmark}: built {len(qs)} questions for {len(selected)} selected docs, or ids not unique")
+        groups = {}
+        for new_id, c in built:
+            groups.setdefault(new_id, []).append(f"{c.task_name}[row {c.index}] native_id={c.native_id}")
+        dups = {k: v for k, v in groups.items() if len(v) > 1}
+        raise RuntimeError(f"{benchmark}: built {len(qs)} questions for {len(selected)} selected docs, or ids not unique; "
+                           f"duplicate doc_id groups: {dups}")
     for q in qs:
         if "," in q.doc_id or "\n" in q.doc_id:
             raise ValueError(f"unsafe doc_id {q.doc_id!r}")
