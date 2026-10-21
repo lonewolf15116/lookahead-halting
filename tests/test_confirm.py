@@ -545,3 +545,22 @@ def test_text_hash_is_template_independent_across_benchmarks():
     assert text_hash("mmlu", mmlu, T("{}\nA.")) == text_hash("openbookqa", obqa, T("{}"))
     hs = {"ctx": "A man is", "endings": ["running.", "sitting."]}
     assert text_hash("hellaswag", hs, T("{}")) != text_hash("openbookqa", obqa, T("{}"))
+
+
+
+def test_confirmation_ids_unique_when_native_ids_repeat(tmp_path, lm):
+    """HellaSwag's `ind` repeats within train: two different pool docs with one native id must get distinct doc_ids,
+    and the collision is counted in the audit stats."""
+    from lm_eval.tasks import TaskManager
+
+    train = [mkdoc(i, ind=i, split="train") for i in range(500, 520)]
+    train[5] = mkdoc(777, ind=503, split="train")  # different text, same native id as train[3]
+    write_task(tmp_path, "fake_rep", {"train": train, "validation": [mkdoc(i, ind=i, split="val") for i in range(600, 604)]},
+               "")
+    build = confirm.build_confirmation_questions("fake_rep", lm, None, confirm.Exclusion(),
+                                                 task_manager=TaskManager(include_path=str(tmp_path)), spec=SPEC,
+                                                 split_plan={"fake_rep": "train"})
+    ids = [q.doc_id for q in build.questions]
+    assert len(ids) == len(set(ids)) == 20
+    assert sum(i.startswith("confirm:fake_rep/train:503@r") for i in ids) == 2
+    assert build.stats["n_native_id_collisions"] == 2

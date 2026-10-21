@@ -333,6 +333,11 @@ def build_confirmation_questions(benchmark, lm, n_take, phase1_exclusion: Exclus
         else:
             seen.add(c.text_hash)
             unique.append(c)
+    nid_counts = {}
+    for c in unique:
+        if c.native_id is not None:
+            nid_counts[c.native_id] = nid_counts.get(c.native_id, 0) + 1
+    stats["n_native_id_collisions"] = sum(n for n in nid_counts.values() if n > 1)  # docs sharing a native id
     stats["n_eligible"] = len(unique)
     stats["n_requested"] = n_take
     selected = unique if n_take is None else unique[:n_take]
@@ -360,7 +365,9 @@ def build_confirmation_questions(benchmark, lm, n_take, phase1_exclusion: Exclus
                 raise AssertionError(f"{q.doc_id}: the question is among its own few-shot exemplars")
             if any(d.text_hash == cand.text_hash for d in r.inserted):
                 violations.append({"doc_id": q.doc_id, "problem": "own text among exemplars under another id"})
-            new = f"confirm:{cand.task_name}/{cand.native_id or cand.text_hash[:16]}"
+            # native ids are not always unique (HellaSwag `ind` repeats within train), so the row index in the
+            # source split is appended; the native id (or text hash) stays in the id for traceability
+            new = f"confirm:{cand.task_name}/{cand.native_id or cand.text_hash[:16]}@r{cand.index}"
             rec.rekey(q.doc_id, new)
             renamed[new] = cand
             q.doc_id = new
