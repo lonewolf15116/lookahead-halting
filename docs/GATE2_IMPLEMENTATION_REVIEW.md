@@ -124,3 +124,20 @@ Result on the laptop's real extracted data (code revision below): identity confi
 Tests (`tests/test_gate2_eval.py`): accepts a consistent synthetic artifact; rejects wrong counts, a swapped document id,
 a failed record, changed file bytes and a wrong pinned hash; the real pinned constants equal the committed manifests; the mode is
 exclusive and writes nothing.
+
+## 9. Final rehearsal at the reviewed revision
+Code revision: **a27c993** (`git log`: "Gate 2 confirm: add confirmation-manifest identity pre-flight ..."), run on the laptop at
+2026-10-21 (local evening), tracked tree clean at the time of the pull. Output:
+```
+pre-flight: P, Q and the refitted shuffled control reproduce their frozen validation numbers
+loaded 5870 questions from data/extracted (split validation)
+rehearsal: every frozen validation number (P, Q, baselines, B, B_cap) and the loader are reproduced
+rehearsal (not a verdict): FAIL  L=True E=False H=False  P saving 0.3880 loss 0.944 pp
+```
+(The last line is the frozen policies scored on validation, not a Gate 2 result.) The confirmation identity check
+(`--check-confirmation-identity`) passed on the real extracted data at the same code (counts 299/570/1000/1500/1000/500, id set
+equals the committed list, 0 failed records, part hashes equal the verified evidence, no marker written). No policy, threshold,
+baseline, model or frozen file changed after the freeze (`frozen_selection.json` sha256 `aa4f49e6a686...`,
+`baseline_B_frozen.json` sha256 `19fcf29583dc...`). The confirmation run, when authorised, is:
+`python scripts/gate2_confirm.py --confirm-one-time-gate2-evaluation --frozen-sha aa4f49e6a686 --baseline-sha 19fcf29583dc
+--reviewer-approval-ref "<reviewer message, date>"` from a clean checkout of a27c993 or a descendant that the reviewer approves.
