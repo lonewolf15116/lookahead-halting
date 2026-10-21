@@ -1,0 +1,1734 @@
+{
+  "label": "gate2 confirmation",
+  "timestamp_utc": "2026-10-21T15:28:04Z",
+  "benchmarks": [
+    "arc_challenge",
+    "arc_easy",
+    "hellaswag",
+    "mmlu",
+    "commonsense_qa",
+    "openbookqa"
+  ],
+  "banner": "Gate 2 confirmation: frozen policies applied once to the never-scored confirmation set.",
+  "split": "confirmation",
+  "frozen_selection_sha256": "aa4f49e6a686a44c3136a30b36ce4516468e9d91913f2ddbc7aace31160eed96",
+  "baseline_B_sha256": "19fcf29583dc78a582d306fbafb82a0128ac6fb557cd36c8f1b14e1bb762eaaf",
+  "git": {
+    "head": "c96a79bbafc8325e9c2ac463c42db9db19d2ff8f",
+    "modified_tracked": []
+  },
+  "n_failed": {
+    "arc_challenge": {
+      "n": 299,
+      "failed": 0
+    },
+    "arc_easy": {
+      "n": 570,
+      "failed": 0
+    },
+    "hellaswag": {
+      "n": 1000,
+      "failed": 0
+    },
+    "mmlu": {
+      "n": 1500,
+      "failed": 0
+    },
+    "commonsense_qa": {
+      "n": 1000,
+      "failed": 0
+    },
+    "openbookqa": {
+      "n": 500,
+      "failed": 0
+    }
+  },
+  "input_hashes": {
+    "data/extracted_confirm/arc_challenge/part-00000.parquet": "17e96fc0a5a612759eb1793236f56ec12ce190cdcd022184076a7dd44dc9bc97",
+    "data/extracted_confirm/arc_challenge/part-00000.hidden.npy": "369ab7d011a991a69798245f3b04fa79616d066441f297ea3ac0218822ed6743",
+    "data/extracted_confirm/arc_challenge/part-00001.parquet": "22dffddcb1b98f4d503c3603144981ed99301cf0cbbc3cee33944af83659d0a1",
+    "data/extracted_confirm/arc_challenge/part-00001.hidden.npy": "dab126b6bb001d9624195a256afc66e4b07097a9d0e39b407b48c1522286a67f",
+    "data/extracted_confirm/arc_easy/part-00000.parquet": "7f30d075802a17491a6dd78cb7099b49045c582708b58b7dcd943162931d76b4",
+    "data/extracted_confirm/arc_easy/part-00000.hidden.npy": "f83de1f52d8fdb432b5a5eb5a3bd20ff2cf567d2aa1439ab1b681adce8f52fe8",
+    "data/extracted_confirm/arc_easy/part-00001.parquet": "34243d3bd3049bda8ba7bc5c515f0bed1d8dd3b1f4bee8f1f02888cef6a52c9f",
+    "data/extracted_confirm/arc_easy/part-00001.hidden.npy": "36b7fd3ca5786bf4e7801000af82901774ad5e52cbac81159ffe5ad1851e44a3",
+    "data/extracted_confirm/arc_easy/part-00002.parquet": "84e23056fe2bb8a3b8fd17a77e5ababd8b34bce433954fcb3aa37604ca43166a",
+    "data/extracted_confirm/arc_easy/part-00002.hidden.npy": "4add8fd865028c50fc6be1a4a83f6d62bbb7a1c2a3e630836421c34f07294946",
+    "data/extracted_confirm/hellaswag/part-00000.parquet": "124de8669c6478ac9b0e4a5f73194da977132346ccad67a3abdd8e3b4fb3aea9",
+    "data/extracted_confirm/hellaswag/part-00000.hidden.npy": "58f86b0e469c634b20c4e6de2a75f434920511b602f67b63f471fde04e19c95f",
+    "data/extracted_confirm/hellaswag/part-00001.parquet": "0fcb8c56a5b4089c74610bd9ddec689ac610bca1cd52612f3ea4b1b2097703b2",
+    "data/extracted_confirm/hellaswag/part-00001.hidden.npy": "13d5041f13cecdb1adda7be2dc7d3f59011139934cb324198e9aa39ac7974efa",
+    "data/extracted_confirm/hellaswag/part-00002.parquet": "02d63a6e73a3ab7a69eee6e0092217a444a6cc3c0df24d7b1b294f5c64125c7d",
+    "data/extracted_confirm/hellaswag/part-00002.hidden.npy": "19cae139841d6061efb31946388dede9507a270d6e9ede7d8a270eb619a95cdc",
+    "data/extracted_confirm/hellaswag/part-00003.parquet": "6f507f5ea830faeb379b3f76df855931b4f959fe1cf42cba7fef801da53ec4ce",
+    "data/extracted_confirm/hellaswag/part-00003.hidden.npy": "8dd44987d67fabbaf7bb57de96403e78853e77a385a6281496dad686589a3a41",
+    "data/extracted_confirm/mmlu/part-00000.parquet": "de8ed8daa45a8d832ffed214a3ee19a5f7eb145f1176c96201177d22ff64585e",
+    "data/extracted_confirm/mmlu/part-00000.hidden.npy": "45c17c17559a87fc8ff726788268ad2daa75f985b5d4b74358ebb0022e91f29a",
+    "data/extracted_confirm/mmlu/part-00001.parquet": "880d1123922c8bc2f6022d8e771ac76abcf9ca722227e1dd13fd676d841b66eb",
+    "data/extracted_confirm/mmlu/part-00001.hidden.npy": "ee13291f37986f6768c137a80bdb4144f0ad198d13050cf1567b83c7a73c864b",
+    "data/extracted_confirm/mmlu/part-00002.parquet": "0181ce3d4ea8161c58c717ff52983abb2070e5ddadefaf2a055e561d340251ba",
+    "data/extracted_confirm/mmlu/part-00002.hidden.npy": "301d48675449af747abb85a54a2cfad9c833c099e0741f995190964ce1cf32c9",
+    "data/extracted_confirm/mmlu/part-00003.parquet": "32367c7b44a2405a49d9860f6bff2833a32bcb28489eed551c76aaafa9262daa",
+    "data/extracted_confirm/mmlu/part-00003.hidden.npy": "28c740a86d8ac12578e4ab284d456eac418a9f2b883ff0eb1530dceaa71563c9",
+    "data/extracted_confirm/mmlu/part-00004.parquet": "1808725fc4fe18ccc9fa0cb847b3ff1e37e9dd88b91d50b60003d64986f00600",
+    "data/extracted_confirm/mmlu/part-00004.hidden.npy": "ea79d4ac0710a87d822d955103f36dcb748ae36c35db8fe4c3b594723e49283f",
+    "data/extracted_confirm/mmlu/part-00005.parquet": "0ed9ef648121f0cf4dcf3673e0316600528cadd917fd729990e74163c5b36861",
+    "data/extracted_confirm/mmlu/part-00005.hidden.npy": "2310805334a954599391b8e9456795a4e5c6bbfd1c27336f746a6a3a9bc665d5",
+    "data/extracted_confirm/commonsense_qa/part-00000.parquet": "20022d9a844f6f6269c7d38ecfb0a8d92d4c549c633d2ef36ee434cd99c020cd",
+    "data/extracted_confirm/commonsense_qa/part-00000.hidden.npy": "f471d41c0a29d56fd0b9c1bb1530968068f41447f024ce3c5b674f02c1509394",
+    "data/extracted_confirm/commonsense_qa/part-00001.parquet": "1ad414e4c22ff0f97307d061370a0304b75930b26dfd63e6b69e6247b7175117",
+    "data/extracted_confirm/commonsense_qa/part-00001.hidden.npy": "723ce8fd30d0c5a42dc052bba4316b93d1a6a33339e8f4470c6108a1fe227d85",
+    "data/extracted_confirm/commonsense_qa/part-00002.parquet": "9e103aa41a170474c9fbe37ec4fb89145d619e97e2696a03e03767c70ffbf4dd",
+    "data/extracted_confirm/commonsense_qa/part-00002.hidden.npy": "ee2f73baf67cea31cac1d3f87324240d2c222b93ced9ce0909e2dd1660b610a2",
+    "data/extracted_confirm/commonsense_qa/part-00003.parquet": "5e314942eddaffbc8e837e8ff21413fc4806faf6a7ddbce95d8739eaacb75785",
+    "data/extracted_confirm/commonsense_qa/part-00003.hidden.npy": "672f98e819c469708921be11853320762f6141153862532cd2ffe004e664cc2a",
+    "data/extracted_confirm/openbookqa/part-00000.parquet": "0c20fad203061a94362a7fe12fa9ee54688eaf68c8fedcdd3d4cbc3d37609e1e",
+    "data/extracted_confirm/openbookqa/part-00000.hidden.npy": "561a4008e97dfb473329d35b8a51ed8ad6a37e160e6fbf82326ae0a70a24b440",
+    "data/extracted_confirm/openbookqa/part-00001.parquet": "5f8f33a4c97d63a1a6e8e072bc96695041f07891d37eab2cbb3ff16583fd5625",
+    "data/extracted_confirm/openbookqa/part-00001.hidden.npy": "045d032669ff0e274f8a42153a7a3a0ce03144fadfa17510453d6890d64e55d1"
+  },
+  "auroc": {
+    "P": {
+      "pooled": [
+        0.7136147285918587,
+        0.774635060483061,
+        0.7935527079074932
+      ],
+      "within": {
+        "arc_challenge": [
+          0.5720821745761191,
+          0.506268081002893,
+          0.5571428571428572
+        ],
+        "arc_easy": [
+          0.5933131407269339,
+          0.6589725679451359,
+          0.5710000000000001
+        ],
+        "hellaswag": [
+          0.595919649870946,
+          0.5912794496329605,
+          0.5659538506760728
+        ],
+        "mmlu": [
+          0.7645314056439452,
+          0.8419003848737703,
+          0.835966892400301
+        ],
+        "commonsense_qa": [
+          0.7213961877833569,
+          0.8191090793975337,
+          0.8523557231800766
+        ],
+        "openbookqa": [
+          0.5266494947493561,
+          0.5238985743298948,
+          0.5433824937751389
+        ]
+      }
+    },
+    "Q": {
+      "pooled": [
+        0.6874716131178209,
+        0.7584256398377197,
+        0.8535491725527004
+      ],
+      "within": {
+        "arc_challenge": [
+          0.6419664483717592,
+          0.5781788125086099,
+          0.5857142857142857
+        ],
+        "arc_easy": [
+          0.5579760795278037,
+          0.55499110998222,
+          0.7138181818181818
+        ],
+        "hellaswag": [
+          0.646374144316014,
+          0.5817767785080133,
+          0.6679894179894179
+        ],
+        "mmlu": [
+          0.6713653168018016,
+          0.8425303305226457,
+          0.8965365508076687
+        ],
+        "commonsense_qa": [
+          0.6913989502591852,
+          0.8197712579650207,
+          0.9151999521072796
+        ],
+        "openbookqa": [
+          0.6649494749356053,
+          0.5858920994952845,
+          0.6666826278490711
+        ]
+      }
+    },
+    "shuffled_control": {
+      "pooled": [
+        0.5949672696082653,
+        0.6100535262812503,
+        0.6045475368286872
+      ],
+      "within": {
+        "arc_challenge": [
+          0.47923208038037146,
+          0.4727923956467833,
+          0.4571428571428571
+        ],
+        "arc_easy": [
+          0.45644351247799525,
+          0.5262255524511048,
+          0.4044545454545454
+        ],
+        "hellaswag": [
+          0.4855930871956009,
+          0.5278354279564933,
+          0.5207965902410348
+        ],
+        "mmlu": [
+          0.43115355292520186,
+          0.4560576285162374,
+          0.38900109566617824
+        ],
+        "commonsense_qa": [
+          0.42650595557288873,
+          0.5758107331013772,
+          0.3438697318007663
+        ],
+        "openbookqa": [
+          0.48657618387160695,
+          0.49530473949850196,
+          0.595767094426355
+        ]
+      }
+    }
+  },
+  "analysis": {
+    "policies": [
+      "fixed-4",
+      "P",
+      "Q",
+      "fixed-3",
+      "confidence",
+      "entropy",
+      "native_gate",
+      "deployable_kl",
+      "B",
+      "B_cap",
+      "shuffled_control"
+    ],
+    "n_boot": 2000,
+    "seed": 0,
+    "n_questions": {
+      "arc_challenge": 299,
+      "arc_easy": 570,
+      "hellaswag": 1000,
+      "mmlu": 1500,
+      "commonsense_qa": 1000,
+      "openbookqa": 500
+    },
+    "point": {
+      "fixed-4": {
+        "role": "reference",
+        "macro_saving": 0.0,
+        "macro_loss": 0.0,
+        "macro_acc": 66.01345811574645,
+        "saving_ci": [
+          0.0,
+          0.0
+        ],
+        "loss_ci": [
+          0.0,
+          0.0
+        ],
+        "pooled": {
+          "saving": 0.0,
+          "loss": 0.0
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 56.85618729096989,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 83.15789473684211,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 74.8,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "mmlu": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 65.26666666666667,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 73.2,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 42.8,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "mmlu": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "commonsense_qa": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          }
+        },
+        "per_benchmark_loss_over_cap": []
+      },
+      "P": {
+        "role": "candidate",
+        "macro_saving": 0.3777713552973851,
+        "macro_loss": 2.020227268282188,
+        "macro_acc": 63.993230847464254,
+        "saving_ci": [
+          0.3728899380121849,
+          0.3832193682279137
+        ],
+        "loss_ci": [
+          1.1893812220070774,
+          2.925039214535787
+        ],
+        "pooled": {
+          "saving": 0.359776134729924,
+          "loss": 1.8073526391456152
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.387123745819398,
+            "loss": 1.6722408026755815,
+            "acc": 55.18394648829431,
+            "loss_ci": [
+              -1.6722408026755886,
+              5.016722408026752
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.42675438596491233,
+            "loss": 2.9824561403508767,
+            "acc": 80.17543859649123,
+            "loss_ci": [
+              0.8771929824561511,
+              5.0877192982456165
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.4385,
+            "loss": 1.9000000000000057,
+            "acc": 72.89999999999999,
+            "loss_ci": [
+              0.29999999999999716,
+              3.5999999999999943
+            ]
+          },
+          "mmlu": {
+            "saving": 0.26849999999999996,
+            "loss": 1.0666666666666629,
+            "acc": 64.2,
+            "loss_ci": [
+              0.20000000000000284,
+              1.8666666666666742
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.35724999999999996,
+            "loss": 1.7000000000000028,
+            "acc": 71.5,
+            "loss_ci": [
+              0.3999999999999915,
+              3.1000000000000085
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.38849999999999996,
+            "loss": 2.799999999999997,
+            "acc": 40.0,
+            "loss_ci": [
+              0.20000000000000284,
+              5.399999999999999
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.013377926421404682,
+            "2": 0.5384615384615384,
+            "3": 0.431438127090301,
+            "4": 0.016722408026755852
+          },
+          "arc_easy": {
+            "1": 0.06140350877192982,
+            "2": 0.5964912280701754,
+            "3": 0.3298245614035088,
+            "4": 0.012280701754385965
+          },
+          "hellaswag": {
+            "1": 0.059,
+            "2": 0.637,
+            "3": 0.303,
+            "4": 0.001
+          },
+          "mmlu": {
+            "1": 0.06533333333333333,
+            "2": 0.276,
+            "3": 0.326,
+            "4": 0.33266666666666667
+          },
+          "commonsense_qa": {
+            "1": 0.072,
+            "2": 0.443,
+            "3": 0.327,
+            "4": 0.158
+          },
+          "openbookqa": {
+            "1": 0.086,
+            "2": 0.408,
+            "3": 0.48,
+            "4": 0.026
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "arc_challenge",
+          "arc_easy",
+          "hellaswag",
+          "mmlu",
+          "commonsense_qa",
+          "openbookqa"
+        ]
+      },
+      "Q": {
+        "role": "control_Q",
+        "macro_saving": 0.39945881006864986,
+        "macro_loss": 1.271582663459096,
+        "macro_acc": 64.74187545228735,
+        "saving_ci": [
+          0.39464188712619064,
+          0.40431213376948505
+        ],
+        "loss_ci": [
+          0.41082396976275914,
+          2.114821725439575
+        ],
+        "pooled": {
+          "saving": 0.3902752105155063,
+          "loss": 1.0269049086054631
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.40217391304347827,
+            "loss": 2.0066889632106992,
+            "acc": 54.84949832775919,
+            "loss_ci": [
+              -1.337792642140471,
+              5.025083612040098
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.38991228070175443,
+            "loss": 2.456140350877206,
+            "acc": 80.7017543859649,
+            "loss_ci": [
+              0.7017543859649038,
+              4.3859649122806985
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.43474999999999997,
+            "loss": 0.0,
+            "acc": 74.8,
+            "loss_ci": [
+              -1.4000000000000057,
+              1.5
+            ]
+          },
+          "mmlu": {
+            "saving": 0.3411666666666666,
+            "loss": 0.46666666666666856,
+            "acc": 64.8,
+            "loss_ci": [
+              -0.6666666666666645,
+              1.5333333333333314
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.39375000000000004,
+            "loss": 1.9000000000000057,
+            "acc": 71.3,
+            "loss_ci": [
+              0.4000000000000057,
+              3.4000000000000057
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.43500000000000005,
+            "loss": 0.7999999999999972,
+            "acc": 42.0,
+            "loss_ci": [
+              -1.8000000000000043,
+              3.404999999999978
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.043478260869565216,
+            "2": 0.5351170568561873,
+            "3": 0.4080267558528428,
+            "4": 0.013377926421404682
+          },
+          "arc_easy": {
+            "1": 0.043859649122807015,
+            "2": 0.4842105263157895,
+            "3": 0.45964912280701753,
+            "4": 0.012280701754385965
+          },
+          "hellaswag": {
+            "1": 0.018,
+            "2": 0.707,
+            "3": 0.271,
+            "4": 0.004
+          },
+          "mmlu": {
+            "1": 0.030666666666666665,
+            "2": 0.43666666666666665,
+            "3": 0.3993333333333333,
+            "4": 0.13333333333333333
+          },
+          "commonsense_qa": {
+            "1": 0.048,
+            "2": 0.577,
+            "3": 0.277,
+            "4": 0.098
+          },
+          "openbookqa": {
+            "1": 0.068,
+            "2": 0.626,
+            "3": 0.284,
+            "4": 0.022
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "arc_challenge",
+          "arc_easy",
+          "commonsense_qa"
+        ]
+      },
+      "fixed-3": {
+        "role": "baseline",
+        "macro_saving": 0.25,
+        "macro_loss": 0.32068102251168656,
+        "macro_acc": 65.69277709323475,
+        "saving_ci": [
+          0.25,
+          0.25
+        ],
+        "loss_ci": [
+          -0.3399230133583687,
+          1.0065697549335946
+        ],
+        "pooled": {
+          "saving": 0.25,
+          "loss": 0.41076196344218524
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.25,
+            "loss": -0.6688963210702354,
+            "acc": 57.52508361204013,
+            "loss_ci": [
+              -3.0100334448160524,
+              1.6722408026755957
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.25,
+            "loss": 0.526315789473685,
+            "acc": 82.63157894736842,
+            "loss_ci": [
+              -0.8771929824561372,
+              2.1052631578947256
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.25,
+            "loss": -0.29999999999999716,
+            "acc": 75.1,
+            "loss_ci": [
+              -1.0999999999999948,
+              0.5000000000000142
+            ]
+          },
+          "mmlu": {
+            "saving": 0.25,
+            "loss": 0.2666666666666657,
+            "acc": 65.0,
+            "loss_ci": [
+              -1.1350000000000062,
+              1.6683333333333288
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.25,
+            "loss": 1.5,
+            "acc": 71.7,
+            "loss_ci": [
+              0.09999999999999432,
+              3.0999999999999943
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.25,
+            "loss": 0.6000000000000014,
+            "acc": 42.199999999999996,
+            "loss_ci": [
+              -1.2000000000000028,
+              2.5999999999999943
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "mmlu": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "commonsense_qa": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "commonsense_qa"
+        ]
+      },
+      "confidence": {
+        "role": "baseline",
+        "macro_saving": 0.0938406432748538,
+        "macro_loss": 0.48888888888888954,
+        "macro_acc": 65.52456922685755,
+        "saving_ci": [
+          0.09002743055555554,
+          0.09747275219298246
+        ],
+        "loss_ci": [
+          0.27777777777777857,
+          0.7168055555555566
+        ],
+        "pooled": {
+          "saving": 0.1386321626617375,
+          "loss": 0.6982953378517149
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 56.85618729096989,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.0008771929824561431,
+            "loss": 0.0,
+            "acc": 83.15789473684211,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 74.8,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "mmlu": {
+            "saving": 0.22816666666666663,
+            "loss": 0.9333333333333371,
+            "acc": 64.33333333333333,
+            "loss_ci": [
+              0.3333333333333428,
+              1.5333333333333456
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.3305,
+            "loss": 2.0,
+            "acc": 71.2,
+            "loss_ci": [
+              0.8974999999999921,
+              3.200000000000003
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.0034999999999999476,
+            "loss": 0.0,
+            "acc": 42.8,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 0.0017543859649122807,
+            "3": 0.0,
+            "4": 0.9982456140350877
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "mmlu": {
+            "1": 0.08333333333333333,
+            "2": 0.25,
+            "3": 0.16266666666666665,
+            "4": 0.504
+          },
+          "commonsense_qa": {
+            "1": 0.177,
+            "2": 0.334,
+            "3": 0.123,
+            "4": 0.366
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 0.006,
+            "3": 0.002,
+            "4": 0.992
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "commonsense_qa"
+        ]
+      },
+      "entropy": {
+        "role": "baseline",
+        "macro_saving": 0.10286416466193354,
+        "macro_loss": 0.7222222222222238,
+        "macro_acc": 65.29123589352422,
+        "saving_ci": [
+          0.09890435803311232,
+          0.10653492489585165
+        ],
+        "loss_ci": [
+          0.46666666666666734,
+          0.9999999999999989
+        ],
+        "pooled": {
+          "saving": 0.15146847401930585,
+          "loss": 1.0679811049496817
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.004180602006689016,
+            "loss": 0.0,
+            "acc": 56.85618729096989,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.0017543859649122862,
+            "loss": 0.0,
+            "acc": 83.15789473684211,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 74.8,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "mmlu": {
+            "saving": 0.254,
+            "loss": 1.7333333333333343,
+            "acc": 63.53333333333333,
+            "loss_ci": [
+              0.86666666666666,
+              2.6666666666666714
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.35124999999999995,
+            "loss": 2.6000000000000085,
+            "acc": 70.6,
+            "loss_ci": [
+              1.2999999999999972,
+              3.9000000000000057
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.006000000000000005,
+            "loss": 0.0,
+            "acc": 42.8,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.006688963210702341,
+            "3": 0.0033444816053511705,
+            "4": 0.9899665551839465
+          },
+          "arc_easy": {
+            "1": 0.0017543859649122807,
+            "2": 0.0,
+            "3": 0.0017543859649122807,
+            "4": 0.9964912280701754
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "mmlu": {
+            "1": 0.09533333333333334,
+            "2": 0.2793333333333333,
+            "3": 0.17133333333333334,
+            "4": 0.454
+          },
+          "commonsense_qa": {
+            "1": 0.178,
+            "2": 0.381,
+            "3": 0.109,
+            "4": 0.332
+          },
+          "openbookqa": {
+            "1": 0.002,
+            "2": 0.008,
+            "3": 0.002,
+            "4": 0.988
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "mmlu",
+          "commonsense_qa"
+        ]
+      },
+      "native_gate": {
+        "role": "baseline",
+        "macro_saving": 0.34988570087425924,
+        "macro_loss": 1.1584247687222522,
+        "macro_acc": 64.8550333470242,
+        "saving_ci": [
+          0.34594571280486613,
+          0.3539937550729528
+        ],
+        "loss_ci": [
+          0.32574441608480686,
+          2.014459528838819
+        ],
+        "pooled": {
+          "saving": 0.3587492298213185,
+          "loss": 1.1295953994660095
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.3311036789297659,
+            "loss": 2.0066889632106992,
+            "acc": 54.84949832775919,
+            "loss_ci": [
+              -1.0033444816053532,
+              5.351170568561869
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.3342105263157895,
+            "loss": 0.8771929824561511,
+            "acc": 82.28070175438596,
+            "loss_ci": [
+              -0.701754385964918,
+              2.631578947368425
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.42474999999999996,
+            "loss": 1.0,
+            "acc": 73.8,
+            "loss_ci": [
+              -0.5999999999999943,
+              2.6999999999999886
+            ]
+          },
+          "mmlu": {
+            "saving": 0.32399999999999995,
+            "loss": 0.6666666666666572,
+            "acc": 64.60000000000001,
+            "loss_ci": [
+              -0.7333333333333343,
+              2.066666666666663
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.40774999999999995,
+            "loss": 2.4000000000000057,
+            "acc": 70.8,
+            "loss_ci": [
+              0.7974999999999974,
+              4.300000000000011
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.27749999999999997,
+            "loss": 0.0,
+            "acc": 42.8,
+            "loss_ci": [
+              -2.200000000000003,
+              2.200000000000003
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.006688963210702341,
+            "2": 0.3110367892976589,
+            "3": 0.6822742474916388,
+            "4": 0.0
+          },
+          "arc_easy": {
+            "1": 0.0035087719298245615,
+            "2": 0.33157894736842103,
+            "3": 0.6631578947368421,
+            "4": 0.0017543859649122807
+          },
+          "hellaswag": {
+            "1": 0.009,
+            "2": 0.682,
+            "3": 0.308,
+            "4": 0.001
+          },
+          "mmlu": {
+            "1": 0.025333333333333333,
+            "2": 0.31133333333333335,
+            "3": 0.5973333333333334,
+            "4": 0.066
+          },
+          "commonsense_qa": {
+            "1": 0.046,
+            "2": 0.543,
+            "3": 0.407,
+            "4": 0.004
+          },
+          "openbookqa": {
+            "1": 0.004,
+            "2": 0.196,
+            "3": 0.706,
+            "4": 0.094
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "arc_challenge",
+          "commonsense_qa"
+        ]
+      },
+      "deployable_kl": {
+        "role": "baseline",
+        "macro_saving": 0.32786546529366895,
+        "macro_loss": 1.5083181755950623,
+        "macro_acc": 64.50513994015138,
+        "saving_ci": [
+          0.32404361406931487,
+          0.3316869322571339
+        ],
+        "loss_ci": [
+          0.5824421316669552,
+          2.4611954565901915
+        ],
+        "pooled": {
+          "saving": 0.2641712877387554,
+          "loss": 0.9858287122612446
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.4565217391304348,
+            "loss": 2.341137123745817,
+            "acc": 54.515050167224075,
+            "loss_ci": [
+              -1.337792642140471,
+              6.020066889632105
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.4184210526315789,
+            "loss": 3.5087719298245617,
+            "acc": 79.64912280701755,
+            "loss_ci": [
+              1.4035087719298218,
+              5.6140350877193015
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.49650000000000005,
+            "loss": 1.2000000000000028,
+            "acc": 73.6,
+            "loss_ci": [
+              -0.5000000000000142,
+              3.1000000000000085
+            ]
+          },
+          "mmlu": {
+            "saving": 0.08150000000000002,
+            "loss": 0.0,
+            "acc": 65.26666666666667,
+            "loss_ci": [
+              -0.7333333333333485,
+              0.7333333333333346
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.07074999999999998,
+            "loss": -0.20000000000000284,
+            "acc": 73.4,
+            "loss_ci": [
+              -0.5,
+              0.0
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.4435,
+            "loss": 2.1999999999999957,
+            "acc": 40.6,
+            "loss_ci": [
+              -0.8000000000000043,
+              5.204999999999982
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.842809364548495,
+            "3": 0.14046822742474915,
+            "4": 0.016722408026755852
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 0.6877192982456141,
+            "3": 0.2982456140350877,
+            "4": 0.014035087719298246
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.986,
+            "3": 0.014,
+            "4": 0.0
+          },
+          "mmlu": {
+            "1": 0.0,
+            "2": 0.048666666666666664,
+            "3": 0.22866666666666666,
+            "4": 0.7226666666666667
+          },
+          "commonsense_qa": {
+            "1": 0.0,
+            "2": 0.015,
+            "3": 0.253,
+            "4": 0.732
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 0.816,
+            "3": 0.142,
+            "4": 0.042
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "arc_challenge",
+          "arc_easy",
+          "hellaswag",
+          "openbookqa"
+        ]
+      },
+      "B": {
+        "role": "amendment_B",
+        "macro_saving": 0.4166666666666667,
+        "macro_loss": 2.2008742592266586,
+        "macro_acc": 63.81258385651978,
+        "saving_ci": [
+          0.4166666666666667,
+          0.4166666666666667
+        ],
+        "loss_ci": [
+          1.179486421600266,
+          3.23633407655147
+        ],
+        "pooled": {
+          "saving": 0.37163688642431714,
+          "loss": 1.6019716574245224
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.5,
+            "loss": 3.6789297658862807,
+            "acc": 53.17725752508361,
+            "loss_ci": [
+              0.0,
+              7.357859531772576
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.5,
+            "loss": 3.8596491228070136,
+            "acc": 79.2982456140351,
+            "loss_ci": [
+              1.7543859649122737,
+              6.1403508771929864
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.5,
+            "loss": 1.2999999999999972,
+            "acc": 73.5,
+            "loss_ci": [
+              -0.5,
+              3.200000000000003
+            ]
+          },
+          "mmlu": {
+            "saving": 0.25,
+            "loss": 0.2666666666666657,
+            "acc": 65.0,
+            "loss_ci": [
+              -1.1350000000000062,
+              1.6683333333333288
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.25,
+            "loss": 1.5,
+            "acc": 71.7,
+            "loss_ci": [
+              0.09999999999999432,
+              3.0999999999999943
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.5,
+            "loss": 2.5999999999999943,
+            "acc": 40.2,
+            "loss_ci": [
+              -0.6000000000000014,
+              6.0
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 1.0,
+            "3": 0.0,
+            "4": 0.0
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 1.0,
+            "3": 0.0,
+            "4": 0.0
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 1.0,
+            "3": 0.0,
+            "4": 0.0
+          },
+          "mmlu": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "commonsense_qa": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 1.0,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "arc_challenge",
+          "arc_easy",
+          "hellaswag",
+          "commonsense_qa",
+          "openbookqa"
+        ]
+      },
+      "B_cap": {
+        "role": "sensitivity",
+        "macro_saving": 0.25,
+        "macro_loss": 0.6095699114005745,
+        "macro_acc": 65.40388820434586,
+        "saving_ci": [
+          0.25,
+          0.25
+        ],
+        "loss_ci": [
+          -0.12168512488020128,
+          1.391636864597392
+        ],
+        "pooled": {
+          "saving": 0.1986547545697268,
+          "loss": 0.5339905524748408
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.25,
+            "loss": -0.6688963210702354,
+            "acc": 57.52508361204013,
+            "loss_ci": [
+              -3.0100334448160524,
+              1.6722408026755957
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.25,
+            "loss": 0.526315789473685,
+            "acc": 82.63157894736842,
+            "loss_ci": [
+              -0.8771929824561372,
+              2.1052631578947256
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.25,
+            "loss": -0.29999999999999716,
+            "acc": 75.1,
+            "loss_ci": [
+              -1.0999999999999948,
+              0.5000000000000142
+            ]
+          },
+          "mmlu": {
+            "saving": 0.0,
+            "loss": 0.0,
+            "acc": 65.26666666666667,
+            "loss_ci": [
+              0.0,
+              0.0
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.25,
+            "loss": 1.5,
+            "acc": 71.7,
+            "loss_ci": [
+              0.09999999999999432,
+              3.0999999999999943
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.5,
+            "loss": 2.5999999999999943,
+            "acc": 40.2,
+            "loss_ci": [
+              -0.6000000000000014,
+              6.0
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "mmlu": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 1.0
+          },
+          "commonsense_qa": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 1.0,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "commonsense_qa",
+          "openbookqa"
+        ]
+      },
+      "shuffled_control": {
+        "role": "control_c",
+        "macro_saving": 0.4073185912104676,
+        "macro_loss": 2.178466232470806,
+        "macro_acc": 63.83499188327563,
+        "saving_ci": [
+          0.40544119427086395,
+          0.40908040465049195
+        ],
+        "loss_ci": [
+          1.16614744078703,
+          3.1837993848892
+        ],
+        "pooled": {
+          "saving": 0.3665537071267201,
+          "loss": 1.6019716574245224
+        },
+        "per_benchmark": {
+          "arc_challenge": {
+            "saving": 0.4866220735785953,
+            "loss": 3.344481605351163,
+            "acc": 53.51170568561873,
+            "loss_ci": [
+              -0.3344481605351177,
+              7.023411371237465
+            ]
+          },
+          "arc_easy": {
+            "saving": 0.49078947368421055,
+            "loss": 3.8596491228070136,
+            "acc": 79.2982456140351,
+            "loss_ci": [
+              1.7543859649122737,
+              6.1403508771929864
+            ]
+          },
+          "hellaswag": {
+            "saving": 0.49824999999999997,
+            "loss": 1.2999999999999972,
+            "acc": 73.5,
+            "loss_ci": [
+              -0.5,
+              3.1000000000000085
+            ]
+          },
+          "mmlu": {
+            "saving": 0.25,
+            "loss": 0.2666666666666657,
+            "acc": 65.0,
+            "loss_ci": [
+              -1.1350000000000062,
+              1.6683333333333288
+            ]
+          },
+          "commonsense_qa": {
+            "saving": 0.25425,
+            "loss": 1.5,
+            "acc": 71.7,
+            "loss_ci": [
+              0.09999999999999432,
+              3.0999999999999943
+            ]
+          },
+          "openbookqa": {
+            "saving": 0.46399999999999997,
+            "loss": 2.799999999999997,
+            "acc": 40.0,
+            "loss_ci": [
+              0.0,
+              5.799999999999997
+            ]
+          }
+        },
+        "exit_distribution": {
+          "arc_challenge": {
+            "1": 0.0,
+            "2": 0.9464882943143813,
+            "3": 0.05351170568561873,
+            "4": 0.0
+          },
+          "arc_easy": {
+            "1": 0.0,
+            "2": 0.9631578947368421,
+            "3": 0.03684210526315789,
+            "4": 0.0
+          },
+          "hellaswag": {
+            "1": 0.0,
+            "2": 0.993,
+            "3": 0.007,
+            "4": 0.0
+          },
+          "mmlu": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 1.0,
+            "4": 0.0
+          },
+          "commonsense_qa": {
+            "1": 0.0,
+            "2": 0.017,
+            "3": 0.983,
+            "4": 0.0
+          },
+          "openbookqa": {
+            "1": 0.0,
+            "2": 0.856,
+            "3": 0.144,
+            "4": 0.0
+          }
+        },
+        "per_benchmark_loss_over_cap": [
+          "arc_challenge",
+          "arc_easy",
+          "hellaswag",
+          "commonsense_qa",
+          "openbookqa"
+        ]
+      }
+    },
+    "original": {
+      "L_budget": false,
+      "E_effect": false,
+      "H_hidden_state": false,
+      "verdict": "FAIL",
+      "P_macro_loss": 2.020227268282188,
+      "P_macro_saving": 0.3777713552973851,
+      "delta_base": {
+        "delta": 0.02788565442312585,
+        "ci": [
+          0.02281103086066617,
+          0.032964482485477904
+        ],
+        "comparator": "native_gate",
+        "comparator_saving": 0.34988570087425924
+      },
+      "delta_ctrl_P_minus_Q": {
+        "delta": -0.02168745477126477,
+        "ci": [
+          -0.028123563620939165,
+          -0.0150400669751999
+        ]
+      },
+      "margin": 0.03,
+      "baselines_confirmation": {
+        "fixed-3": {
+          "saving": 0.25,
+          "loss": 0.32068102251168656
+        },
+        "confidence": {
+          "saving": 0.0938406432748538,
+          "loss": 0.48888888888888954
+        },
+        "entropy": {
+          "saving": 0.10286416466193354,
+          "loss": 0.7222222222222238
+        },
+        "native_gate": {
+          "saving": 0.34988570087425924,
+          "loss": 1.1584247687222522
+        },
+        "deployable_kl": {
+          "saving": 0.32786546529366895,
+          "loss": 1.5083181755950623
+        }
+      },
+      "note": "B is the largest confirmation saving among all validation-qualified baselines, including any that exceed 1 pp loss on confirmation; it is re-determined inside every resample."
+    },
+    "secondary": {
+      "loss_compliant_baselines": [
+        "fixed-3",
+        "confidence",
+        "entropy"
+      ],
+      "P_minus_best_loss_compliant_baseline": {
+        "delta": 0.1277713552973851,
+        "ci": [
+          0.12288993801218491,
+          0.13321936822791372
+        ]
+      },
+      "Q_minus_best_loss_compliant_baseline": {
+        "delta": 0.14945881006864986,
+        "ci": [
+          0.1446418871261906,
+          0.15431213376948505
+        ]
+      },
+      "Q_minus_best_baseline_all_qualified": {
+        "delta": 0.04957310919439062,
+        "ci": [
+          0.04370793110319001,
+          0.0551372239824757
+        ]
+      },
+      "sensitivity_without_openbookqa": {
+        "P_loss": 1.864272721938626,
+        "P_minus_best_baseline": {
+          "delta": 0.011262785307750989,
+          "ci": [
+            0.0060899220354397295,
+            0.016737582878601207
+          ]
+        },
+        "P_minus_Q": {
+          "delta": -0.016724945725517804,
+          "ci": [
+            -0.023329265827612484,
+            -0.009708923018247996
+          ]
+        }
+      }
+    },
+    "amendment": {
+      "task_aware_note": "B uses benchmark identity: a task-aware control, not a deployable policy. B was chosen on validation among 1,024 vectors, so its validation numbers were optimistic.",
+      "P_minus_B": {
+        "delta": -0.03889531136928159,
+        "ci": [
+          -0.043776728654481775,
+          -0.03344729843875297
+        ]
+      },
+      "Q_minus_B": {
+        "delta": -0.017207856598016824,
+        "ci": [
+          -0.022024779540476064,
+          -0.012354532897181646
+        ]
+      },
+      "P_minus_fixed3": {
+        "delta": 0.1277713552973851,
+        "ci": [
+          0.12288993801218491,
+          0.13321936822791372
+        ]
+      },
+      "Q_minus_fixed3": {
+        "delta": 0.14945881006864986,
+        "ci": [
+          0.1446418871261906,
+          0.15431213376948505
+        ]
+      },
+      "B": {
+        "saving": 0.4166666666666667,
+        "loss": 2.2008742592266586,
+        "saving_ci": [
+          0.4166666666666667,
+          0.4166666666666667
+        ],
+        "loss_ci": [
+          1.179486421600266,
+          3.23633407655147
+        ]
+      },
+      "fixed3": {
+        "saving": 0.25,
+        "loss": 0.32068102251168656
+      },
+      "B_meets_macro_budget": false,
+      "per_benchmark_cap_sensitivity": {
+        "cap_pp": 1.0,
+        "policies_over_cap": {
+          "P": [
+            "arc_challenge",
+            "arc_easy",
+            "hellaswag",
+            "mmlu",
+            "commonsense_qa",
+            "openbookqa"
+          ],
+          "Q": [
+            "arc_challenge",
+            "arc_easy",
+            "commonsense_qa"
+          ],
+          "fixed-3": [
+            "commonsense_qa"
+          ],
+          "confidence": [
+            "commonsense_qa"
+          ],
+          "entropy": [
+            "mmlu",
+            "commonsense_qa"
+          ],
+          "native_gate": [
+            "arc_challenge",
+            "commonsense_qa"
+          ],
+          "deployable_kl": [
+            "arc_challenge",
+            "arc_easy",
+            "hellaswag",
+            "openbookqa"
+          ],
+          "B": [
+            "arc_challenge",
+            "arc_easy",
+            "hellaswag",
+            "commonsense_qa",
+            "openbookqa"
+          ],
+          "B_cap": [
+            "commonsense_qa",
+            "openbookqa"
+          ],
+          "shuffled_control": [
+            "arc_challenge",
+            "arc_easy",
+            "hellaswag",
+            "commonsense_qa",
+            "openbookqa"
+          ]
+        },
+        "B_cap_vector": {
+          "saving": 0.25,
+          "loss": 0.6095699114005745
+        }
+      },
+      "interpretation_guard": "The original verdict is reported separately above. B outperforming P or Q does not alter it.",
+      "shuffled_control_minus_B": {
+        "delta": -0.00934807545619909,
+        "ci": [
+          -0.011225472395802755,
+          -0.007586262016174739
+        ]
+      }
+    }
+  },
+  "code": {
+    "src/lookahead/gate1.py": "e5cb19b276b97498b7a644a389e98c8ba05951e8a8284f0ca67263226703d107",
+    "scripts/gate1_validation.py": "be10f27478f0f2c27d5b40a1ace02f3273be84170bee3fafbbb79e736dc60092",
+    "scripts/gate1_test.py": "9d2d7260f2dfbfe987fa4f2be746e18b193c9ec554d265838e71c24f6caee011"
+  }
+}

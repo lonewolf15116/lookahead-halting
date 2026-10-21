@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-10-21T15:28:03Z",
+  "frozen_selection_sha256": "aa4f49e6a686a44c3136a30b36ce4516468e9d91913f2ddbc7aace31160eed96",
+  "baseline_B_sha256": "19fcf29583dc78a582d306fbafb82a0128ac6fb557cd36c8f1b14e1bb762eaaf",
+  "git": {
+    "head": "c96a79bbafc8325e9c2ac463c42db9db19d2ff8f",
+    "modified_tracked": []
+  },
+  "reviewer_approval_ref": "Gate 2 Final Reviewer Decision GO, 2026-10-21 (one-time confirmation)",
+  "note": "written BEFORE any confirmation outcome is opened"
+}
