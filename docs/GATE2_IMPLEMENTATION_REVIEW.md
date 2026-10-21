@@ -79,8 +79,13 @@ and 19 in `tests/test_gate2_eval.py`. All Gate 2 tests use synthetic data only; 
 `python scripts/gate2_confirm.py --rehearsal-on-validation` runs the confirmation code path on validation and fails (exit 3)
 unless it reproduces: P 0.3880/0.9441, Q 0.4029/0.5331, the frozen baselines, B 0.4167/0.7775, the B_cap vector, and
 `gate2.load_probe_data` array-for-array (hidden states, cheap features, targets, ok flags, doc ids).
-First pass (without the shuffled control): reproduced everything. The full rehearsal including the control is to be run
-on the laptop (`scripts/run_gate2_rehearsal_windows.ps1`) and its output attached.
+Result: the full rehearsal on the laptop (shuffled control included, at the committed code 53fd6e1) printed
+"every frozen validation number (P, Q, baselines, B, B_cap) and the loader are reproduced". The shuffled control is not part
+of the script's automatic check; it was compared by hand: rehearsal 0.406015202046128 / 0.38953268172622896 against
+`validation_report.json` 0.406015202046128 / 0.38953268172622896 (identical). Output: `results/gate2_rehearsal/rehearsal_report.json`,
+`docs/GATE2_REHEARSAL.md`. The rehearsal's "verdict" line is computed on validation with frozen thresholds and is NOT a Gate 2
+result (on validation: L true, E false, H false). Paired validation deltas for orientation only: P-B -0.029 [-0.036, -0.021],
+Q-B -0.014 [-0.021, -0.007], control-B -0.011 [-0.014, -0.007].
 
 ## 6. Known limitations to weigh
 - Procedural: training and selection ran before this review (recorded deviation; code identical to the committed e65eba1).
