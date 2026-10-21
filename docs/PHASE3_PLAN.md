@@ -1,4 +1,4 @@
-# Phase 3 plan (v1, revised on reviewer review; for freeze. Nothing has been run)
+# Phase 3 plan (v1.1, revised on reviewer review; for freeze. Nothing has been run)
 
 Working title: **decision-aware halting beyond task-aware depth.**
 Question: *can question-specific information improve computation allocation beyond what task identity alone achieves?*
@@ -25,9 +25,10 @@ confirmation outcome is used to design anything here, and the Gate 2 confirmatio
 5. The macro loss budget hid per-benchmark damage (OpenBookQA gains offset HellaSwag losses of 2-3 pp).
 
 ## 2. Hypotheses
-- **H3 (primary, task-aware track):** a frozen per-question halting policy that nests B achieves ≥ 0.03 more macro loop
-  saving than B_pb (section 5) on a fresh in-distribution test set, with every benchmark's loss ≤ 1 pp (point estimate)
-  and a paired-bootstrap 95% CI lower bound of the improvement > 0.
+- **H3 (primary, task-aware track):** a frozen per-question halting policy that nests B achieves ≥ 0.03 more **net**
+  macro loop saving (controller overhead included, section 5a) than the **strongest eligible task-aware baseline** on a fresh
+  in-distribution test set, with every benchmark's loss ≤ 1 pp (point estimate) and a paired-bootstrap 95% CI lower
+  bound of the improvement > 0.
 - **H3-h (secondary):** the hidden-state version of the selected policy beats its cheap-features-only twin (CI > 0).
 - **H3-agn (secondary, task-agnostic track):** without benchmark identity, the best task-agnostic policy beats the best
   task-agnostic baseline by ≥ 0.03 (CI > 0) under the same per-benchmark loss rule.
@@ -73,6 +74,18 @@ learned thresholds.
   The rule is: max macro saving subject to every benchmark's loss ≤ 1 pp, then the same tie-breaks. Its baselines are pooled
   fixed depth and native gate, chosen the same way.
 
+## 5a. Net saving (controller overhead) and the comparator
+- **Net saving per question** = 1 − (e + ρ_b · n_eval) / 4, with e the executed loops, n_eval the number of loops at which
+  the controller computed a score (halting at loop t < m_b by score: n_eval = t; reaching the cap m_b: n_eval = m_b − 1),
+  and ρ_b = measured controller milliseconds per evaluation divided by measured mean milliseconds per loop for benchmark b
+  (batch size 1, same GPU, same code path as extraction). Policies that need no extra computation (fixed depth, Ouro's native
+  gate CDF, which the model already produces) have ρ = 0. ρ_b is measured once on development data at G3b and frozen.
+  Gross saving (ρ = 0) is reported beside it. The verdict uses net saving.
+- **Strongest eligible task-aware baseline:** among the frozen task-aware baselines that were qualified at selection
+  (B_pb and native-pb), the one with the highest net test saving, re-determined inside every bootstrap resample. As in
+  Gate 2, a baseline that exceeds 1 pp on a test benchmark still sets the bar. The comparison against baselines that
+  meet the cap on the test set is reported as secondary.
+
 ## 6. Candidate list (closed; no additions after freeze)
 Features: x = Gate 2 cheap features (9); hx = h_t (2048) + x. Models: family 1 only (per-loop L2-logistic or ridge,
 Gate 2 section 5 settings: C grid, alpha grid, 5-fold CV inside each training fold). Families 2 and 3 are dropped
@@ -99,7 +112,7 @@ role of the cost:
 - s_t = A_t = P̂(c_t=1 \| z_t) − Ĉ_t(z_t); halt when A_t ≥ τ_b (τ_b ≤ 0 means "stop if within |τ_b| of the value of going
   on"). The per-benchmark τ_b grid is as in section 5.
 
-π3 is kept as the simpler final-loop-gain policy, as the reviewer asked. Its sign is flipped so that "halt when s_t ≥ τ" means "halt
+**Distinction kept explicit.** π3's V_t = P̂(c_4=1 | z_t) − P̂(c_t=1 | z_t) estimates the benefit of *proceeding to loop 4*, not of taking *one more loop and reconsidering*; a controller that can stop at t+1 or t+2 is worth more than V_t says, and π4 is the policy that models that. π3 is kept as the simpler final-loop-gain policy, as the reviewer asked. Its sign is flipped so that "halt when s_t ≥ τ" means "halt
 when the expected gain from continuing is small".
 
 **Final policy choice** (task-aware track): among the six candidates (π1, π3, π4 × x, hx), the largest cross-fitted
@@ -110,7 +123,7 @@ loss → simpler (π1 < π3 < π4; x < hx). **H3-h** compares the chosen policy 
 ## 7. Step 0 / G3a: feasibility (train and validation only; no new policy is selected for testing)
 | id | diagnostic | stop rule |
 |---|---|---|
-| D1 | Oracle headroom over B_pb (B_pb chosen on cross-fitted train). Two retrospective ceilings, both on known outcomes, **not deployable policies**: (i) *final-answer-preserving oracle* (Gate 1's stable-final, for continuity); (ii) *accuracy-budget oracle* (correction A): per benchmark, choose each question's exit e_i ∈ {1..4} to minimise Σ e_i subject to Σ c_{i,e_i} ≥ Σ c_{i,4} − 0.01 n_b. Exact solution: each question exits at loop 1 unless "bought" at its earliest correct loop ε_i at extra cost ε_i − 1 (only questions wrong at loop 1 and correct at some loop are candidates); buy in ascending extra cost until the constraint holds. | stop if ceiling (ii) − B_pb < 0.05 macro saving |
+| D1 | Oracle headroom over B_pb (B_pb chosen on cross-fitted train). Two retrospective ceilings, both on known outcomes, **not deployable policies**: (i) *final-answer-preserving oracle* (Gate 1's stable-final, for continuity); (ii) *accuracy-budget oracle* (correction A): per benchmark, choose each question's exit e_i ∈ {1..4} to minimise Σ e_i subject to Σ c_{i,e_i} ≥ Σ c_{i,4} − 0.01 n_b. **The oracle may keep an incorrect early answer**, as long as the benchmark stays within its 1 pp budget. Exact solution, per benchmark: let k_b = Σ c_{i,1} (correct at loop 1) and K_b = Σ c_{i,4} (correct at loop 4). Start with every question exiting at loop 1. If k_b ≥ K_b − 0.01·n_b the budget already holds. Otherwise "buy" r_b = ⌈K_b − 0.01·n_b − k_b⌉ extra correct answers: a question wrong at loop 1 and correct at some loop has earliest correct loop ε_i and gains +1 correct for ε_i − 1 extra loops. These costs are independent across questions, so buying the r_b cheapest (ties by doc_id) is optimal. Questions correct at loop 1 and questions never correct exit at loop 1. A question that is correct at an early loop but wrong at loop 4 counts as correct, so the oracle can profit from the model unlearning an answer; that is why this ceiling is loose and is only a necessary condition. | stop if ceiling (ii) − B_pb < 0.05 macro saving |
 | D2 | Reachable headroom, screening only (correction B). π1-x and π1-hx with Gate 2's frozen hyperparameters, refit by 5-fold cross-fitting on train; (τ_b, m_b) chosen on four folds' out-of-fold statistics and evaluated on the fifth, rotated (nested). B_pb selected the same nested way. Validation is reported as a second, **exposed** estimate (Gate 2 used it for selection). | stop if the nested-train improvement over B_pb < 0.02 |
 | D3 | Within-benchmark AUROC for WC vs CW (adjacent loops and to-final), h_t vs x, per benchmark and loop, out of fold. | H3-h and the hx variants are kept only if h > x within at least half of the (benchmark, loop) cells with ≥ 30 transitions |
 | D4 | Within-benchmark predictability of c_t, c_4 and Δ_t = c_4 − c_t (AUROC / Spearman, out of fold). | informative only |
@@ -129,7 +142,7 @@ Caveats fixed in advance:
   improvement over the pooled fixed-depth baseline ≥ 0.03 with CI lower bound > 0. These are reported per benchmark and
   are never pooled with the in-distribution result.
 
-## 9. Fresh test data (to be inventoried and audited before freeze)
+## 9. Fresh test data (to be inventoried and audited before freeze; **no audited fresh set exists yet**)
 In-distribution candidates are the unscored remainders of the six benchmarks' other splits, after the Gate 2 audit
 procedure (exemplar recording, identity and template-independent text-hash exclusion, Phase 1 hash reproduction):
 - **HellaSwag train:** about 676 left (1,676 eligible in the Gate 2 audit, 1,000 used).
@@ -157,14 +170,13 @@ Pre-registered handling:
   OOD set (separate), by a guarded script in the Gate 2 pattern.
 
 Verdict table (H3; exhaustive), written before G3c:
-| budget: every in-dist benchmark loss ≤ 1 pp | effect: Δ = S_π − S_Bpb ≥ 0.03 and CI lower > 0 | verdict |
+| budget: every in-dist benchmark loss ≤ 1 pp | effect: Δ = S_net,π − S_net,strongest eligible baseline ≥ 0.03 and CI lower > 0 | verdict |
 |---|---|---|
 | yes | yes | **PASS**: question-specific allocation beyond task-aware depth |
 | yes | no | **FAIL (no decision value shown)**: Δ and CI reported |
 | no | any | **FAIL (budget)** |
 
-H3-h, H3-agn, H3-ood and net wall-clock saving after controller overhead (measured, as in Gate 2) are reported beside the
-verdict and never change it. Claims are limited to Ouro-1.4B and the evaluated benchmarks.
+H3-h, H3-agn, H3-ood, gross saving and measured wall-clock saving are reported beside the verdict and never change it. Claims are limited to Ouro-1.4B and the evaluated benchmarks.
 
 ## 11. Not allowed
 - Using any Gate 2 confirmation outcome; selecting anything on validation; adding candidates or features after the freeze.
@@ -183,6 +195,10 @@ verdict and never change it. Claims are limited to Ouro-1.4B and the evaluated b
 6. G3c one-time tests, then `docs/PHASE3_REPORT.md`.
 
 ## Change log
+- v1 → v1.1 (second reviewer note, which had seen only the draft file): D1 states explicitly that the oracle may keep a wrong early
+  answer within the budget; the G3c comparator is the strongest eligible task-aware baseline and the effect is on **net** saving
+  with controller overhead inside the metric (section 5a); the "commit to loop 4" vs "one more loop" distinction is explicit; the
+  absence of an audited fresh set is stated. D2's procedure, ties and fallback are in sections 5 and 7 (unchanged).
 - Draft (fb9f669) → v1, on reviewer decision (CONDITIONAL GO):
   - (A) D1 uses an accuracy-budget oracle, with the stable-final oracle kept for reference; both labelled retrospective.
   - (B) D2 is nested cross-fitted on train; validation is reported as exposed.
