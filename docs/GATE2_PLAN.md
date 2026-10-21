@@ -110,6 +110,23 @@ The 0.03 margin is a project-specific practical-significance criterion, not a st
 - Predictive quality on confirmation: AUROC for S_t, F_t, WC vs CW; Spearman for log D_t and G_t; each against the cheap-features model.
 - Gate 1 test as an exploratory development check, run after the confirmation verdict is written.
 
+### 7b. Amendment v3.1: benchmark-specific fixed-depth control (added after validation; before any confirmation outcome was read)
+**Why.** Validation showed that the label-shuffled control (c) matched P and Q (0.406 vs 0.388 and 0.403), and the audit (`scripts/gate2_control_audit.py`, `results/gate2/control_audit.json`) showed it halts almost every question of a benchmark at one loop: it is a benchmark-depth policy. A probe-free policy that applies each benchmark's training base rate of S_t reaches 0.417 saving at 0.777 pp macro loss on validation, above P and Q. A per-benchmark fixed-depth control was therefore missing. The amendment adds it; it does not change sections 5-7, the thresholds, or the P/Q selection (commit e65eba1).
+
+**What is added (additional analysis; the section 7 verdict is computed exactly as before and reported first, separately).**
+| Item | Specification |
+|---|---|
+| B (primary additional control) | Fixed depth per benchmark, frozen **B = (2, 2, 2, 3, 3, 2)** in the order ARC-C, ARC-E, HellaSwag, MMLU, CSQA, OBQA. |
+| Selection of B | Validation only: of all 4^6 depth vectors, max macro saving subject to macro loss ≤ 1 pp (+ the Gate 1 tolerance); ties to smaller loss, then lexicographically smaller vector. 440 vectors qualify; B (0.4167 / 0.777 pp) leads the next vector (0.375) by 0.042, so the choice is not a tie-break. |
+| Second construction | The feature-free benchmark-prior policy (benchmark train mean of S_t per loop, Gate 1 operating-point rule on validation) selects the same vector with identical saving and loss. The two are one policy built two ways, not independent evidence. `scripts/gate2_freeze_baseline.py` asserts agreement and writes `results/gate2/baseline_B_frozen.json`. |
+| Pooled fixed-3 (secondary control) | Fixed depth 3 for all benchmarks (shallowest compliant pooled depth on validation: macro loss -0.09 pp; depth 2 gives 3.12 pp). |
+| Sensitivity: per-benchmark cap | Each benchmark's own loss ≤ 1 pp. Validation vector (3, 3, 3, 4, 3, 2), saving 0.250. Reported as a sensitivity analysis only; it is not a condition of PASS/PARTIAL/FAIL. |
+| Comparisons | P − B and Q − B (macro saving), with paired-bootstrap 95% CIs on the same resampling as section 7 (2,000, stratified by benchmark, seed 0). Also P − fixed-3 and Q − fixed-3. B is fixed (not re-selected in resamples). |
+| Mandatory reporting | Per-benchmark saving and loss for P, Q, B, fixed-3 and the shuffled control, under the macro constraint and under the per-benchmark cap. |
+| Not allowed | Retuning any threshold or depth on confirmation. B is not added to the comparator in section 7 (the original verdict is unchanged); B outperforming P or Q does not alter the original verdict, it is reported next to it. |
+
+**Interpretation limits (stated in advance).** B uses benchmark identity, so it is a task-aware control, not a deployable policy. B was chosen among 1,024 vectors on the same validation set that estimates its accuracy, so its validation numbers are optimistic; the confirmation set is the unbiased check. The macro loss budget lets OpenBookQA gains (100 validation questions) offset losses elsewhere (validation: HellaSwag 3.19 pp for P, 1.99 pp for Q); the per-benchmark table makes this visible. The audit shows Q carries within-benchmark predictive information about S_t (AUROC up to about 0.94 on CSQA); the narrower finding is that the learned stopping policies did not show an improvement over benchmark-specific fixed depth on validation.
+
 ## 8. What is not allowed
 - No confirmation outcome is read before the selections in sections 5-6 are committed.
 - No new probe families, features or thresholds after confirmation.
@@ -120,8 +137,10 @@ The 0.03 margin is a project-specific practical-significance criterion, not a st
 1. Plan v3 committed (reviewer conditional approval, amendments A/B and the engineering freeze applied).
 2. Confirmation-set preparation and contamination audit (section 3a; CPU, laptop). The manifest and audit are committed. Then extract plus verify (GPU, about 1 h). The outcomes are written but not analysed.
 3. Probe data loader, training, controls and validation selection (laptop; minutes per model). Frozen and committed.
-4. One-time guarded confirmation run, then `docs/GATE2_REPORT.md`.
+4. Amendment v3.1 (section 7b): control audit and B frozen (`baseline_B_frozen.json`) before confirmation.
+5. Implementation review by the reviewer, then a guarded one-time confirmation run (explicit flag, refuses rerun, reads only the frozen files, records their hashes), then `docs/GATE2_REPORT.md`.
 
 ## Change log
+- v3.1 (amendment, after validation, before any confirmation outcome): section 7b adds the benchmark-specific fixed-depth control B, pooled fixed-3, and the per-benchmark-cap sensitivity. Sections 5-7 and the e65eba1 selection are unchanged. Training and validation selection ran before the reviewer signed off the implementation (recorded protocol deviation in DECISIONS).
 - v1 draft (88ce902). v2 (e7ca404): fresh confirmation set and the loss-budget comparison.
 - v3: on reviewer review, (A) primary verdict uses validation-frozen operating points, and the confirmation-optimised frontier is retrospective only; (B) the PASS/PARTIAL/FAIL table is made exhaustive, with "not demonstrated" wording; contamination audit specified (3a); training seeds, grids, early-stopping split and tie-breaks frozen (section 5); measured vs estimated overhead separated.
