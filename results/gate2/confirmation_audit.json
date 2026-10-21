@@ -1,0 +1,2049 @@
+{
+  "limit": null,
+  "salt": "lh-confirm-v1",
+  "benchmarks": {
+    "arc_challenge": {
+      "phase1": {
+        "rebuild_question_set_sha256": "c6653ea67830f45fcd49934a86f5cecff0323e893dee1405f3b392442aac8e86",
+        "manifest_question_set_sha256": "c6653ea67830f45fcd49934a86f5cecff0323e893dee1405f3b392442aac8e86",
+        "hash_matches": true,
+        "n_questions": 1172,
+        "n_exemplar_draws_inserted": 29300,
+        "n_exemplar_docs_inserted": 1119,
+        "n_exemplar_docs_superset": 1119,
+        "verbatim_checked_against": "stored data/questions",
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0
+      },
+      "confirmation": {
+        "split": "validation",
+        "pool_size": 299,
+        "n_excluded_id": 0,
+        "n_excluded_text": 0,
+        "excluded_id": [],
+        "excluded_text": [],
+        "n_internal_duplicates": 0,
+        "n_excluded_id_listed": 0,
+        "n_excluded_text_listed": 0,
+        "n_native_id_collisions": 0,
+        "n_eligible": 299,
+        "n_requested": null,
+        "n_taken": 299,
+        "self_exemplar_violations": [],
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0,
+        "expected_pool": 299
+      }
+    },
+    "arc_easy": {
+      "phase1": {
+        "rebuild_question_set_sha256": "df988c4dab1c9c503998f3420b06e7f51c607577439ac6859e22ebd084fc4b98",
+        "manifest_question_set_sha256": "df988c4dab1c9c503998f3420b06e7f51c607577439ac6859e22ebd084fc4b98",
+        "hash_matches": true,
+        "n_questions": 2376,
+        "n_exemplar_draws_inserted": 19008,
+        "n_exemplar_docs_inserted": 2251,
+        "n_exemplar_docs_superset": 2251,
+        "verbatim_checked_against": "stored data/questions",
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0
+      },
+      "confirmation": {
+        "split": "validation",
+        "pool_size": 570,
+        "n_excluded_id": 0,
+        "n_excluded_text": 0,
+        "excluded_id": [],
+        "excluded_text": [],
+        "n_internal_duplicates": 0,
+        "n_excluded_id_listed": 0,
+        "n_excluded_text_listed": 0,
+        "n_native_id_collisions": 0,
+        "n_eligible": 570,
+        "n_requested": null,
+        "n_taken": 570,
+        "self_exemplar_violations": [],
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0,
+        "expected_pool": 570
+      }
+    },
+    "hellaswag": {
+      "phase1": {
+        "rebuild_question_set_sha256": "496d688a49427d9b719ef6b9164fdcfb75257a2f2dff1e9c49cebc1811951bb0",
+        "manifest_question_set_sha256": "496d688a49427d9b719ef6b9164fdcfb75257a2f2dff1e9c49cebc1811951bb0",
+        "hash_matches": true,
+        "n_questions": 10042,
+        "n_exemplar_draws_inserted": 100420,
+        "n_exemplar_docs_inserted": 36713,
+        "n_exemplar_docs_superset": 37409,
+        "verbatim_checked_against": "stored data/questions",
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0
+      },
+      "confirmation": {
+        "split": "train",
+        "pool_size": 39905,
+        "n_excluded_id": 38229,
+        "n_excluded_text": 37409,
+        "excluded_id": [
+          {
+            "item": "hellaswag/train:4",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2498",
+              "hellaswag exemplar of hellaswag/2498",
+              "hellaswag exemplar of hellaswag/4076"
+            ]
+          },
+          {
+            "item": "hellaswag/train:8",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4743",
+              "hellaswag exemplar of hellaswag/4743",
+              "hellaswag exemplar of hellaswag/5512"
+            ]
+          },
+          {
+            "item": "hellaswag/train:9",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/305",
+              "hellaswag exemplar of hellaswag/305",
+              "hellaswag exemplar of hellaswag/2133"
+            ]
+          },
+          {
+            "item": "hellaswag/train:12",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3451",
+              "hellaswag exemplar of hellaswag/3451",
+              "hellaswag exemplar of hellaswag/3616"
+            ]
+          },
+          {
+            "item": "hellaswag/train:29",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1119",
+              "hellaswag exemplar of hellaswag/1119",
+              "hellaswag exemplar of hellaswag/3603"
+            ]
+          },
+          {
+            "item": "hellaswag/train:30",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2802",
+              "hellaswag exemplar of hellaswag/2802",
+              "hellaswag exemplar of hellaswag/5943"
+            ]
+          },
+          {
+            "item": "hellaswag/train:32",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/569",
+              "hellaswag exemplar of hellaswag/569",
+              "hellaswag exemplar of hellaswag/3080"
+            ]
+          },
+          {
+            "item": "hellaswag/train:33",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3738",
+              "hellaswag exemplar of hellaswag/3738",
+              "hellaswag exemplar of hellaswag/6433"
+            ]
+          },
+          {
+            "item": "hellaswag/train:34",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3949",
+              "hellaswag exemplar of hellaswag/3949",
+              "hellaswag exemplar of hellaswag/4923"
+            ]
+          },
+          {
+            "item": "hellaswag/train:35",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1560",
+              "hellaswag exemplar of hellaswag/1560",
+              "hellaswag exemplar of hellaswag/6010"
+            ]
+          },
+          {
+            "item": "hellaswag/train:37",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/8945",
+              "hellaswag exemplar of hellaswag/8945"
+            ]
+          },
+          {
+            "item": "hellaswag/train:38",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1737",
+              "hellaswag exemplar of hellaswag/4086",
+              "hellaswag exemplar of hellaswag/4086"
+            ]
+          },
+          {
+            "item": "hellaswag/train:39",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/161",
+              "hellaswag exemplar of hellaswag/161",
+              "hellaswag exemplar of hellaswag/1776"
+            ]
+          },
+          {
+            "item": "hellaswag/train:40",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/90",
+              "hellaswag exemplar of hellaswag/90",
+              "hellaswag exemplar of hellaswag/1436"
+            ]
+          },
+          {
+            "item": "hellaswag/train:41",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/369",
+              "hellaswag exemplar of hellaswag/369",
+              "hellaswag exemplar of hellaswag/1098"
+            ]
+          },
+          {
+            "item": "hellaswag/train:44",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/113",
+              "hellaswag exemplar of hellaswag/113",
+              "hellaswag exemplar of hellaswag/3723"
+            ]
+          },
+          {
+            "item": "hellaswag/train:45",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1126",
+              "hellaswag exemplar of hellaswag/1126",
+              "hellaswag exemplar of hellaswag/2999"
+            ]
+          },
+          {
+            "item": "hellaswag/train:47",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3641",
+              "hellaswag exemplar of hellaswag/4670",
+              "hellaswag exemplar of hellaswag/4670"
+            ]
+          },
+          {
+            "item": "hellaswag/train:50",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2699",
+              "hellaswag exemplar of hellaswag/5681",
+              "hellaswag exemplar of hellaswag/5681"
+            ]
+          },
+          {
+            "item": "hellaswag/train:51",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/760",
+              "hellaswag exemplar of hellaswag/760",
+              "hellaswag exemplar of hellaswag/2871"
+            ]
+          },
+          {
+            "item": "hellaswag/train:52",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3450",
+              "hellaswag exemplar of hellaswag/3450",
+              "hellaswag exemplar of hellaswag/3978"
+            ]
+          },
+          {
+            "item": "hellaswag/train:53",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1492",
+              "hellaswag exemplar of hellaswag/1492",
+              "hellaswag exemplar of hellaswag/7401"
+            ]
+          },
+          {
+            "item": "hellaswag/train:54",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2548",
+              "hellaswag exemplar of hellaswag/2548",
+              "hellaswag exemplar of hellaswag/4144"
+            ]
+          },
+          {
+            "item": "hellaswag/train:56",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3069",
+              "hellaswag exemplar of hellaswag/3069"
+            ]
+          },
+          {
+            "item": "hellaswag/train:60",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/7443",
+              "hellaswag exemplar of hellaswag/7443",
+              "hellaswag exemplar of hellaswag/8709"
+            ]
+          },
+          {
+            "item": "hellaswag/train:61",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3743",
+              "hellaswag exemplar of hellaswag/3743",
+              "hellaswag exemplar of hellaswag/4681"
+            ]
+          },
+          {
+            "item": "hellaswag/train:62",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1337",
+              "hellaswag exemplar of hellaswag/2839",
+              "hellaswag exemplar of hellaswag/2839"
+            ]
+          },
+          {
+            "item": "hellaswag/train:63",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4544",
+              "hellaswag exemplar of hellaswag/4544",
+              "hellaswag exemplar of hellaswag/5497"
+            ]
+          },
+          {
+            "item": "hellaswag/train:66",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2880",
+              "hellaswag exemplar of hellaswag/2880",
+              "hellaswag exemplar of hellaswag/9823"
+            ]
+          },
+          {
+            "item": "hellaswag/train:67",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/314",
+              "hellaswag exemplar of hellaswag/314",
+              "hellaswag exemplar of hellaswag/2616"
+            ]
+          },
+          {
+            "item": "hellaswag/train:68",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1338",
+              "hellaswag exemplar of hellaswag/1338",
+              "hellaswag exemplar of hellaswag/1901"
+            ]
+          },
+          {
+            "item": "hellaswag/train:69",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/853",
+              "hellaswag exemplar of hellaswag/853",
+              "hellaswag exemplar of hellaswag/1137"
+            ]
+          },
+          {
+            "item": "hellaswag/train:87",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4867",
+              "hellaswag exemplar of hellaswag/4867"
+            ]
+          },
+          {
+            "item": "hellaswag/train:89",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/325",
+              "hellaswag exemplar of hellaswag/325",
+              "hellaswag exemplar of hellaswag/3237"
+            ]
+          },
+          {
+            "item": "hellaswag/train:94",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2836",
+              "hellaswag exemplar of hellaswag/2836",
+              "hellaswag exemplar of hellaswag/4320"
+            ]
+          },
+          {
+            "item": "hellaswag/train:95",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1512",
+              "hellaswag exemplar of hellaswag/1512",
+              "hellaswag exemplar of hellaswag/3183"
+            ]
+          },
+          {
+            "item": "hellaswag/train:96",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/963",
+              "hellaswag exemplar of hellaswag/963",
+              "hellaswag exemplar of hellaswag/3927"
+            ]
+          },
+          {
+            "item": "hellaswag/train:97",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2889",
+              "hellaswag exemplar of hellaswag/2889",
+              "hellaswag exemplar of hellaswag/9255"
+            ]
+          },
+          {
+            "item": "hellaswag/train:100",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1996",
+              "hellaswag exemplar of hellaswag/1996",
+              "hellaswag exemplar of hellaswag/4831"
+            ]
+          },
+          {
+            "item": "hellaswag/train:102",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1836",
+              "hellaswag exemplar of hellaswag/1836",
+              "hellaswag exemplar of hellaswag/8404"
+            ]
+          },
+          {
+            "item": "hellaswag/train:105",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/184",
+              "hellaswag exemplar of hellaswag/2435",
+              "hellaswag exemplar of hellaswag/2435"
+            ]
+          },
+          {
+            "item": "hellaswag/train:109",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2950",
+              "hellaswag exemplar of hellaswag/2950",
+              "hellaswag exemplar of hellaswag/4402"
+            ]
+          },
+          {
+            "item": "hellaswag/train:111",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3233",
+              "hellaswag exemplar of hellaswag/3233",
+              "hellaswag exemplar of hellaswag/3459"
+            ]
+          },
+          {
+            "item": "hellaswag/train:123",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/575",
+              "hellaswag exemplar of hellaswag/575",
+              "hellaswag exemplar of hellaswag/1201"
+            ]
+          },
+          {
+            "item": "hellaswag/train:126",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4371",
+              "hellaswag exemplar of hellaswag/4371",
+              "hellaswag exemplar of hellaswag/9592"
+            ]
+          },
+          {
+            "item": "hellaswag/train:129",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/547",
+              "hellaswag exemplar of hellaswag/547",
+              "hellaswag exemplar of hellaswag/1480"
+            ]
+          },
+          {
+            "item": "hellaswag/train:135",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/599",
+              "hellaswag exemplar of hellaswag/599",
+              "hellaswag exemplar of hellaswag/3594"
+            ]
+          },
+          {
+            "item": "hellaswag/train:136",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/572",
+              "hellaswag exemplar of hellaswag/1020",
+              "hellaswag exemplar of hellaswag/1020"
+            ]
+          },
+          {
+            "item": "hellaswag/train:137",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4863",
+              "hellaswag exemplar of hellaswag/4863",
+              "hellaswag exemplar of hellaswag/8933"
+            ]
+          },
+          {
+            "item": "hellaswag/train:144",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1195",
+              "hellaswag exemplar of hellaswag/1195",
+              "hellaswag exemplar of hellaswag/3206"
+            ]
+          }
+        ],
+        "excluded_text": [
+          {
+            "item": "hellaswag/train:4",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2498",
+              "hellaswag exemplar of hellaswag/2498"
+            ]
+          },
+          {
+            "item": "hellaswag/train:8",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4743",
+              "hellaswag exemplar of hellaswag/4743",
+              "hellaswag exemplar of hellaswag/5512"
+            ]
+          },
+          {
+            "item": "hellaswag/train:9",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/305",
+              "hellaswag exemplar of hellaswag/305",
+              "hellaswag exemplar of hellaswag/7449"
+            ]
+          },
+          {
+            "item": "hellaswag/train:12",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3819",
+              "hellaswag exemplar of hellaswag/3819",
+              "hellaswag exemplar of hellaswag/3927"
+            ]
+          },
+          {
+            "item": "hellaswag/train:29",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1119",
+              "hellaswag exemplar of hellaswag/1119",
+              "hellaswag exemplar of hellaswag/3603"
+            ]
+          },
+          {
+            "item": "hellaswag/train:30",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2802",
+              "hellaswag exemplar of hellaswag/2802",
+              "hellaswag exemplar of hellaswag/5943"
+            ]
+          },
+          {
+            "item": "hellaswag/train:32",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/569",
+              "hellaswag exemplar of hellaswag/569",
+              "hellaswag exemplar of hellaswag/3080"
+            ]
+          },
+          {
+            "item": "hellaswag/train:33",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3738",
+              "hellaswag exemplar of hellaswag/3738",
+              "hellaswag exemplar of hellaswag/6433"
+            ]
+          },
+          {
+            "item": "hellaswag/train:34",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3949",
+              "hellaswag exemplar of hellaswag/3949",
+              "hellaswag exemplar of hellaswag/4923"
+            ]
+          },
+          {
+            "item": "hellaswag/train:35",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1560",
+              "hellaswag exemplar of hellaswag/1560",
+              "hellaswag exemplar of hellaswag/6010"
+            ]
+          },
+          {
+            "item": "hellaswag/train:37",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/8945",
+              "hellaswag exemplar of hellaswag/8945"
+            ]
+          },
+          {
+            "item": "hellaswag/train:38",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1737",
+              "hellaswag exemplar of hellaswag/4196",
+              "hellaswag exemplar of hellaswag/4196"
+            ]
+          },
+          {
+            "item": "hellaswag/train:39",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/161",
+              "hellaswag exemplar of hellaswag/161",
+              "hellaswag exemplar of hellaswag/1776"
+            ]
+          },
+          {
+            "item": "hellaswag/train:40",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/90",
+              "hellaswag exemplar of hellaswag/90",
+              "hellaswag exemplar of hellaswag/1436"
+            ]
+          },
+          {
+            "item": "hellaswag/train:41",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1098",
+              "hellaswag exemplar of hellaswag/1098",
+              "hellaswag exemplar of hellaswag/5270"
+            ]
+          },
+          {
+            "item": "hellaswag/train:44",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3723",
+              "hellaswag exemplar of hellaswag/3723",
+              "hellaswag exemplar of hellaswag/7051"
+            ]
+          },
+          {
+            "item": "hellaswag/train:45",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1126",
+              "hellaswag exemplar of hellaswag/1126",
+              "hellaswag exemplar of hellaswag/2999"
+            ]
+          },
+          {
+            "item": "hellaswag/train:47",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3641",
+              "hellaswag exemplar of hellaswag/4670",
+              "hellaswag exemplar of hellaswag/4670"
+            ]
+          },
+          {
+            "item": "hellaswag/train:50",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2699",
+              "hellaswag exemplar of hellaswag/5681",
+              "hellaswag exemplar of hellaswag/5681"
+            ]
+          },
+          {
+            "item": "hellaswag/train:51",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/760",
+              "hellaswag exemplar of hellaswag/760",
+              "hellaswag exemplar of hellaswag/2871"
+            ]
+          },
+          {
+            "item": "hellaswag/train:52",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3450",
+              "hellaswag exemplar of hellaswag/3450",
+              "hellaswag exemplar of hellaswag/4746"
+            ]
+          },
+          {
+            "item": "hellaswag/train:53",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1492",
+              "hellaswag exemplar of hellaswag/1492",
+              "hellaswag exemplar of hellaswag/7401"
+            ]
+          },
+          {
+            "item": "hellaswag/train:54",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2548",
+              "hellaswag exemplar of hellaswag/2548",
+              "hellaswag exemplar of hellaswag/4144"
+            ]
+          },
+          {
+            "item": "hellaswag/train:56",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3069",
+              "hellaswag exemplar of hellaswag/3069"
+            ]
+          },
+          {
+            "item": "hellaswag/train:60",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/7443",
+              "hellaswag exemplar of hellaswag/7443",
+              "hellaswag exemplar of hellaswag/8709"
+            ]
+          },
+          {
+            "item": "hellaswag/train:61",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3743",
+              "hellaswag exemplar of hellaswag/3743",
+              "hellaswag exemplar of hellaswag/4681"
+            ]
+          },
+          {
+            "item": "hellaswag/train:62",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1337",
+              "hellaswag exemplar of hellaswag/6702",
+              "hellaswag exemplar of hellaswag/6702"
+            ]
+          },
+          {
+            "item": "hellaswag/train:63",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/6722",
+              "hellaswag exemplar of hellaswag/6722",
+              "hellaswag exemplar of hellaswag/8366"
+            ]
+          },
+          {
+            "item": "hellaswag/train:66",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2880",
+              "hellaswag exemplar of hellaswag/2880",
+              "hellaswag exemplar of hellaswag/9823"
+            ]
+          },
+          {
+            "item": "hellaswag/train:67",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2635",
+              "hellaswag exemplar of hellaswag/2635",
+              "hellaswag exemplar of hellaswag/8168"
+            ]
+          },
+          {
+            "item": "hellaswag/train:68",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1338",
+              "hellaswag exemplar of hellaswag/1338"
+            ]
+          },
+          {
+            "item": "hellaswag/train:69",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/853",
+              "hellaswag exemplar of hellaswag/853",
+              "hellaswag exemplar of hellaswag/1137"
+            ]
+          },
+          {
+            "item": "hellaswag/train:87",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4867",
+              "hellaswag exemplar of hellaswag/4867"
+            ]
+          },
+          {
+            "item": "hellaswag/train:89",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/325",
+              "hellaswag exemplar of hellaswag/325",
+              "hellaswag exemplar of hellaswag/3237"
+            ]
+          },
+          {
+            "item": "hellaswag/train:94",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4320",
+              "hellaswag exemplar of hellaswag/4896",
+              "hellaswag exemplar of hellaswag/4896"
+            ]
+          },
+          {
+            "item": "hellaswag/train:95",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1512",
+              "hellaswag exemplar of hellaswag/1512",
+              "hellaswag exemplar of hellaswag/3183"
+            ]
+          },
+          {
+            "item": "hellaswag/train:96",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/963",
+              "hellaswag exemplar of hellaswag/963",
+              "hellaswag exemplar of hellaswag/9925"
+            ]
+          },
+          {
+            "item": "hellaswag/train:97",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/2889",
+              "hellaswag exemplar of hellaswag/2889",
+              "hellaswag exemplar of hellaswag/9255"
+            ]
+          },
+          {
+            "item": "hellaswag/train:100",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1996",
+              "hellaswag exemplar of hellaswag/1996",
+              "hellaswag exemplar of hellaswag/4831"
+            ]
+          },
+          {
+            "item": "hellaswag/train:102",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1836",
+              "hellaswag exemplar of hellaswag/1836",
+              "hellaswag exemplar of hellaswag/8404"
+            ]
+          },
+          {
+            "item": "hellaswag/train:105",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/184",
+              "hellaswag exemplar of hellaswag/2435",
+              "hellaswag exemplar of hellaswag/2435"
+            ]
+          },
+          {
+            "item": "hellaswag/train:109",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4402",
+              "hellaswag exemplar of hellaswag/4402",
+              "hellaswag exemplar of hellaswag/4704"
+            ]
+          },
+          {
+            "item": "hellaswag/train:111",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/3233",
+              "hellaswag exemplar of hellaswag/3233",
+              "hellaswag exemplar of hellaswag/3459"
+            ]
+          },
+          {
+            "item": "hellaswag/train:123",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/575",
+              "hellaswag exemplar of hellaswag/575",
+              "hellaswag exemplar of hellaswag/7815"
+            ]
+          },
+          {
+            "item": "hellaswag/train:129",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/547",
+              "hellaswag exemplar of hellaswag/547",
+              "hellaswag exemplar of hellaswag/1480"
+            ]
+          },
+          {
+            "item": "hellaswag/train:135",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/599",
+              "hellaswag exemplar of hellaswag/599",
+              "hellaswag exemplar of hellaswag/5051"
+            ]
+          },
+          {
+            "item": "hellaswag/train:136",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/572",
+              "hellaswag exemplar of hellaswag/3347",
+              "hellaswag exemplar of hellaswag/3347"
+            ]
+          },
+          {
+            "item": "hellaswag/train:137",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/4863",
+              "hellaswag exemplar of hellaswag/4863",
+              "hellaswag exemplar of hellaswag/8933"
+            ]
+          },
+          {
+            "item": "hellaswag/train:144",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/1195",
+              "hellaswag exemplar of hellaswag/1195",
+              "hellaswag exemplar of hellaswag/3206"
+            ]
+          },
+          {
+            "item": "hellaswag/train:145",
+            "phase1": [
+              "hellaswag exemplar of hellaswag/5940",
+              "hellaswag exemplar of hellaswag/5940",
+              "hellaswag exemplar of hellaswag/6116"
+            ]
+          }
+        ],
+        "n_internal_duplicates": 0,
+        "n_excluded_id_listed": 50,
+        "n_excluded_text_listed": 50,
+        "n_native_id_collisions": 76,
+        "n_eligible": 1676,
+        "n_requested": 1000,
+        "n_taken": 1000,
+        "self_exemplar_violations": [],
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0,
+        "expected_pool": 39905
+      }
+    },
+    "mmlu": {
+      "phase1": {
+        "rebuild_question_set_sha256": "b8966dde63ab381ce908791ac6b98492ea5a538f0a1cb293ed071bf315fb4765",
+        "manifest_question_set_sha256": "b8966dde63ab381ce908791ac6b98492ea5a538f0a1cb293ed071bf315fb4765",
+        "hash_matches": true,
+        "n_questions": 14042,
+        "n_exemplar_draws_inserted": 70210,
+        "n_exemplar_docs_inserted": 285,
+        "n_exemplar_docs_superset": 285,
+        "verbatim_checked_against": "stored data/questions",
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0
+      },
+      "confirmation": {
+        "split": "validation",
+        "pool_size": 1531,
+        "n_excluded_id": 0,
+        "n_excluded_text": 29,
+        "excluded_id": [],
+        "excluded_text": [
+          {
+            "item": "mmlu_clinical_knowledge/f4e38f350e4fb90c",
+            "phase1": [
+              "mmlu eval mmlu_college_medicine/110"
+            ]
+          },
+          {
+            "item": "mmlu_clinical_knowledge/90ff525e55b585af",
+            "phase1": [
+              "mmlu eval mmlu_college_medicine/156"
+            ]
+          },
+          {
+            "item": "mmlu_clinical_knowledge/94767e302d645c68",
+            "phase1": [
+              "mmlu eval mmlu_college_medicine/153"
+            ]
+          },
+          {
+            "item": "mmlu_clinical_knowledge/349dad79923af2bd",
+            "phase1": [
+              "mmlu eval mmlu_college_medicine/1"
+            ]
+          },
+          {
+            "item": "mmlu_clinical_knowledge/ef93ba702320598c",
+            "phase1": [
+              "mmlu eval mmlu_college_medicine/56"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/6cd54873cb585e69",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/185"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/b7639cd40b22ab08",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/231"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/38fcee41d1004947",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/154"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/99f1908c97f99746",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/72"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/4aa4f5190918ec4b",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/14"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/a6e810b03f141cdb",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/123"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/fdaf202e3fb2fde1",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/114"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/7793d338763f45d1",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/261"
+            ]
+          },
+          {
+            "item": "mmlu_college_medicine/834ffa7f13461ff6",
+            "phase1": [
+              "mmlu eval mmlu_clinical_knowledge/45"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/8742dbc2481c176b",
+            "phase1": [
+              "mmlu eval mmlu_college_physics/20"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/2d3b29cb736c61bb",
+            "phase1": [
+              "mmlu eval mmlu_college_physics/55"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/b8553b8e24f9f192",
+            "phase1": [
+              "mmlu eval mmlu_college_physics/49"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/19b9b0e3e91b3f82",
+            "phase1": [
+              "mmlu eval mmlu_college_physics/50"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/ec215375b167bc35",
+            "phase1": [
+              "mmlu eval mmlu_college_physics/61"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/8e14cc19afd8d0fd",
+            "phase1": [
+              "mmlu exemplar of mmlu_college_physics/0",
+              "mmlu exemplar of mmlu_college_physics/0",
+              "mmlu exemplar of mmlu_college_physics/1"
+            ]
+          },
+          {
+            "item": "mmlu_college_physics/f65ca6c330528b6b",
+            "phase1": [
+              "mmlu eval mmlu_college_physics/71"
+            ]
+          },
+          {
+            "item": "mmlu_high_school_psychology/85ba710f4f5633cc",
+            "phase1": [
+              "mmlu eval mmlu_high_school_psychology/259"
+            ]
+          },
+          {
+            "item": "mmlu_miscellaneous/0defe757380db09e",
+            "phase1": [
+              "mmlu eval mmlu_miscellaneous/401"
+            ]
+          },
+          {
+            "item": "mmlu_professional_psychology/476a407062f722b7",
+            "phase1": [
+              "mmlu eval mmlu_professional_psychology/586"
+            ]
+          },
+          {
+            "item": "mmlu_professional_psychology/ffe2dc12f6ba11d9",
+            "phase1": [
+              "mmlu eval mmlu_professional_psychology/18"
+            ]
+          },
+          {
+            "item": "mmlu_professional_psychology/52f1cb45e8d50bc8",
+            "phase1": [
+              "mmlu eval mmlu_professional_psychology/275"
+            ]
+          },
+          {
+            "item": "mmlu_professional_psychology/ebf75a5c2850e9f1",
+            "phase1": [
+              "mmlu eval mmlu_professional_psychology/529"
+            ]
+          },
+          {
+            "item": "mmlu_public_relations/2efdbf1b440a7448",
+            "phase1": [
+              "mmlu eval mmlu_public_relations/50"
+            ]
+          },
+          {
+            "item": "mmlu_public_relations/ce0b5be56a7438a8",
+            "phase1": [
+              "mmlu eval mmlu_public_relations/55"
+            ]
+          }
+        ],
+        "n_internal_duplicates": 2,
+        "n_excluded_id_listed": 0,
+        "n_excluded_text_listed": 29,
+        "n_native_id_collisions": 0,
+        "n_eligible": 1500,
+        "n_requested": null,
+        "n_taken": 1500,
+        "self_exemplar_violations": [],
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0,
+        "expected_pool": 1531
+      }
+    },
+    "commonsense_qa": {
+      "phase1": {
+        "rebuild_question_set_sha256": "f213b63eb668f25c28dd241ed8f86e9b56376936c22d86033bbae18e65b33979",
+        "manifest_question_set_sha256": "f213b63eb668f25c28dd241ed8f86e9b56376936c22d86033bbae18e65b33979",
+        "hash_matches": true,
+        "n_questions": 1221,
+        "n_exemplar_draws_inserted": 12210,
+        "n_exemplar_docs_inserted": 6969,
+        "n_exemplar_docs_superset": 7306,
+        "verbatim_checked_against": "stored data/questions",
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0
+      },
+      "confirmation": {
+        "split": "train",
+        "pool_size": 9741,
+        "n_excluded_id": 7306,
+        "n_excluded_text": 7306,
+        "excluded_id": [
+          {
+            "item": "commonsense_qa/075e483d21c29a511267ef62bedc0461",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/298",
+              "commonsense_qa exemplar of commonsense_qa/298"
+            ]
+          },
+          {
+            "item": "commonsense_qa/61fe6e879ff18686d7552425a36344c8",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1092",
+              "commonsense_qa exemplar of commonsense_qa/1092"
+            ]
+          },
+          {
+            "item": "commonsense_qa/4c1cb0e95b99f72d55c068ba0255c54d",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/555",
+              "commonsense_qa exemplar of commonsense_qa/555"
+            ]
+          },
+          {
+            "item": "commonsense_qa/02e821a3e53cb320790950aab4489e85",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/87",
+              "commonsense_qa exemplar of commonsense_qa/87",
+              "commonsense_qa exemplar of commonsense_qa/157"
+            ]
+          },
+          {
+            "item": "commonsense_qa/23505889b94e880c3e89cff4ba119860",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1071",
+              "commonsense_qa exemplar of commonsense_qa/1071",
+              "commonsense_qa exemplar of commonsense_qa/1099"
+            ]
+          },
+          {
+            "item": "commonsense_qa/e8a8b3a2061aa0e6d7c6b522e9612824",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/741",
+              "commonsense_qa exemplar of commonsense_qa/741"
+            ]
+          },
+          {
+            "item": "commonsense_qa/86c59f14af97b33ec13edc6ec4389e31",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/832",
+              "commonsense_qa exemplar of commonsense_qa/832",
+              "commonsense_qa exemplar of commonsense_qa/1110"
+            ]
+          },
+          {
+            "item": "commonsense_qa/cae61908c731d4a20889e04c3e784ebe",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/317",
+              "commonsense_qa exemplar of commonsense_qa/317",
+              "commonsense_qa exemplar of commonsense_qa/940"
+            ]
+          },
+          {
+            "item": "commonsense_qa/1a7f5b3c65364d9be002576660c914fe",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/180",
+              "commonsense_qa exemplar of commonsense_qa/180"
+            ]
+          },
+          {
+            "item": "commonsense_qa/dac769116ed064bc70936c15eb822c3e",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/561",
+              "commonsense_qa exemplar of commonsense_qa/561"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f5c9664c9930b704f2724fbd617bee9d",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/534",
+              "commonsense_qa exemplar of commonsense_qa/534",
+              "commonsense_qa exemplar of commonsense_qa/559"
+            ]
+          },
+          {
+            "item": "commonsense_qa/b63b9809c203321d6659ddf8551894bf",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1167",
+              "commonsense_qa exemplar of commonsense_qa/1167"
+            ]
+          },
+          {
+            "item": "commonsense_qa/527e72eb38950b8031ee6217ef531960",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/303"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a76403b4921a9281b6ee2a7241a5ec9f",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/173",
+              "commonsense_qa exemplar of commonsense_qa/173"
+            ]
+          },
+          {
+            "item": "commonsense_qa/ad96098698b8378b2e79c6424920ffbd",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/311",
+              "commonsense_qa exemplar of commonsense_qa/311",
+              "commonsense_qa exemplar of commonsense_qa/472"
+            ]
+          },
+          {
+            "item": "commonsense_qa/6d4ed2c485187ed79ff3bdcc8cca6132",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/991",
+              "commonsense_qa exemplar of commonsense_qa/991"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a40f5339ee858a0a119cbac052c5a2d0",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/731",
+              "commonsense_qa exemplar of commonsense_qa/731",
+              "commonsense_qa exemplar of commonsense_qa/772"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f36489668c28b26c0cdbc56cec1db27b",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/570",
+              "commonsense_qa exemplar of commonsense_qa/570",
+              "commonsense_qa exemplar of commonsense_qa/783"
+            ]
+          },
+          {
+            "item": "commonsense_qa/0476192858e7f541611b5c2d3c5e5197",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/116",
+              "commonsense_qa exemplar of commonsense_qa/116"
+            ]
+          },
+          {
+            "item": "commonsense_qa/df7861813910ae204c3bd0b3c16fe5d9",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/510",
+              "commonsense_qa exemplar of commonsense_qa/510",
+              "commonsense_qa exemplar of commonsense_qa/1187"
+            ]
+          },
+          {
+            "item": "commonsense_qa/c12a904025471139df4f8860cc380c60",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/616",
+              "commonsense_qa exemplar of commonsense_qa/616"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a69bd1bf3c06a233d696a00d71a9db36",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/14",
+              "commonsense_qa exemplar of commonsense_qa/14",
+              "commonsense_qa exemplar of commonsense_qa/231"
+            ]
+          },
+          {
+            "item": "commonsense_qa/84e983f432647531b55b8b72c12fb78a",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1133",
+              "commonsense_qa exemplar of commonsense_qa/1133"
+            ]
+          },
+          {
+            "item": "commonsense_qa/68f123f22be7bff13875e8b752b2d933",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/798",
+              "commonsense_qa exemplar of commonsense_qa/823",
+              "commonsense_qa exemplar of commonsense_qa/823"
+            ]
+          },
+          {
+            "item": "commonsense_qa/c9580b132b323906f0d51e7dc5b4ce29",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/50",
+              "commonsense_qa exemplar of commonsense_qa/50"
+            ]
+          },
+          {
+            "item": "commonsense_qa/80930e9df9ac4ad752749a54e7fc124f",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/254",
+              "commonsense_qa exemplar of commonsense_qa/821",
+              "commonsense_qa exemplar of commonsense_qa/821"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f080ab037c1aaf689a43cc030e9d93e9",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/429",
+              "commonsense_qa exemplar of commonsense_qa/429"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a261d4eaf8b33c0730d830ebbffbd9f8",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/511",
+              "commonsense_qa exemplar of commonsense_qa/511"
+            ]
+          },
+          {
+            "item": "commonsense_qa/bfd14dedb440ae1c266c61aa22960778",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1074",
+              "commonsense_qa exemplar of commonsense_qa/1074"
+            ]
+          },
+          {
+            "item": "commonsense_qa/fb721d7949d06915a2dd6fc6ec815325",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/884",
+              "commonsense_qa exemplar of commonsense_qa/884"
+            ]
+          },
+          {
+            "item": "commonsense_qa/47db2878d917ceb8d82627de4722a254",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/18",
+              "commonsense_qa exemplar of commonsense_qa/18",
+              "commonsense_qa exemplar of commonsense_qa/1211"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f03a340e093dbd5eea88feb6507ed20e",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/282",
+              "commonsense_qa exemplar of commonsense_qa/282",
+              "commonsense_qa exemplar of commonsense_qa/727"
+            ]
+          },
+          {
+            "item": "commonsense_qa/5f6296570569960a05c47a2a79656363",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/928",
+              "commonsense_qa exemplar of commonsense_qa/928"
+            ]
+          },
+          {
+            "item": "commonsense_qa/98b176ac1c91370e079863d13c7dd964",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/644",
+              "commonsense_qa exemplar of commonsense_qa/644"
+            ]
+          },
+          {
+            "item": "commonsense_qa/b13d110147ecf24562b64a69df4fe5ad",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/278",
+              "commonsense_qa exemplar of commonsense_qa/278",
+              "commonsense_qa exemplar of commonsense_qa/508"
+            ]
+          },
+          {
+            "item": "commonsense_qa/145f1ccce9aeab854f6514f927f58288",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/990",
+              "commonsense_qa exemplar of commonsense_qa/990"
+            ]
+          },
+          {
+            "item": "commonsense_qa/c428412a660f34965772a7389ce58e0a",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/641",
+              "commonsense_qa exemplar of commonsense_qa/641",
+              "commonsense_qa exemplar of commonsense_qa/746"
+            ]
+          },
+          {
+            "item": "commonsense_qa/80f8afc17b5b5915a327240db8bc2a52",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/784",
+              "commonsense_qa exemplar of commonsense_qa/784"
+            ]
+          },
+          {
+            "item": "commonsense_qa/313b72ce5b14f3d0b86b91c7bc6497be",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/747",
+              "commonsense_qa exemplar of commonsense_qa/747"
+            ]
+          },
+          {
+            "item": "commonsense_qa/6efbe0725841b961848b6935fe67a471",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/34",
+              "commonsense_qa exemplar of commonsense_qa/34",
+              "commonsense_qa exemplar of commonsense_qa/275"
+            ]
+          },
+          {
+            "item": "commonsense_qa/4dbeeb50a01a3b5c9c76d1052c4b14ea",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/740",
+              "commonsense_qa exemplar of commonsense_qa/740"
+            ]
+          },
+          {
+            "item": "commonsense_qa/129014ff081296c3d9bbc338c5ff32db",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/268"
+            ]
+          },
+          {
+            "item": "commonsense_qa/8f495e9bcd88ce23617197520442090c",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1073",
+              "commonsense_qa exemplar of commonsense_qa/1073"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a7c9d4f6be3bb973c4ebecb1e841b3ac",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/937",
+              "commonsense_qa exemplar of commonsense_qa/937"
+            ]
+          },
+          {
+            "item": "commonsense_qa/9f84a7225b5da1e119ae54919f38ba79",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/263",
+              "commonsense_qa exemplar of commonsense_qa/405",
+              "commonsense_qa exemplar of commonsense_qa/405"
+            ]
+          },
+          {
+            "item": "commonsense_qa/70a97a0079878b3a46080d00a4e118fb",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/311",
+              "commonsense_qa exemplar of commonsense_qa/311"
+            ]
+          },
+          {
+            "item": "commonsense_qa/00dc6e53c3715d0050ffb78646cd6c7c",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/528",
+              "commonsense_qa exemplar of commonsense_qa/528",
+              "commonsense_qa exemplar of commonsense_qa/914"
+            ]
+          },
+          {
+            "item": "commonsense_qa/d829cc86312173f28b877987ae87fd7c",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/692",
+              "commonsense_qa exemplar of commonsense_qa/692"
+            ]
+          },
+          {
+            "item": "commonsense_qa/223d54ae26635218666dc05f42a469e9",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/304",
+              "commonsense_qa exemplar of commonsense_qa/346",
+              "commonsense_qa exemplar of commonsense_qa/346"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f75bb741497541837b92c4c2a113f5a4",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/176",
+              "commonsense_qa exemplar of commonsense_qa/176"
+            ]
+          }
+        ],
+        "excluded_text": [
+          {
+            "item": "commonsense_qa/075e483d21c29a511267ef62bedc0461",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/298",
+              "commonsense_qa exemplar of commonsense_qa/298"
+            ]
+          },
+          {
+            "item": "commonsense_qa/61fe6e879ff18686d7552425a36344c8",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1092",
+              "commonsense_qa exemplar of commonsense_qa/1092"
+            ]
+          },
+          {
+            "item": "commonsense_qa/4c1cb0e95b99f72d55c068ba0255c54d",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/555",
+              "commonsense_qa exemplar of commonsense_qa/555"
+            ]
+          },
+          {
+            "item": "commonsense_qa/02e821a3e53cb320790950aab4489e85",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/87",
+              "commonsense_qa exemplar of commonsense_qa/87",
+              "commonsense_qa exemplar of commonsense_qa/157"
+            ]
+          },
+          {
+            "item": "commonsense_qa/23505889b94e880c3e89cff4ba119860",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1071",
+              "commonsense_qa exemplar of commonsense_qa/1071",
+              "commonsense_qa exemplar of commonsense_qa/1099"
+            ]
+          },
+          {
+            "item": "commonsense_qa/e8a8b3a2061aa0e6d7c6b522e9612824",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/741",
+              "commonsense_qa exemplar of commonsense_qa/741"
+            ]
+          },
+          {
+            "item": "commonsense_qa/86c59f14af97b33ec13edc6ec4389e31",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/832",
+              "commonsense_qa exemplar of commonsense_qa/832",
+              "commonsense_qa exemplar of commonsense_qa/1110"
+            ]
+          },
+          {
+            "item": "commonsense_qa/cae61908c731d4a20889e04c3e784ebe",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/317",
+              "commonsense_qa exemplar of commonsense_qa/317",
+              "commonsense_qa exemplar of commonsense_qa/940"
+            ]
+          },
+          {
+            "item": "commonsense_qa/1a7f5b3c65364d9be002576660c914fe",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/180",
+              "commonsense_qa exemplar of commonsense_qa/180"
+            ]
+          },
+          {
+            "item": "commonsense_qa/dac769116ed064bc70936c15eb822c3e",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/561",
+              "commonsense_qa exemplar of commonsense_qa/561"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f5c9664c9930b704f2724fbd617bee9d",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/534",
+              "commonsense_qa exemplar of commonsense_qa/534",
+              "commonsense_qa exemplar of commonsense_qa/559"
+            ]
+          },
+          {
+            "item": "commonsense_qa/b63b9809c203321d6659ddf8551894bf",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1167",
+              "commonsense_qa exemplar of commonsense_qa/1167"
+            ]
+          },
+          {
+            "item": "commonsense_qa/527e72eb38950b8031ee6217ef531960",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/303"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a76403b4921a9281b6ee2a7241a5ec9f",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/173",
+              "commonsense_qa exemplar of commonsense_qa/173"
+            ]
+          },
+          {
+            "item": "commonsense_qa/ad96098698b8378b2e79c6424920ffbd",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/311",
+              "commonsense_qa exemplar of commonsense_qa/311",
+              "commonsense_qa exemplar of commonsense_qa/472"
+            ]
+          },
+          {
+            "item": "commonsense_qa/6d4ed2c485187ed79ff3bdcc8cca6132",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/991",
+              "commonsense_qa exemplar of commonsense_qa/991"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a40f5339ee858a0a119cbac052c5a2d0",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/731",
+              "commonsense_qa exemplar of commonsense_qa/731",
+              "commonsense_qa exemplar of commonsense_qa/772"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f36489668c28b26c0cdbc56cec1db27b",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/570",
+              "commonsense_qa exemplar of commonsense_qa/570",
+              "commonsense_qa exemplar of commonsense_qa/783"
+            ]
+          },
+          {
+            "item": "commonsense_qa/0476192858e7f541611b5c2d3c5e5197",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/116",
+              "commonsense_qa exemplar of commonsense_qa/116"
+            ]
+          },
+          {
+            "item": "commonsense_qa/df7861813910ae204c3bd0b3c16fe5d9",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/510",
+              "commonsense_qa exemplar of commonsense_qa/510",
+              "commonsense_qa exemplar of commonsense_qa/1187"
+            ]
+          },
+          {
+            "item": "commonsense_qa/c12a904025471139df4f8860cc380c60",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/616",
+              "commonsense_qa exemplar of commonsense_qa/616"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a69bd1bf3c06a233d696a00d71a9db36",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/14",
+              "commonsense_qa exemplar of commonsense_qa/14",
+              "commonsense_qa exemplar of commonsense_qa/231"
+            ]
+          },
+          {
+            "item": "commonsense_qa/84e983f432647531b55b8b72c12fb78a",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1133",
+              "commonsense_qa exemplar of commonsense_qa/1133"
+            ]
+          },
+          {
+            "item": "commonsense_qa/68f123f22be7bff13875e8b752b2d933",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/798",
+              "commonsense_qa exemplar of commonsense_qa/823",
+              "commonsense_qa exemplar of commonsense_qa/823"
+            ]
+          },
+          {
+            "item": "commonsense_qa/c9580b132b323906f0d51e7dc5b4ce29",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/50",
+              "commonsense_qa exemplar of commonsense_qa/50"
+            ]
+          },
+          {
+            "item": "commonsense_qa/80930e9df9ac4ad752749a54e7fc124f",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/254",
+              "commonsense_qa exemplar of commonsense_qa/821",
+              "commonsense_qa exemplar of commonsense_qa/821"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f080ab037c1aaf689a43cc030e9d93e9",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/429",
+              "commonsense_qa exemplar of commonsense_qa/429"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a261d4eaf8b33c0730d830ebbffbd9f8",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/511",
+              "commonsense_qa exemplar of commonsense_qa/511"
+            ]
+          },
+          {
+            "item": "commonsense_qa/bfd14dedb440ae1c266c61aa22960778",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1074",
+              "commonsense_qa exemplar of commonsense_qa/1074"
+            ]
+          },
+          {
+            "item": "commonsense_qa/fb721d7949d06915a2dd6fc6ec815325",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/884",
+              "commonsense_qa exemplar of commonsense_qa/884"
+            ]
+          },
+          {
+            "item": "commonsense_qa/47db2878d917ceb8d82627de4722a254",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/18",
+              "commonsense_qa exemplar of commonsense_qa/18",
+              "commonsense_qa exemplar of commonsense_qa/1211"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f03a340e093dbd5eea88feb6507ed20e",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/282",
+              "commonsense_qa exemplar of commonsense_qa/282",
+              "commonsense_qa exemplar of commonsense_qa/727"
+            ]
+          },
+          {
+            "item": "commonsense_qa/5f6296570569960a05c47a2a79656363",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/928",
+              "commonsense_qa exemplar of commonsense_qa/928"
+            ]
+          },
+          {
+            "item": "commonsense_qa/98b176ac1c91370e079863d13c7dd964",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/644",
+              "commonsense_qa exemplar of commonsense_qa/644"
+            ]
+          },
+          {
+            "item": "commonsense_qa/b13d110147ecf24562b64a69df4fe5ad",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/278",
+              "commonsense_qa exemplar of commonsense_qa/278",
+              "commonsense_qa exemplar of commonsense_qa/508"
+            ]
+          },
+          {
+            "item": "commonsense_qa/145f1ccce9aeab854f6514f927f58288",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/990",
+              "commonsense_qa exemplar of commonsense_qa/990"
+            ]
+          },
+          {
+            "item": "commonsense_qa/c428412a660f34965772a7389ce58e0a",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/641",
+              "commonsense_qa exemplar of commonsense_qa/641",
+              "commonsense_qa exemplar of commonsense_qa/746"
+            ]
+          },
+          {
+            "item": "commonsense_qa/80f8afc17b5b5915a327240db8bc2a52",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/784",
+              "commonsense_qa exemplar of commonsense_qa/784"
+            ]
+          },
+          {
+            "item": "commonsense_qa/313b72ce5b14f3d0b86b91c7bc6497be",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/747",
+              "commonsense_qa exemplar of commonsense_qa/747"
+            ]
+          },
+          {
+            "item": "commonsense_qa/6efbe0725841b961848b6935fe67a471",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/34",
+              "commonsense_qa exemplar of commonsense_qa/34",
+              "commonsense_qa exemplar of commonsense_qa/275"
+            ]
+          },
+          {
+            "item": "commonsense_qa/4dbeeb50a01a3b5c9c76d1052c4b14ea",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/740",
+              "commonsense_qa exemplar of commonsense_qa/740"
+            ]
+          },
+          {
+            "item": "commonsense_qa/129014ff081296c3d9bbc338c5ff32db",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/268"
+            ]
+          },
+          {
+            "item": "commonsense_qa/8f495e9bcd88ce23617197520442090c",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/1073",
+              "commonsense_qa exemplar of commonsense_qa/1073"
+            ]
+          },
+          {
+            "item": "commonsense_qa/a7c9d4f6be3bb973c4ebecb1e841b3ac",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/937",
+              "commonsense_qa exemplar of commonsense_qa/937"
+            ]
+          },
+          {
+            "item": "commonsense_qa/9f84a7225b5da1e119ae54919f38ba79",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/263",
+              "commonsense_qa exemplar of commonsense_qa/405",
+              "commonsense_qa exemplar of commonsense_qa/405"
+            ]
+          },
+          {
+            "item": "commonsense_qa/70a97a0079878b3a46080d00a4e118fb",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/311",
+              "commonsense_qa exemplar of commonsense_qa/311"
+            ]
+          },
+          {
+            "item": "commonsense_qa/00dc6e53c3715d0050ffb78646cd6c7c",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/528",
+              "commonsense_qa exemplar of commonsense_qa/528",
+              "commonsense_qa exemplar of commonsense_qa/914"
+            ]
+          },
+          {
+            "item": "commonsense_qa/d829cc86312173f28b877987ae87fd7c",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/692",
+              "commonsense_qa exemplar of commonsense_qa/692"
+            ]
+          },
+          {
+            "item": "commonsense_qa/223d54ae26635218666dc05f42a469e9",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/304",
+              "commonsense_qa exemplar of commonsense_qa/346",
+              "commonsense_qa exemplar of commonsense_qa/346"
+            ]
+          },
+          {
+            "item": "commonsense_qa/f75bb741497541837b92c4c2a113f5a4",
+            "phase1": [
+              "commonsense_qa exemplar of commonsense_qa/176",
+              "commonsense_qa exemplar of commonsense_qa/176"
+            ]
+          }
+        ],
+        "n_internal_duplicates": 0,
+        "n_excluded_id_listed": 50,
+        "n_excluded_text_listed": 50,
+        "n_native_id_collisions": 0,
+        "n_eligible": 2435,
+        "n_requested": 1000,
+        "n_taken": 1000,
+        "self_exemplar_violations": [],
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0,
+        "expected_pool": 9741
+      }
+    },
+    "openbookqa": {
+      "phase1": {
+        "rebuild_question_set_sha256": "d3f4183ec4c9baef9ab8bf7b9c85e85006eb71857c1c214e5b06b74820c7e167",
+        "manifest_question_set_sha256": "d3f4183ec4c9baef9ab8bf7b9c85e85006eb71857c1c214e5b06b74820c7e167",
+        "hash_matches": true,
+        "n_questions": 500,
+        "n_exemplar_draws_inserted": 0,
+        "n_exemplar_docs_inserted": 0,
+        "n_exemplar_docs_superset": 0,
+        "verbatim_checked_against": "stored data/questions",
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0
+      },
+      "confirmation": {
+        "split": "validation",
+        "pool_size": 500,
+        "n_excluded_id": 0,
+        "n_excluded_text": 0,
+        "excluded_id": [],
+        "excluded_text": [],
+        "n_internal_duplicates": 0,
+        "n_excluded_id_listed": 0,
+        "n_excluded_text_listed": 0,
+        "n_native_id_collisions": 0,
+        "n_eligible": 500,
+        "n_requested": null,
+        "n_taken": 500,
+        "self_exemplar_violations": [],
+        "verbatim_failures": [],
+        "n_verbatim_failures": 0,
+        "expected_pool": 500
+      }
+    }
+  },
+  "overlaps": {
+    "identity": [],
+    "text": [],
+    "doc_id": []
+  },
+  "checks": {
+    "phase1_rebuild_matches_manifest": true,
+    "exemplars_verbatim_in_contexts": true,
+    "no_identity_overlap": true,
+    "no_text_overlap": true,
+    "no_leakage_into_probe_data": true,
+    "confirmation_exemplars_verbatim": true,
+    "no_self_exemplar": true,
+    "enough_eligible": true,
+    "pool_sizes_match_plan": true
+  },
+  "failed_checks": [],
+  "passed": true,
+  "fingerprints": {
+    "lm_eval_version": "0.4.13",
+    "salt": "lh-confirm-v1",
+    "n_take": {
+      "arc_challenge": null,
+      "arc_easy": null,
+      "hellaswag": 1000,
+      "mmlu": null,
+      "commonsense_qa": 1000,
+      "openbookqa": null
+    },
+    "confirmation_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+    "confirmation_question_set_sha256": {
+      "arc_challenge": "f237e5e280514d914f546be7d774a58e101a79c54ca19eeaf66c1f44f28ffbc0",
+      "arc_easy": "6d7b7111793cd67fb08e1db33096c99acd1fa6b46a90c88c611a08e61c4a32b4",
+      "hellaswag": "c30ada5c64f4e00eb35a0db07dd9494620bee14ddfb16547a6ddb5fc68067424",
+      "mmlu": "b702bf90627d6f8698a7741718cd5beb2b7ed3bd4b0e8b2ba54a6846cd7b2418",
+      "commonsense_qa": "de2899bc2e1f314b9d2c2edd258a26abf1aa61cbd055cc9c05cff66bdd6af649",
+      "openbookqa": "2aae166c7348476c2b8d5169b1e3bc6fdc9c960d6713dd4250da8eee8bef7762"
+    },
+    "task_yaml_sha256": {
+      "arc_challenge.yaml": "682621c26ae24b1065a2d732460a55a8ef2b9f2544574431666c9309a9efd7bd",
+      "arc_easy.yaml": "96da1d9efe1df88659481cedc13985cb347dc068554a2eae561303fa39bfab3f",
+      "default.yaml": "61699aec6e95c719576ba0a74c05ac4b46c01afa070f902d5c4d7732a86a559b",
+      "hellaswag.yaml": "e9ef8ac3fed02bf283777d946ae76cbf906152e9c92533c9794e5a9dad78d1cf",
+      "utils.py": "07d23b60b28f2a4f658dcf8440623a63fe6644854ce9b846a114dde980dc1214",
+      "mmlu_abstract_algebra.yaml": "f026cc8918a0a4a422af4286e22889de6f423483671975fdd5429c96c0d0d9ef",
+      "mmlu_anatomy.yaml": "8dad2f8dc245224b7981c6186e1192e362d26c0eac649d1307080f57df92ff64",
+      "mmlu_astronomy.yaml": "a7723276547be2474f1413d387d13f1fec179ae98f236a78258c6c83e231d926",
+      "mmlu_business_ethics.yaml": "0a8df5dc2fa2f02f1c70da7ab920761f479862462dee97457182df817b1dce57",
+      "mmlu_clinical_knowledge.yaml": "2308279513bb71f56bc46213ec73d942918a6e5d6edc8856ec430dcc6d3cc26b",
+      "mmlu_college_biology.yaml": "a102e5ddd619591a8a7edf1830bd78c9ae56f083908a31f5b62ba0d7ab593695",
+      "mmlu_college_chemistry.yaml": "aafbd16592bce40850f95f13a61d3ae53f2ecc5121e1677e9bc27a898d8b022c",
+      "mmlu_college_computer_science.yaml": "34ba579d113ac7d499fb9f1a41db30f656eb4f85f240c8e85b2e01c8a2e7b1aa",
+      "mmlu_college_mathematics.yaml": "f5ee2d5cab36fdcee9678fdfda31c1d6dafd173674692311e6a3000511d7de14",
+      "mmlu_college_medicine.yaml": "3c95658b25cf99dd9c998430463cdcae1ad4c3fb75c735ac4483448ccbe07432",
+      "mmlu_college_physics.yaml": "419ff741345b01c8d7362ab41f7a48f0ea44667cf0bb870568718a500b1ca6ac",
+      "mmlu_computer_security.yaml": "a734f89bffb4038e6be27d9f402aac0e79bbe3b831d42faffc5e15410d88a953",
+      "mmlu_conceptual_physics.yaml": "2f442a87451b9f95b22907d434e737ca14455f197390ad69bbaae997004ad4a2",
+      "mmlu_econometrics.yaml": "4d42386ca2a5637d60b4978c575d3490354f4038c67743089a7e9ff14d65fb13",
+      "mmlu_electrical_engineering.yaml": "c29ed6b29cb28b0fd4c243a2bf637385123926119b25160f99f02867f5be1396",
+      "mmlu_elementary_mathematics.yaml": "90105e3ee53a869f5bb23361fe01419e9cec54bfbf1cd82b2d3f3e5f8a335c4a",
+      "mmlu_formal_logic.yaml": "31e3c8ec51bbbe8ba7842948b28844b0f12de8b709059f1647bda39f860ab86e",
+      "mmlu_global_facts.yaml": "d938b962a3f8fdcd90040d9ef28db9068a6d1ecf08a7311d8de7ed89f77eabf9",
+      "mmlu_high_school_biology.yaml": "3b967d4bf5169aa90abd85a04b9cca5746b79102aa9e3feca4aad8318f441767",
+      "mmlu_high_school_chemistry.yaml": "d89282333d4fce1f761df5e0baedcb59aa72dab22f4651d3e1f77aa142cd1f06",
+      "mmlu_high_school_computer_science.yaml": "4fa205dc34a098acf68e303f6f7c0da3bdde9d4638a94a5683ef6c57c3c3f13b",
+      "mmlu_high_school_european_history.yaml": "dc30df82cdef1692a99806b1be2aa94f16362407179cc2a2d9eabdb37b2af06e",
+      "mmlu_high_school_geography.yaml": "4b6e36425a2690e02e46e8a7c7c886d64e42082399857c7bfc2f396d93d38ea9",
+      "mmlu_high_school_government_and_politics.yaml": "02b95e38f133266a69bbbffb8ecaef5f67fa0521d81b0f540a0e4cc2dcc64923",
+      "mmlu_high_school_macroeconomics.yaml": "d86505fa78ab45dac3de902432bb1a30e25f3d86fe20289c07a1b61214529f33",
+      "mmlu_high_school_mathematics.yaml": "7cdaaad0ba299d5679b344ec8cd4775dd81ebff3918041157a7a980708f31dc2",
+      "mmlu_high_school_microeconomics.yaml": "b50ee6a489ebef539ea181b968716b7b7cdc94729fc58cf01b9f36388093ec36",
+      "mmlu_high_school_physics.yaml": "8ee33988717ad1c9cc29f51841ffdd8ba2ce57e80f93fc6f3d570a48c6683934",
+      "mmlu_high_school_psychology.yaml": "603b757c8843ede5c6451a25593a8ee5b781d453b07372c49424816b79a9a4ae",
+      "mmlu_high_school_statistics.yaml": "b9dadaa5ce8598d6fd068481e03e617e5154f90462c80a71874bf8077fbf8492",
+      "mmlu_high_school_us_history.yaml": "2bd13e1b627b022b65c4c8f135fac2aa96dcd9ca7f46ff79abe8679c279eb947",
+      "mmlu_high_school_world_history.yaml": "580fd84a4f4c1c9a974b13bcb92f39f5a0c464402401744dd9b45daa4a76eeae",
+      "mmlu_human_aging.yaml": "cee80b63790b0e86e7b26cd68973c410ab2a085e7626268a4a25587ed48a7811",
+      "mmlu_human_sexuality.yaml": "267fe3eb8fcaf52d157fcc0728d0513fdb91c3371173fe388e0b03f8a7ea09e4",
+      "mmlu_international_law.yaml": "99064d1d0304106cb19fea31fd4af5cf69a949cb4f5e871729a76d090a3e89c3",
+      "mmlu_jurisprudence.yaml": "2d18fc654dd44d92ddd394adf1e3ef97c74366378bb37345b2e44d2f79fa2b05",
+      "mmlu_logical_fallacies.yaml": "2f03bd256e2e12fff3cdec67ea4f08df6d678b6dbacb6962c0d81dc0da2f356a",
+      "mmlu_machine_learning.yaml": "789baf184429d6b505f16fe581abb32ba1815b48223735be15710244c3d4c948",
+      "mmlu_management.yaml": "9d4507c060bff0db4dc8ff4198c625715effed28d24fdbf54495ea493b1c6d27",
+      "mmlu_marketing.yaml": "f63fecdb482e3f23bdd1863c6a309a5ddc836e09f531515f0a33de8461b824c9",
+      "mmlu_medical_genetics.yaml": "ab26bded29775760a1e5455d476227c74a51d94eb0b369363a69d184a876d857",
+      "mmlu_miscellaneous.yaml": "afc98efce966768995194ffd5d8e86c881bdad06fd5bb576156b3da133f82d3d",
+      "mmlu_moral_disputes.yaml": "ec8279e3da5bfc4a28a1b096f1dd6c42fe5f307d9a9c513e3e79f2990f2fd058",
+      "mmlu_moral_scenarios.yaml": "c98a60a99386cafb095e7e02b56c6a74011a77a5a6772901d055e9d48e63e26e",
+      "mmlu_nutrition.yaml": "e117c15b9846fc75e9efcf28f62edea6c736d24d4d1acc3e310205f1852e6221",
+      "mmlu_philosophy.yaml": "7654a06752c5c45e0637508ea4a528798114c10fab172b761ca2ef397c0d9172",
+      "mmlu_prehistory.yaml": "c23f8dcc4e96011f9ebca99bcb2b2372f477d5e36681690bbacd94c0a403b6c9",
+      "mmlu_professional_accounting.yaml": "432df31fa6ad5398020117189481f61afbc4b27bf7e7e7f03fa83f900f01cd11",
+      "mmlu_professional_law.yaml": "6067d60160d0978b5e2c15faedcd9baf5188600876a892fb08c42f1b4369758c",
+      "mmlu_professional_medicine.yaml": "aedd6c8fc5b662f1197fda2920bea8516ce4090e16f97ef0cf1d22a4c54274e4",
+      "mmlu_professional_psychology.yaml": "c8acc00f3010b396ce34f2b54ffa6bf0806397a7b14f9a1c52eab18b4e02c642",
+      "mmlu_public_relations.yaml": "3f560bb0cbe9967c9ee9e753d41681304a366c83e4cccb73743fca4d0938533f",
+      "mmlu_security_studies.yaml": "c23f790964719dd32abaeb4993ecb9bf5560a7b4606220cd88a900830e11df2f",
+      "mmlu_sociology.yaml": "bf1ca22fc29b65431b83fa9de59676a3543535b9ab942fa86cc4ff8c871bd6c3",
+      "mmlu_us_foreign_policy.yaml": "44c36ea7852bccc941fc24370bcd9c985ab0ff334a9689525a6511ef2c6a8339",
+      "mmlu_virology.yaml": "028b0d3acbacd9bf83f7e67a41b052e4699feccca4c7e5e9edd74fbfd259a817",
+      "mmlu_world_religions.yaml": "08d79b1b3cc4976a97c9aa57f1362cb588db1e68010ba56ff33a4fbe884e3e2a",
+      "openbookqa.yaml": "13ac2df0c7d5f73e5a12dccc704048ca28b8123980fa0b8258eef937284f4735"
+    },
+    "datasets": {
+      "arc_challenge": {
+        "hf_dataset": "allenai/ai2_arc",
+        "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+        "source_split": "validation"
+      },
+      "arc_easy": {
+        "hf_dataset": "allenai/ai2_arc",
+        "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+        "source_split": "validation"
+      },
+      "hellaswag": {
+        "hf_dataset": "Rowan/hellaswag",
+        "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+        "source_split": "train"
+      },
+      "mmlu": {
+        "hf_dataset": "cais/mmlu",
+        "hf_revision": "c30699e8356da336a370243923dbaf21066bb9fe",
+        "source_split": "validation"
+      },
+      "commonsense_qa": {
+        "hf_dataset": "tau/commonsense_qa",
+        "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+        "source_split": "train"
+      },
+      "openbookqa": {
+        "hf_dataset": "allenai/openbookqa",
+        "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+        "source_split": "validation"
+      }
+    }
+  }
+}

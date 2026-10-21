@@ -1,0 +1,75 @@
+{
+  "salt": "lh-confirm-v1",
+  "limit": null,
+  "lm_eval_version": "0.4.13",
+  "ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+  "audit_sha256": "72e3b57f8a1f9d554a6814a18457cd0bb53c959a42b1c6f95c5189d5c5d3ddce",
+  "benchmarks": {
+    "arc_challenge": {
+      "n_questions": 299,
+      "question_set_sha256": "f237e5e280514d914f546be7d774a58e101a79c54ca19eeaf66c1f44f28ffbc0",
+      "source_split": "validation",
+      "hf_dataset": "allenai/ai2_arc",
+      "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+      "shots": 25,
+      "metric": "acc_norm",
+      "n_take": null,
+      "pool_size": 299
+    },
+    "arc_easy": {
+      "n_questions": 570,
+      "question_set_sha256": "6d7b7111793cd67fb08e1db33096c99acd1fa6b46a90c88c611a08e61c4a32b4",
+      "source_split": "validation",
+      "hf_dataset": "allenai/ai2_arc",
+      "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+      "shots": 8,
+      "metric": "acc_norm",
+      "n_take": null,
+      "pool_size": 570
+    },
+    "hellaswag": {
+      "n_questions": 1000,
+      "question_set_sha256": "c30ada5c64f4e00eb35a0db07dd9494620bee14ddfb16547a6ddb5fc68067424",
+      "source_split": "train",
+      "hf_dataset": "Rowan/hellaswag",
+      "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+      "shots": 10,
+      "metric": "acc_norm",
+      "n_take": 1000,
+      "pool_size": 39905
+    },
+    "mmlu": {
+      "n_questions": 1500,
+      "question_set_sha256": "b702bf90627d6f8698a7741718cd5beb2b7ed3bd4b0e8b2ba54a6846cd7b2418",
+      "source_split": "validation",
+      "hf_dataset": "cais/mmlu",
+      "hf_revision": "c30699e8356da336a370243923dbaf21066bb9fe",
+      "shots": 5,
+      "metric": "acc",
+      "n_take": null,
+      "pool_size": 1531
+    },
+    "commonsense_qa": {
+      "n_questions": 1000,
+      "question_set_sha256": "de2899bc2e1f314b9d2c2edd258a26abf1aa61cbd055cc9c05cff66bdd6af649",
+      "source_split": "train",
+      "hf_dataset": "tau/commonsense_qa",
+      "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+      "shots": 10,
+      "metric": "acc",
+      "n_take": 1000,
+      "pool_size": 9741
+    },
+    "openbookqa": {
+      "n_questions": 500,
+      "question_set_sha256": "2aae166c7348476c2b8d5169b1e3bc6fdc9c960d6713dd4250da8eee8bef7762",
+      "source_split": "validation",
+      "hf_dataset": "allenai/openbookqa",
+      "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+      "shots": 0,
+      "metric": "acc_norm",
+      "n_take": null,
+      "pool_size": 500
+    }
+  }
+}
