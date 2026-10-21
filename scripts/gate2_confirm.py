@@ -8,11 +8,13 @@ Rehearsal (touches NO confirmation data; runs the same code on VALIDATION and ch
 is reproduced):
     python scripts/gate2_confirm.py --rehearsal-on-validation
 
-The real run: pins the frozen files by sha256 prefix (typed by the person running it), refuses if a STARTED or EVALUATED
-marker exists (--allow-rerun records a rerun), refuses with modified tracked files (--allow-dirty records it), writes the
-STARTED marker BEFORE any confirmation outcome is opened, reads only the frozen files, applies thresholds exactly (never
-reselects), reports the original section 7 verdict first and the v3.1 analyses separately, and writes the EVALUATED marker
-last.
+The real run: pins the frozen files by sha256 prefix (typed by the person running it); refuses if a STARTED or EVALUATED
+marker exists (there is no override: a repeat would need a new commit and a reviewer decision); refuses with any modified
+tracked file (no override); requires the shuffled control; BEFORE opening the confirmation set it reloads train and
+validation, refits the shuffled control deterministically on train only, and checks that P, Q and the control reproduce
+their frozen/reported validation saving and loss at the frozen thresholds (exit 3 otherwise); then writes the STARTED
+marker, reads only the frozen files, applies thresholds exactly (never reselects), reports the original section 7 verdict
+first and the v3.1 analyses separately, and writes the EVALUATED marker last.
 """
 import argparse
 import contextlib
@@ -97,6 +99,19 @@ def rehearsal_checks(root, frozen, base, benchmarks, analysis, ps_eval, gclip) -
     return bad
 
 
+def validation_preflight(root, benchmarks, gclip, entries) -> list:
+    """Before the confirmation set is opened: each (name, probe, threshold, saving, loss) must reproduce its frozen/reported
+    validation macro saving and loss at its fixed threshold. Reads train/validation data only."""
+    val = g2.load_probe_data(root, "validation", benchmarks, g_clip=gclip)
+    bad = []
+    for name, probe, thr, want_s, want_l in entries:
+        m = g.summarize(g2.probe_policy_data(val, probe.predict(val)), benchmarks, "native_gate", thr)["macro"]
+        for what, got, want in (("saving", m["saving"], want_s), ("loss", m["loss"], want_l)):
+            if want is None or abs(got - want) > 1e-9:
+                bad.append(f"{name} {what}: got {got!r}, frozen/reported {want!r}")
+    return bad
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=".")
@@ -105,8 +120,6 @@ def main(argv=None) -> int:
     ap.add_argument("--frozen-sha")
     ap.add_argument("--baseline-sha")
     ap.add_argument("--reviewer-approval-ref")
-    ap.add_argument("--allow-rerun", action="store_true")
-    ap.add_argument("--allow-dirty", action="store_true")
     ap.add_argument("--skip-control", action="store_true")
     ap.add_argument("--n-boot", type=int, default=g.N_BOOT)
     args = ap.parse_args(argv)
@@ -122,7 +135,9 @@ def main(argv=None) -> int:
     out_dir = root / "results" / ("gate2" if real else "gate2_rehearsal")
     started, evaluated = root / "results/gate2/CONFIRMATION_STARTED.json", root / "results/gate2/CONFIRMATION_EVALUATED.json"
     git = git_state(root)
-    previous = None
+    if real and args.skip_control:
+        print("refusing: the real run requires the shuffled control (no --skip-control)", file=sys.stderr)
+        return 2
     if real:
         check_prefix("frozen-sha", args.frozen_sha, sha_f)
         check_prefix("baseline-sha", args.baseline_sha, sha_b)
@@ -130,26 +145,42 @@ def main(argv=None) -> int:
             print("refusing: --reviewer-approval-ref must say where/when the reviewer approved this run", file=sys.stderr)
             return 2
         if started.exists() or evaluated.exists():
-            if not args.allow_rerun:
-                print("refusing: a STARTED/EVALUATED marker exists (the confirmation set was already opened); "
-                      "--allow-rerun records a rerun", file=sys.stderr)
-                return 2
-            previous = {p.name: json.loads(p.read_text(encoding="utf-8")) for p in (started, evaluated) if p.exists()}
-        if git["modified_tracked"] and not args.allow_dirty:
-            print("refusing: tracked files are modified:\n  " + "\n  ".join(git["modified_tracked"]), file=sys.stderr)
+            print("refusing: a STARTED/EVALUATED marker exists (the confirmation set was already opened); there is no "
+                  "override", file=sys.stderr)
             return 2
+        if git["modified_tracked"]:
+            print("refusing: tracked files are modified (no override):\n  " + "\n  ".join(git["modified_tracked"]),
+                  file=sys.stderr)
+            return 2
+
+    gclip = tuple(frozen["provenance"]["g_clip_train"])
+    P = ev.load_frozen_probe(root, frozen["P"])
+    Q = ev.load_frozen_probe(root, frozen["Q"])
+    control_thr, shuf = None, None
+    if not args.skip_control:
+        vr = json.loads((root / "results/gate2/validation_report.json").read_text(encoding="utf-8"))
+        rec = [r for r in vr["control_records"] if r["name"].startswith("control-c")][0]
+        control_thr = rec["threshold"]
+        train = g2.load_probe_data(root, "train", benchmarks)          # training data only
+        shuf = g2.fit_probe(train, 1, "h", "S", labels=g2.shuffle_labels_within(train, train.targets["S"]))
+    if shuf is not None:
+        entries = [("P", P, frozen["P"]["threshold"], frozen["P"]["validation_saving"], frozen["P"]["validation_loss"]),
+                   ("Q", Q, frozen["Q"]["threshold"], frozen["Q"]["validation_saving"], frozen["Q"]["validation_loss"]),
+                   ("shuffled_control", shuf, control_thr, rec["saving"], rec["loss"])]
+        bad = validation_preflight(root, benchmarks, gclip, entries)
+        if bad:
+            print("PRE-FLIGHT FAILED; the confirmation set was NOT opened:\n  " + "\n  ".join(bad), file=sys.stderr)
+            return 3
+        print("pre-flight: P, Q and the refitted shuffled control reproduce their frozen validation numbers", flush=True)
+    if real:
         stamp0 = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         g.write_json(started, {"timestamp_utc": stamp0, "frozen_selection_sha256": sha_f, "baseline_B_sha256": sha_b,
                                "git": git, "reviewer_approval_ref": args.reviewer_approval_ref,
-                               "is_rerun": previous is not None, "previous": previous,
                                "note": "written BEFORE any confirmation outcome is opened"})
         print("STARTED marker written; opening the confirmation set", flush=True)
 
     subdir, split = ("extracted_confirm", "confirmation") if real else ("extracted", "validation")
-    gclip = tuple(frozen["provenance"]["g_clip_train"])
     prov = {}
-    P = ev.load_frozen_probe(root, frozen["P"])
-    Q = ev.load_frozen_probe(root, frozen["Q"])
     ctx = ev.allow_confirmation_paths() if real else contextlib.nullcontext()
     with ctx:
         ps = ev.eval_loader(root, benchmarks, subdir, split, gclip, provenance=prov)
@@ -158,13 +189,7 @@ def main(argv=None) -> int:
     p_sc, q_sc = P.predict(ps), Q.predict(ps)
     datasets = {"base": ps.arrays, "P": g2.probe_policy_data(ps, p_sc), "Q": g2.probe_policy_data(ps, q_sc)}
     scores = {"P": p_sc, "Q": q_sc}
-    control_thr = None
-    if not args.skip_control:
-        vr = json.loads((root / "results/gate2/validation_report.json").read_text(encoding="utf-8"))
-        rec = [r for r in vr["control_records"] if r["name"].startswith("control-c")][0]
-        control_thr = rec["threshold"]
-        train = g2.load_probe_data(root, "train", benchmarks)
-        shuf = g2.fit_probe(train, 1, "h", "S", labels=g2.shuffle_labels_within(train, train.targets["S"]))
+    if shuf is not None:
         c_sc = shuf.predict(ps)
         datasets["control"] = g2.probe_policy_data(ps, c_sc)
         scores["shuffled_control"] = c_sc
@@ -198,7 +223,7 @@ def main(argv=None) -> int:
     doc.write_text(md, encoding="utf-8")
     if real:
         g.write_json(evaluated, {"timestamp_utc": stamp, "frozen_selection_sha256": sha_f, "baseline_B_sha256": sha_b,
-                                 "verdict": analysis["original"]["verdict"], "is_rerun": previous is not None})
+                                 "verdict": analysis["original"]["verdict"]})
     o = analysis["original"]
     print(f"{'ORIGINAL VERDICT' if real else 'rehearsal (not a verdict)'}: {o['verdict']}  L={o['L_budget']} E={o['E_effect']} "
           f"H={o['H_hidden_state']}  P saving {o['P_macro_saving']:.4f} loss {o['P_macro_loss']:.3f} pp")

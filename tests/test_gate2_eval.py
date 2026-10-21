@@ -146,3 +146,21 @@ def test_confirmation_paths_are_only_open_inside_the_context_manager():
         g2._assert_allowed_path("data/extracted_confirm/mmlu")
     with pytest.raises(AssertionError):
         g2._assert_allowed_path("data/extracted_confirm/mmlu")
+
+
+# ------------------------------------------------------------------------ no overrides (reviewer request)
+@pytest.mark.parametrize("flag", ["--allow-rerun", "--allow-dirty"])
+def test_override_flags_do_not_exist(fake_root, flag):
+    with pytest.raises(SystemExit):
+        cf.main(_args(fake_root, flag))
+
+
+def test_real_run_requires_the_shuffled_control(fake_root):
+    assert cf.main(_args(fake_root, "--skip-control")) == 2
+    assert not (fake_root / "results/gate2/CONFIRMATION_STARTED.json").exists()
+
+
+def test_refuses_with_modified_tracked_files_and_no_override(fake_root, monkeypatch):
+    monkeypatch.setattr(cf, "git_state", lambda root: {"head": "x", "modified_tracked": [" M src/lookahead/gate2.py"]})
+    assert cf.main(_args(fake_root)) == 2
+    assert not (fake_root / "results/gate2/CONFIRMATION_STARTED.json").exists()

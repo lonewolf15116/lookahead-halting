@@ -62,8 +62,8 @@ over a [policy × benchmark] array) reproduces every frozen validation number to
 Selection code can never open confirmation data (b above). The only relaxation is `gate2_eval.allow_confirmation_paths()`,
 a context manager used by `scripts/gate2_confirm.py` after all pre-flight checks. The script requires
 `--confirm-one-time-gate2-evaluation`, the sha256 prefixes (≥ 12 hex) of the two frozen files, and a reviewer-approval
-reference; refuses if `results/gate2/CONFIRMATION_STARTED.json` or `CONFIRMATION_EVALUATED.json` exists (`--allow-rerun`
-records a rerun); refuses with modified tracked files (`--allow-dirty` records it); checks the B vector equals
+reference; refuses if `results/gate2/CONFIRMATION_STARTED.json` or `CONFIRMATION_EVALUATED.json` exists (no override flag exists); refuses
+with any modified tracked file (no override flag exists); requires the shuffled control; checks the B vector equals
 (2,2,2,3,3,2) and that `baseline_B_frozen.json` was made against this `frozen_selection.json`; verifies the model files
 against their frozen sha256; writes STARTED before any confirmation outcome is opened and EVALUATED last. It computes
 no threshold, depth or probe weight: all come from the frozen files.
@@ -96,3 +96,14 @@ Q-B -0.014 [-0.021, -0.007], control-B -0.011 [-0.014, -0.007].
   gitignored and outside the selection loaders' directory.
 - Not implemented in the confirmation script (retrospective analyses of plan 7a, to be added after the verdict is recorded):
   accuracy-budget frontier and leave-one-benchmark-out probes.
+
+## 7. Changes after the reviewer's third note (conditional acceptance)
+- `--allow-rerun` and `--allow-dirty` are **removed**; argparse rejects them (tests `test_override_flags_do_not_exist`). A repeat
+  run or a run on a modified tree is impossible without a new commit and a new reviewer decision.
+- The real run requires the shuffled control (`--skip-control` is refused in the real run).
+- **Pre-flight before the confirmation set is opened** (`validation_preflight`): reloads train and validation, refits the
+  shuffled control deterministically on **train only**, and requires P, Q and the control to reproduce their frozen/reported
+  validation saving and loss (1e-9) at the frozen thresholds (P 0.8529863981323346, Q 0.7907418731925548, control
+  0.8222508742366401). Exit code 3 and no STARTED marker if any differs. The rehearsal runs the same pre-flight.
+- Source bundle for source-level review: `gate2_source_review.zip` (the four requested files, the two frozen JSON files, gate1.py
+  and the tests, with a sha256 manifest).
