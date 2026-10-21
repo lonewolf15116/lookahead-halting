@@ -1,0 +1,658 @@
+{
+  "native_id_survey": {
+    "hellaswag": [
+      {
+        "split": "validation",
+        "n_docs": 10042,
+        "n_with_native_id": 10042,
+        "n_distinct_native_ids": 9609,
+        "n_duplicate_groups": 433,
+        "n_docs_in_duplicate_groups": 866,
+        "max_group_size": 2,
+        "n_duplicate_groups_with_differing_text": 433,
+        "example_groups": {
+          "val:10175": [
+            {
+              "row": 724,
+              "ind": 10175,
+              "source_id": "activitynet~v_0AjYz-s4Rek",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Ice fishing",
+              "text": "When they make a hole in the ice they put their fishing wire attached with bait "
+            },
+            {
+              "row": 4571,
+              "ind": 10175,
+              "source_id": "wikihow~16761",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Education and Communications",
+              "text": "[header] How to hone your memory through the beauty of art [title] Grab the mome"
+            }
+          ],
+          "val:10224": [
+            {
+              "row": 730,
+              "ind": 10224,
+              "source_id": "activitynet~v_0vJfctL116Y",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Preparing salad",
+              "text": "She continues tossing the salad and mixing the dressing into it. A woman behind "
+            },
+            {
+              "row": 4577,
+              "ind": 10224,
+              "source_id": "wikihow~16839",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Computers and Electronics",
+              "text": "[header] How to purchase your own phone as a teenager [title] Work around the ho"
+            }
+          ],
+          "val:10246": [
+            {
+              "row": 734,
+              "ind": 10246,
+              "source_id": "activitynet~v_1BfYAuxv6Wk",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Mixing drinks",
+              "text": "She then takes a shaker and pours and vodka and the jagermeister. Then adds some"
+            },
+            {
+              "row": 4580,
+              "ind": 10246,
+              "source_id": "wikihow~16873",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Pets and Animals",
+              "text": "[header] How to diagnose and treat gingivitis in cats [title] Look at their gums"
+            }
+          ],
+          "val:10338": [
+            {
+              "row": 740,
+              "ind": 10338,
+              "source_id": "activitynet~v_2Ot4ZPYpNwI",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Playing harmonica",
+              "text": "A man is seated on a couch, playing a harmonica. he"
+            },
+            {
+              "row": 4600,
+              "ind": 10338,
+              "source_id": "wikihow~17026",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Computers and Electronics",
+              "text": "[header] How to convert bin files using power iso [title] Download power iso. [s"
+            }
+          ],
+          "val:10442": [
+            {
+              "row": 742,
+              "ind": 10442,
+              "source_id": "activitynet~v_3fAVDJyrSQs",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Chopping wood",
+              "text": "A boy stands holding a stick. A man throws pieces of wood into a pile. Chairs at"
+            },
+            {
+              "row": 4615,
+              "ind": 10442,
+              "source_id": "wikihow~17210",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Personal Care and Style",
+              "text": "[header] How to shave your legs (male ) [title] Determine an end point. [step] C"
+            }
+          ],
+          "val:10553": [
+            {
+              "row": 748,
+              "ind": 10553,
+              "source_id": "activitynet~v_5JkN8t5k0jU",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Clean and jerk",
+              "text": "An intro of titles eventually leads to an athlete holding a large amount of weig"
+            },
+            {
+              "row": 4632,
+              "ind": 10553,
+              "source_id": "wikihow~17384",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Health",
+              "text": "[header] How to treat malaria [title] Determine if you're at risk of malaria. [s"
+            }
+          ],
+          "val:10559": [
+            {
+              "row": 749,
+              "ind": 10559,
+              "source_id": "activitynet~v_5MpJCKOxRVs",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Fixing bicycle",
+              "text": "Then he unscrews the base to level it out to his liking. Then he sits on the bik"
+            },
+            {
+              "row": 4634,
+              "ind": 10559,
+              "source_id": "wikihow~17395",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Health",
+              "text": "[header] How to make a kilt [title] Choose a tartan by clan. [step] Clans and la"
+            }
+          ],
+          "val:10587": [
+            {
+              "row": 750,
+              "ind": 10587,
+              "source_id": "activitynet~v_5gBRDguUe8U",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Assembling bicycle",
+              "text": "A person is seen sitting on a stool and piecing together several parts of a bike"
+            },
+            {
+              "row": 4636,
+              "ind": 10587,
+              "source_id": "wikihow~17435",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Relationships",
+              "text": "[header] How to become a better leader [title] Communication is key. [step] Clea"
+            }
+          ],
+          "val:10605": [
+            {
+              "row": 751,
+              "ind": 10605,
+              "source_id": "activitynet~v_5vlGKyxl22M",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Running a marathon",
+              "text": "An old woman talks before run in a marathon where there is a lot of people parti"
+            },
+            {
+              "row": 4638,
+              "ind": 10605,
+              "source_id": "wikihow~17465",
+              "split": "val",
+              "split_type": "indomain",
+              "activity_label": "Health",
+              "text": "[header] How to relieve itchy hands and feet at night [title] Keep yourself from"
+            }
+          ],
+          "val:10606": [
+            {
+              "row": 752,
+              "ind": 10606,
+              "source_id": "activitynet~v_5vlGKyxl22M",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Running a marathon",
+              "text": "An old woman talks before run in a marathon where there is a lot of people parti"
+            },
+            {
+              "row": 4639,
+              "ind": 10606,
+              "source_id": "wikihow~17466",
+              "split": "val",
+              "split_type": "zeroshot",
+              "activity_label": "Personal Care and Style",
+              "text": "[header] How to remove dry skin from your feet using epsom salt [title] Buy epso"
+            }
+          ]
+        }
+      },
+      {
+        "split": "train",
+        "n_docs": 39905,
+        "n_with_native_id": 39905,
+        "n_distinct_native_ids": 32599,
+        "n_duplicate_groups": 7306,
+        "n_docs_in_duplicate_groups": 14612,
+        "max_group_size": 2,
+        "n_duplicate_groups_with_differing_text": 7306,
+        "example_groups": {
+          "train:100": [
+            {
+              "row": 41,
+              "ind": 100,
+              "source_id": "activitynet~v_-tv6laq1ic0",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Getting a tattoo",
+              "text": "We see blinds down on a window. A person is laying in a tattoo parlor being tatt"
+            },
+            {
+              "row": 14789,
+              "ind": 100,
+              "source_id": "wikihow~165",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Cars & Other Vehicles",
+              "text": "[header] How to clean a glass windshield [title] Lift the windshield wipers up. "
+            }
+          ],
+          "train:10005": [
+            {
+              "row": 2997,
+              "ind": 10005,
+              "source_id": "activitynet~v_xabaKyhx7cg",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Cleaning shoes",
+              "text": "He pulls out of a bag to put the shoes in and throws the bag into a washing mach"
+            },
+            {
+              "row": 19683,
+              "ind": 10005,
+              "source_id": "wikihow~16488",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Food and Entertaining",
+              "text": "[header] How to cook corned beef in a crockpot [title] Shop for a brisket at you"
+            }
+          ],
+          "train:1001": [
+            {
+              "row": 326,
+              "ind": 1001,
+              "source_id": "activitynet~v_B4zPg1ftxf4",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Paintball",
+              "text": "He fills his gun with orange balls. A person walks up to the bag near the man. T"
+            },
+            {
+              "row": 15246,
+              "ind": 1001,
+              "source_id": "wikihow~1643",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Computers and Electronics",
+              "text": "[header] How to prevent canine coronavirus [title] Get your dog a vaccine. [step"
+            }
+          ],
+          "train:10012": [
+            {
+              "row": 2999,
+              "ind": 10012,
+              "source_id": "activitynet~v_xf9iLflgRro",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Fixing the roof",
+              "text": "Two people are seen working on a roof that leads into clips of a clock and a hou"
+            },
+            {
+              "row": 19686,
+              "ind": 10012,
+              "source_id": "wikihow~16497",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Education and Communications",
+              "text": "[header] How to answer point of informations in a debate [title] Plan on when to"
+            }
+          ],
+          "train:10013": [
+            {
+              "row": 3000,
+              "ind": 10013,
+              "source_id": "activitynet~v_xf9iLflgRro",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Fixing the roof",
+              "text": "Several shots are shown of a roof as well as the men laying down paper and pushi"
+            },
+            {
+              "row": 19687,
+              "ind": 10013,
+              "source_id": "wikihow~16498",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Finance and Business",
+              "text": "[header] How to buy penny stocks without a broker [title] Be aware of the benefi"
+            }
+          ],
+          "train:10015": [
+            {
+              "row": 3002,
+              "ind": 10015,
+              "source_id": "activitynet~v_xfhwYTFCGYY",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Ironing clothes",
+              "text": "A woman is explaining the materials to iron garments. Then, the woman explains s"
+            },
+            {
+              "row": 19688,
+              "ind": 10015,
+              "source_id": "wikihow~16506",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Food and Entertaining",
+              "text": "[header] How to overclock a graphics card [title] Update your video card drivers"
+            }
+          ],
+          "train:10025": [
+            {
+              "row": 3005,
+              "ind": 10025,
+              "source_id": "activitynet~v_y3Zq6RZZNtc",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Putting on shoes",
+              "text": "A girl puts on a no show sock and then a slip on shoe on her left foot. she"
+            },
+            {
+              "row": 19694,
+              "ind": 10025,
+              "source_id": "wikihow~16523",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Finance and Business",
+              "text": "[header] How to end a broadcast contract [title] Ask if you can be let out of th"
+            }
+          ],
+          "train:10035": [
+            {
+              "row": 3007,
+              "ind": 10035,
+              "source_id": "activitynet~v_yA3AD9jU7QU",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Washing hands",
+              "text": "The man grabs something form the shelf and washes under his fingers. He then gra"
+            },
+            {
+              "row": 19698,
+              "ind": 10035,
+              "source_id": "wikihow~16539",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Home and Garden",
+              "text": "[header] How to keep birds off your seedlings [title] Construct a tunnel made of"
+            }
+          ],
+          "train:10039": [
+            {
+              "row": 3008,
+              "ind": 10039,
+              "source_id": "activitynet~v_yACg55C3IlM",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Hand car wash",
+              "text": "Two girls are outside in bathing suits cleaning the front of a green vehicle. On"
+            },
+            {
+              "row": 19701,
+              "ind": 10039,
+              "source_id": "wikihow~16543",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Health",
+              "text": "[header] How to apply essential oils [title] Treat physical ailments. [step] Man"
+            }
+          ],
+          "train:10042": [
+            {
+              "row": 3009,
+              "ind": 10042,
+              "source_id": "activitynet~v_yAkVtmP7654",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Removing ice from car",
+              "text": "People are walking in a snow covered parking lot. The camera operator turns the "
+            },
+            {
+              "row": 19702,
+              "ind": 10042,
+              "source_id": "wikihow~16547",
+              "split": "train",
+              "split_type": "indomain",
+              "activity_label": "Home and Garden",
+              "text": "[header] How to decorate a garden [title] Provide some functional seating. [step"
+            }
+          ]
+        }
+      }
+    ],
+    "commonsense_qa": [
+      {
+        "split": "validation",
+        "n_docs": 1221,
+        "n_with_native_id": 1221,
+        "n_distinct_native_ids": 1221,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      },
+      {
+        "split": "train",
+        "n_docs": 9741,
+        "n_with_native_id": 9741,
+        "n_distinct_native_ids": 9741,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      }
+    ],
+    "arc_challenge": [
+      {
+        "split": "test",
+        "n_docs": 1172,
+        "n_with_native_id": 1172,
+        "n_distinct_native_ids": 1172,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      },
+      {
+        "split": "validation",
+        "n_docs": 299,
+        "n_with_native_id": 299,
+        "n_distinct_native_ids": 299,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      }
+    ],
+    "arc_easy": [
+      {
+        "split": "test",
+        "n_docs": 2376,
+        "n_with_native_id": 2376,
+        "n_distinct_native_ids": 2376,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      },
+      {
+        "split": "validation",
+        "n_docs": 570,
+        "n_with_native_id": 570,
+        "n_distinct_native_ids": 570,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      }
+    ],
+    "openbookqa": [
+      {
+        "split": "test",
+        "n_docs": 500,
+        "n_with_native_id": 500,
+        "n_distinct_native_ids": 500,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      },
+      {
+        "split": "validation",
+        "n_docs": 500,
+        "n_with_native_id": 500,
+        "n_distinct_native_ids": 500,
+        "n_duplicate_groups": 0,
+        "n_docs_in_duplicate_groups": 0,
+        "max_group_size": 1,
+        "n_duplicate_groups_with_differing_text": 0,
+        "example_groups": {}
+      }
+    ]
+  },
+  "smoke_replay": {
+    "selected": [
+      {
+        "doc_id": "confirm:hellaswag/train:340@r127",
+        "native_id": "train:340",
+        "row": 127,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:340@r14899",
+        "native_id": "train:340",
+        "row": 14899,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:32370@r30757",
+        "native_id": "train:32370",
+        "row": 30757,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:12278@r3639",
+        "native_id": "train:12278",
+        "row": 3639,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:13759@r4042",
+        "native_id": "train:13759",
+        "row": 4042,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:1282@r411",
+        "native_id": "train:1282",
+        "row": 411,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:24552@r7051",
+        "native_id": "train:24552",
+        "row": 7051,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:24552@r26865",
+        "native_id": "train:24552",
+        "row": 26865,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:38146@r33624",
+        "native_id": "train:38146",
+        "row": 33624,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:15256@r4504",
+        "native_id": "train:15256",
+        "row": 4504,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:34273@r9801",
+        "native_id": "train:34273",
+        "row": 9801,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:34273@r31716",
+        "native_id": "train:34273",
+        "row": 31716,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:42340@r12257",
+        "native_id": "train:42340",
+        "row": 12257,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:42340@r35731",
+        "native_id": "train:42340",
+        "row": 35731,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:9015@r2727",
+        "native_id": "train:9015",
+        "row": 2727,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:44167@r12835",
+        "native_id": "train:44167",
+        "row": 12835,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:21899@r25524",
+        "native_id": "train:21899",
+        "row": 25524,
+        "native_id_repeated": false
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:35519@r10228",
+        "native_id": "train:35519",
+        "row": 10228,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:35519@r32330",
+        "native_id": "train:35519",
+        "row": 32330,
+        "native_id_repeated": true
+      },
+      {
+        "doc_id": "confirm:hellaswag/train:41143@r11889",
+        "native_id": "train:41143",
+        "row": 11889,
+        "native_id_repeated": false
+      }
+    ],
+    "repeated_native_ids": {
+      "train:340": 2,
+      "train:24552": 2,
+      "train:34273": 2,
+      "train:42340": 2,
+      "train:35519": 2
+    },
+    "doc_ids_unique": true
+  }
+}

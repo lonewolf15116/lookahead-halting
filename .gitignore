@@ -25,3 +25,5 @@ data/extracted_confirm/
 hf_cache
 data/extracted_confirm_smoke/
 data/questions_confirm_limit*/
+data/manifests/*_limit*
+results/gate2/*_limit*
