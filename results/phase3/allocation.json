@@ -1,0 +1,206 @@
+{
+  "allocation_salt": "lh-phase3-alloc-v1",
+  "amendment": "A1",
+  "dev_ids_sha256": "c1ed6e3851c6ee2c3deec178a67970f11133272b529bc4fdb8a04b2344d097d1",
+  "extraction_estimate": {
+    "gpu_minutes": 78,
+    "questions": 11152
+  },
+  "hellaswag_rule": {
+    "clean": 998,
+    "excluded": {
+      "INTERNAL_DUPLICATE": 0,
+      "OTHER_POOL_TEXT": 0,
+      "SHARED_CONTEXT": 10,
+      "SHARED_SOURCE": 488,
+      "UNLABELED": 0,
+      "USED_TEXT": 38409
+    },
+    "excluded_by_source_only_through_validation_split": 0,
+    "n_train_rows": 39905,
+    "n_used_contexts": 48125,
+    "n_used_rows_all_splits": 48451,
+    "n_used_rows_by_split": {
+      "train": 38409,
+      "validation": 10042
+    },
+    "n_used_sources": 39620,
+    "rule_version": "hellaswag-audit-v2"
+  },
+  "inventory_sha256": "7ec501aee8e2f1b1ca078f14af969f887ec947fd0b2ec9e778151fd93ce517f1",
+  "n_dev_rows": 2635,
+  "n_test_rows": 8517,
+  "ood": {
+    "piqa": "validation",
+    "social_iqa": "validation"
+  },
+  "per_benchmark": {
+    "commonsense_qa": {
+      "n_dev": 435,
+      "n_groups": null,
+      "n_pool": 1435,
+      "n_test": 1000,
+      "n_test_requested": 1000,
+      "precision_test": {
+        "n": 1000,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0139,
+          "0.1": 0.0196,
+          "0.2": 0.0277
+        },
+        "single_accuracy_halfwidth": 0.031
+      }
+    },
+    "hellaswag": {
+      "n_dev": 248,
+      "n_groups": 997,
+      "n_pool": 998,
+      "n_test": 750,
+      "n_test_requested": 750,
+      "precision_test": {
+        "n": 750,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.016,
+          "0.1": 0.0226,
+          "0.2": 0.032
+        },
+        "single_accuracy_halfwidth": 0.0358
+      }
+    },
+    "openbookqa": {
+      "n_dev": 1952,
+      "n_groups": null,
+      "n_pool": 4952,
+      "n_test": 3000,
+      "n_test_requested": 3000,
+      "precision_test": {
+        "n": 3000,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.008,
+          "0.1": 0.0113,
+          "0.2": 0.016
+        },
+        "single_accuracy_halfwidth": 0.0179
+      }
+    },
+    "piqa": {
+      "n_dev": 0,
+      "n_pool": 1837,
+      "n_test": 1837,
+      "precision_test": {
+        "n": 1837,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0102,
+          "0.1": 0.0145,
+          "0.2": 0.0205
+        },
+        "single_accuracy_halfwidth": 0.0229
+      }
+    },
+    "social_iqa": {
+      "n_dev": 0,
+      "n_pool": 1930,
+      "n_test": 1930,
+      "precision_test": {
+        "n": 1930,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.01,
+          "0.1": 0.0141,
+          "0.2": 0.02
+        },
+        "single_accuracy_halfwidth": 0.0223
+      }
+    }
+  },
+  "plan": {
+    "commonsense_qa": {
+      "group_key": null,
+      "n_test": 1000,
+      "source_split": "train"
+    },
+    "hellaswag": {
+      "group_key": "source_id",
+      "n_test": 750,
+      "source_split": "train"
+    },
+    "openbookqa": {
+      "group_key": null,
+      "n_test": 3000,
+      "source_split": "train"
+    }
+  },
+  "status": "ALLOCATED (pending reviewer freeze)",
+  "test_ids_sha256": "298873a90b26617685fa872e6f77825784829a8bb677f075575cff4c32cefeff",
+  "tokenizer_mode": "real",
+  "used_set_fingerprint": "ddd88b73930fb718fb9d022468e99e93fc814441f861b7b7fd7af8cfe48f94bd",
+  "verification": {
+    "confirmation": {
+      "manifest_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+      "matches": true,
+      "n_questions": {
+        "arc_challenge": 299,
+        "arc_easy": 570,
+        "commonsense_qa": 1000,
+        "hellaswag": 1000,
+        "mmlu": 1500,
+        "openbookqa": 500
+      },
+      "rebuilt_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc"
+    },
+    "phase1": {
+      "arc_challenge": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 1172,
+        "n_questions": 1172,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "arc_easy": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 2376,
+        "n_questions": 2376,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "commonsense_qa": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 1221,
+        "n_questions": 1221,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "hellaswag": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 10042,
+        "n_questions": 10042,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "mmlu": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 14042,
+        "n_questions": 14042,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "openbookqa": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 500,
+        "n_questions": 500,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      }
+    }
+  }
+}

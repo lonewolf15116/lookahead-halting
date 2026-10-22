@@ -47,7 +47,7 @@ frozen `lh-fold-v1` hash).
 |---|---|---|---|---|---|
 | OpenBookQA | 4,952 | 3,000 | 1,952 | 300 | 100 |
 | CommonsenseQA | 1,435 | 1,000 | 435 | 733 | 244 |
-| HellaSwag | ≤ 999 under rule v2 (within-train count; the final cross-split count is set by A1.9) | 750 | the rest (≤ 249) | 6,025 | 2,008 |
+| HellaSwag | **998** under rule v2 (cross-split, A1.9) | 750 (749 sources) | 248 | 6,025 | 2,008 |
 
 - **Selection procedure.** Rank the clean rows of each benchmark by sha256(`lh-phase3-alloc-v1|benchmark|task|row|text_hash`),
   ascending. The first N go to TEST and the rest to DEV+. Frozen with A1: the exact TEST and DEV+ id lists (CSV),
@@ -79,8 +79,8 @@ frozen `lh-fold-v1` hash).
   is 2,252 questions (1 pp ≈ 22 questions). CommonsenseQA goes from 733 to 1,168. HellaSwag's development data is
   essentially Phase 1 train (6,025), and its small remainder is not treated as a resource.
 - **Cost (corrected; the first draft left out the OOD sets).** In-distribution DEV+ and TEST come to at most 7,386 questions
-  (4,952 + 1,435 + ≤ 999), and the OOD TEST sets to 3,767 (1,837 + 1,930). That is at most 11,153 questions, about 78 GPU-minutes
-  at the measured ~35 min per 5k. The exact figure is in `allocation.json`. TEST outcomes are extracted but stay sealed, as the
+  (4,952 + 1,435 + 998), and the OOD TEST sets to 3,767 (1,837 + 1,930). That is 11,152 questions (8,517 TEST, 2,635 DEV+),
+  about 78 GPU-minutes at the measured ~35 min per 5k (`allocation.json`). TEST outcomes are extracted but stay sealed, as the
   Gate 2 confirmation outcomes were.
 
 ## A1.4 OOD allocation
@@ -154,6 +154,19 @@ frozen `lh-fold-v1` hash).
   The "half", "≥ 30 transitions" and "h > x" parts are unchanged. Six-benchmark D3 is reported beside it and decides nothing.
 - **Order:** A1 frozen (commit and tag) → DEV+ and TEST extraction (TEST sealed, Gate 2 pattern) → G3a on Phase 1 train + DEV+ →
   reviewer GO/STOP → G3b → reviewer implementation sign-off → G3c.
+
+## A1.9 result (run at a99bd6b on the PC; real tokenizer; used-set verification passed)
+- `results/phase3/allocation.json` sha256 1327e1cca5360f9b80de7759360b6d06519e8c881aad984e988a723417ea9a1b. The TEST and DEV+
+  list hashes match the files. No row is in both lists, and no HellaSwag source is split between them. Every non-HellaSwag
+  row is an inventory-clean row.
+- **HellaSwag v2, cross-split:** 39,905 train rows. Excluded: 38,409 used text, 488 shared source, 10 shared context; 0
+  unlabeled, 0 other-pool, 0 duplicate. Clean: **998**. The used rows behind the source and context checks are 38,409 in train
+  plus all 10,042 in Phase 1 validation. **0** rows were excluded only through validation-split sources, and the cross-split
+  context check removed one row more than the within-train count (999 → 998).
+- **v2 versus v1:** only 513 of the 676 v1-clean rows survive v2. The other 163 share a source or context with a used row,
+  which v1 did not check. So v2 is stricter than v1 on proximity, and more permissive only on colliding ids.
+- **Allocation:** OpenBookQA 3,000 TEST / 1,952 DEV+; CommonsenseQA 1,000 / 435; HellaSwag 750 / 248; PIQA 1,837 TEST;
+  Social IQa 1,930 TEST. TEST 8,517 rows, DEV+ 2,635 rows.
 
 ## A1.8 Reviewer decisions (Revised Amendment Review, 2026-10-22)
 | item | status |
