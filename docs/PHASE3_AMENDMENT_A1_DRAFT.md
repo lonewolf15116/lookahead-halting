@@ -1,4 +1,6 @@
-# Phase 3 amendment A1: allocation, narrowed population, D1-D4 population (DRAFT for review; nothing frozen)
+# Phase 3 amendment A1: allocation, narrowed population, D1-D4 population (DRAFT rev 2; nothing frozen)
+
+Rev 2 applies the reviewer's "Phase 3 A1 — Revised Amendment Review" (CONDITIONAL GO): HellaSwag rule v2 and 750 TEST accepted subject to the cross-split audit (A1.9); effect-precision rule rewritten (A1.5); tables reconciled; D3 change declared as an amendment (A1.7).
 
 Amends the frozen plan `docs/PHASE3_PLAN.md` v1.1 (sha256 e599f07c688f…, tag phase3-plan-v1.1). The plan file is not
 edited. A1 is frozen as its own file after reviewer approval, before any extraction or outcome analysis.
@@ -45,7 +47,7 @@ frozen `lh-fold-v1` hash).
 |---|---|---|---|---|---|
 | OpenBookQA | 4,952 | 3,000 | 1,952 | 300 | 100 |
 | CommonsenseQA | 1,435 | 1,000 | 435 | 733 | 244 |
-| HellaSwag | 676 under rule v1; **999** under the proposed rule v2 (below) | 750 (if v2) / 500 (if v1) | rest | 6,025 | 2,008 |
+| HellaSwag | ≤ 999 under rule v2 (within-train count; the final cross-split count is set by A1.9) | 750 | the rest (≤ 249) | 6,025 | 2,008 |
 
 - **Selection procedure.** Rank the clean rows of each benchmark by sha256(`lh-phase3-alloc-v1|benchmark|task|row|text_hash`),
   ascending. The first N go to TEST and the rest to DEV+. Frozen with A1: the exact TEST and DEV+ id lists (CSV),
@@ -67,15 +69,19 @@ frozen `lh-fold-v1` hash).
   (an id number). It gives **999** clean rows under the within-train check, against 676 under v1. Before freezing, the
   allocation script must apply the source criterion against **every** used HellaSwag row, including the Phase 1 validation
   split (the audit compared within train only). So the final count can only fall from 999, and it is recorded at freeze.
-- **HellaSwag TEST size.** If v2 is accepted: 750 TEST (two-sided paired half-width about 2.3 pp at d = 0.10, against 2.8 pp at
-  500), and the rest DEV+. If v1 is kept: the reviewer's 500 of 676.
+- **HellaSwag TEST size: 750** (rule v2, reviewer-accepted conditionally). If the cross-split audit (A1.9) leaves fewer than 750
+  clean rows, or source grouping cannot reach 750, the allocation script writes no lists and stops with RETURN_FOR_REVIEW.
+  Neither the target nor DEV+ is reduced silently. Because whole source groups are taken, TEST can exceed 750 by a few rows;
+  the exact count is recorded at freeze.
 - **Why DEV+ is needed (reviewer concern on independent development data).** The binding case is not HellaSwag but
   **OpenBookQA**. It has only 300 Phase 1 train questions, so 1 pp is 3 questions, and inside a nested 4-of-5-fold D2 it is
   about 2. Per-benchmark thresholds selected at that resolution are unreliable. With DEV+ the OpenBookQA development set
   is 2,252 questions (1 pp ≈ 22 questions). CommonsenseQA goes from 733 to 1,168. HellaSwag's development data is
   essentially Phase 1 train (6,025), and its small remainder is not treated as a resource.
-- **Cost.** DEV+ and TEST together come to about 7,063 questions to extract, roughly 50 GPU-minutes at the measured
-  ~35 min per 5k. TEST outcomes are extracted but stay sealed, as the Gate 2 confirmation outcomes were.
+- **Cost (corrected; the first draft left out the OOD sets).** In-distribution DEV+ and TEST come to at most 7,386 questions
+  (4,952 + 1,435 + ≤ 999), and the OOD TEST sets to 3,767 (1,837 + 1,930). That is at most 11,153 questions, about 78 GPU-minutes
+  at the measured ~35 min per 5k. The exact figure is in `allocation.json`. TEST outcomes are extracted but stay sealed, as the
+  Gate 2 confirmation outcomes were.
 
 ## A1.4 OOD allocation
 | benchmark | test split | rows | status |
@@ -111,7 +117,7 @@ frozen `lh-fold-v1` hash).
 |---|---|---|---|
 | OpenBookQA | 3,000 | 0.67 / 0.95 pp | 0.80 / 1.13 pp |
 | CommonsenseQA | 1,000 | 1.16 / 1.65 pp | 1.39 / 1.96 pp |
-| HellaSwag | 500 | 1.65 / 2.33 pp | 1.96 / 2.77 pp |
+| HellaSwag | 750 | 1.34 / 1.90 pp | 1.60 / 2.26 pp |
 | PIQA (OOD) | 1,837 | 0.86 / 1.21 pp | 1.02 / 1.45 pp |
 | Social IQa (OOD) | 1,930 | 0.84 / 1.18 pp | 1.00 / 1.41 pp |
 
@@ -119,9 +125,11 @@ frozen `lh-fold-v1` hash).
   loses nothing. That is said now, so that a PASS cannot be read as a demonstrated ≤ 1 pp on those two benchmarks. The d
   values are planning assumptions. At G3b freeze, the expected widths are recomputed from the cross-fitted train
   discordance of the frozen policy (no test data), and recorded.
-- **Effect precision.** At G3b freeze, the expected CI width of the macro Δ net saving is also recomputed, from the frozen
-  policy's per-question saving differences on cross-fitted train. If the expected half-width is ≥ 0.03, the test cannot
-  distinguish the margin. In that case it is reported to the reviewer before G3c, and the test is not spent automatically.
+- **Effect precision (reviewer wording, replacing the first draft's incorrect "half-width ≥ 0.03" rule).** At G3b freeze,
+  estimate the standard error and expected confidence-interval width for the primary macro difference in net saving, using
+  cross-fitted development predictions. Report the minimum detectable improvement above the preregistered 0.03 margin at the
+  chosen confidence level and statistical power. If precision is inadequate for a practically meaningful effect, obtain
+  reviewer approval before spending the sealed test. This assessment does not change the success threshold.
 
 ## A1.6 Frozen identities, seeds, exclusions
 - Allocation salt `lh-phase3-alloc-v1`; folds `lh-fold-v1`; bootstrap 2,000 resamples, stratified by benchmark, paired, seed 0
@@ -139,15 +147,40 @@ frozen `lh-fold-v1` hash).
 - **Data:** Phase 1 train plus DEV+ for the three primary benchmarks. Phase 1 validation is reported as exposed. TEST rows
   are never read: the G3a code takes the frozen DEV+ id list as an allow-list and refuses TEST ids.
 - **D1-D4 definitions:** as in plan section 7, unchanged. The stop rules are computed on the three-benchmark macro:
-  D1 ceiling (ii) − B_pb < 0.05 stops; D2 nested improvement over B_pb < 0.02 stops. D3's rule ("h > x in at least half of
-  the cells with ≥ 30 transitions") is counted over the primary benchmarks' cells.
+  D1 ceiling (ii) − B_pb < 0.05 stops; D2 nested improvement over B_pb < 0.02 stops. **D3 (declared amendment A1-D3).** The rule
+  is present in frozen v1.1 section 7: "H3-h and the hx variants are kept only if h > x within at least half of the
+  (benchmark, loop) cells with ≥ 30 transitions". v1.1 counts cells over all six benchmarks. A1 amends only the population:
+  the cells are counted over the three primary benchmarks, so that the D3 decision concerns the benchmarks the H3 claim covers.
+  The "half", "≥ 30 transitions" and "h > x" parts are unchanged. Six-benchmark D3 is reported beside it and decides nothing.
 - **Order:** A1 frozen (commit and tag) → DEV+ and TEST extraction (TEST sealed, Gate 2 pattern) → G3a on Phase 1 train + DEV+ →
   reviewer GO/STOP → G3b → reviewer implementation sign-off → G3c.
 
-## A1.8 For the reviewer to decide before freezing
-1. Accept the three-benchmark H3 population and the macro definitions of A1.2. That includes fitting on all six benchmarks
-   with selection per benchmark, and the task-agnostic rule constrained over all six.
-2. Accept DEV+ (fresh non-test rows as development data) and the TEST sizes, including HellaSwag grouping by `source_id`.
-3. HellaSwag audit rule v2 (drop the colliding-id criterion; add the source/context criterion against every used HellaSwag row) and TEST 750, or keep v1 (676 rows, TEST 500).
-4. OOD: PIQA and Social IQa primary, WinoGrande excluded, OOD train splits sealed, 0-shot.
-5. Observed versus demonstrated compliance as in A1.5, including the pre-test check that the effect is resolvable.
+## A1.8 Reviewer decisions (Revised Amendment Review, 2026-10-22)
+| item | status |
+|---|---|
+| Three-benchmark H3 population (A1.2) | accepted |
+| DEV+ / TEST allocation | accepted conditionally (final lists from A1.9) |
+| HellaSwag rule v2 | accepted conditionally (cross-split audit, A1.9) |
+| HellaSwag TEST 750 | accepted if the final pool and source grouping permit (A1.9 stops otherwise) |
+| PIQA and Social IQa OOD; WinoGrande excluded | accepted |
+| Observed versus demonstrated compliance; effect precision as reworded | accepted |
+| Freeze | HOLD until A1.9 has run and the reviewer has seen `allocation.json` |
+
+## A1.9 Final allocation run (implements A1.3, A1.4 and the HellaSwag cross-split audit)
+- `scripts/phase3_allocate.py`, with the pure logic in `src/lookahead/phase3_allocation.py` (9 synthetic tests). CPU only. It reads
+  the committed inventory (sha256-checked against 7ec501ae…), the HellaSwag dataset and the manifests. It reads no model
+  output.
+- **HellaSwag cross-split audit.** The used-set is rebuilt and verified exactly as in the inventory. A train row is HellaSwag-clean
+  only if all of these hold:
+  - it has a gold answer;
+  - its text was never used;
+  - it shares no `source_id` or context with **any** used HellaSwag row, in the train or the Phase 1 validation split;
+  - its text is not a clean row of another pool.
+  Internal duplicates keep one row. The run reports counts by reason, including how many rows are excluded **only** through
+  validation-split sources: what the within-train audit could not see.
+- **Outputs.** `results/phase3/allocation.json` (counts, rule versions, list hashes, precision at the final sizes, extraction
+  estimate), plus `allocation_test_ids.csv` and `allocation_dev_ids.csv`. The script refuses to overwrite them. If HellaSwag
+  falls short of 750 it writes only the json, with RETURN_FOR_REVIEW (exit 3).
+- **Freeze.** After the reviewer has seen `allocation.json`, these are committed and tagged together as `phase3-a1`, with their
+  sha256 values recorded here: this file renamed to `docs/PHASE3_AMENDMENT_A1.md`, the allocation outputs, and the actual
+  counts filled into A1.3 and A1.5. Only then are extraction and G3a authorized.

@@ -220,7 +220,7 @@ class Stub:
         return [0], [0]
 
 
-def make_root(tmp, world, script, *, revisions=None):
+def make_root(tmp, world, script, *, revisions=None, take=None):
     """A repo-like folder whose manifests are what the Phase 1 / Gate 2 code would have written for the fake world."""
     from lookahead import confirm as C
     from lookahead.questions import load_lm_eval_questions
@@ -239,7 +239,7 @@ def make_root(tmp, world, script, *, revisions=None):
     (root / "data/manifests/splits.csv").write_text("\n".join(rows) + "\n", encoding="utf-8", newline="\n")
     (root / "data/manifests/questions.json").write_text(json.dumps({"benchmarks": qinfo}), encoding="utf-8")
     excl = C.Exclusion.from_recorders(recs)
-    builds = {b: C.build_confirmation_questions(b, Stub(), None, excl, salt=C.SALT, task_manager=world, spec=SPEC, split_plan=PLAN)
+    builds = {b: C.build_confirmation_questions(b, Stub(), (take or {}).get(b), excl, salt=C.SALT, task_manager=world, spec=SPEC, split_plan=PLAN)
               for b in ("fake_arc", "fake_hs")}
     ids = C.ids_csv_text(builds)
     (root / "data/manifests/confirmation_ids.csv").write_text(ids, encoding="utf-8", newline="\n")
