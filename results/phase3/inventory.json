@@ -1,0 +1,1411 @@
+{
+  "audit_rule_version": "phase3-inventory-v1",
+  "inputs": {
+    "clean_ids_csv_sha256": "bb16dcfff2d24cb39c49a33272fbd754fb6cc2dd0f841ce02d0c80f4432f87aa",
+    "files_sha256": {
+      "data/manifests/confirmation.json": "395385c6c9195be01c183a4c7730b7f702f68faa408bee37a7deb28d9035659d",
+      "data/manifests/confirmation_ids.csv": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+      "data/manifests/confirmation_ids.sha256": "06c86e2f0339f333897b8aac23ebd0f04029c305ccc18bf9f081a6a5f1380310",
+      "data/manifests/questions.json": "c44525f0a94171fb2e7014fbbbbd51d64a905fb00f5c34664b17856d5963259e",
+      "data/manifests/splits.csv": "89fbab6684bd2bb52e247fe9e8807faf6be73ed9122cf757656eb0bc3bf0712e",
+      "docs/PHASE3_PLAN.md": "e599f07c688f040467494a42d7efcaa36e13f437502da860ec8952944053b28f",
+      "results/gate2/confirmation_audit.json": "72e3b57f8a1f9d554a6814a18457cd0bb53c959a42b1c6f95c5189d5c5d3ddce"
+    },
+    "n_clean_ids": 101979,
+    "verification": {
+      "confirmation": {
+        "manifest_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+        "matches": true,
+        "n_questions": {
+          "arc_challenge": 299,
+          "arc_easy": 570,
+          "commonsense_qa": 1000,
+          "hellaswag": 1000,
+          "mmlu": 1500,
+          "openbookqa": 500
+        },
+        "rebuilt_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc"
+      },
+      "phase1": {
+        "arc_challenge": {
+          "doc_ids_equal_splits_csv": true,
+          "exemplar_live_failures": 0,
+          "manifest_n_questions": 1172,
+          "n_questions": 1172,
+          "n_questions_match": true,
+          "question_set_hash_matches": true
+        },
+        "arc_easy": {
+          "doc_ids_equal_splits_csv": true,
+          "exemplar_live_failures": 0,
+          "manifest_n_questions": 2376,
+          "n_questions": 2376,
+          "n_questions_match": true,
+          "question_set_hash_matches": true
+        },
+        "commonsense_qa": {
+          "doc_ids_equal_splits_csv": true,
+          "exemplar_live_failures": 0,
+          "manifest_n_questions": 1221,
+          "n_questions": 1221,
+          "n_questions_match": true,
+          "question_set_hash_matches": true
+        },
+        "hellaswag": {
+          "doc_ids_equal_splits_csv": true,
+          "exemplar_live_failures": 0,
+          "manifest_n_questions": 10042,
+          "n_questions": 10042,
+          "n_questions_match": true,
+          "question_set_hash_matches": true
+        },
+        "mmlu": {
+          "doc_ids_equal_splits_csv": true,
+          "exemplar_live_failures": 0,
+          "manifest_n_questions": 14042,
+          "n_questions": 14042,
+          "n_questions_match": true,
+          "question_set_hash_matches": true
+        },
+        "openbookqa": {
+          "doc_ids_equal_splits_csv": true,
+          "exemplar_live_failures": 0,
+          "manifest_n_questions": 500,
+          "n_questions": 500,
+          "n_questions_match": true,
+          "question_set_hash_matches": true
+        }
+      }
+    }
+  },
+  "min_clean": 300,
+  "pools": {
+    "arc_challenge/test": {
+      "benchmark": "arc_challenge",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 1172,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 1172,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "4eb8ac55885c8a3da2e3c8eb2adbe170bbdd3b5725dc5a066b7e11800cb607d5",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 1172,
+      "source_split": "test"
+    },
+    "arc_challenge/train": {
+      "benchmark": "arc_challenge",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 1119,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 1119,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 1119,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "2394b5c5c6a58360e813673cc92ba23d0d35e021aca8384aa76dfae47340437c",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 1119,
+      "source_split": "train"
+    },
+    "arc_challenge/validation": {
+      "benchmark": "arc_challenge",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 299,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 299,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "1a54becd0bb82c7cef519e7db4dd2ad6b7cb3e9a724150dc48508869abd40cd9",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 299,
+      "source_split": "validation"
+    },
+    "arc_easy/test": {
+      "benchmark": "arc_easy",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 1,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 2376,
+        "P1_EXEMPLAR": 2,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 2376,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "843fa0ab875a0e73a8ffd0614008f7d4059e5cafb3815b80378dcd16d2018bca",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 2376,
+      "source_split": "test"
+    },
+    "arc_easy/train": {
+      "benchmark": "arc_easy",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 1941,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 2,
+        "P1_EXEMPLAR": 2251,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 2,
+        "P1_EXEMPLAR": 2249,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "63ec14be67d16cc6d52568e6d4f9603a00a6ed9f247dcaf3e0e58aa392d20140",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 2251,
+      "source_split": "train"
+    },
+    "arc_easy/validation": {
+      "benchmark": "arc_easy",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 570,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 570,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "a38a0da0562c3dfa4c119ee28f3019bb8c99644b4e93581673e2e55f8dc2ddd8",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 570,
+      "source_split": "validation"
+    },
+    "commonsense_qa/test": {
+      "benchmark": "commonsense_qa",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 1140
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 1140
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "d565d1a012b364294d13138020f07c8af80019d2a9ca8eb6b467f5139d95c6da",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 1140,
+      "source_split": "test"
+    },
+    "commonsense_qa/train": {
+      "benchmark": "commonsense_qa",
+      "clean": 1435,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "8d8d45d6677735b108733053c5e40a23a907f076695c43b73f70d23654dd8b2c",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 1000,
+        "CONF_EXEMPLAR": 6593,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 7306,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 1000,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 7306,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "60abd2471725eef778172180a91615e4d3eae4e92bd24582598634ebf7d441c1",
+      "precision": {
+        "n": 1435,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0116,
+          "0.1": 0.0164,
+          "0.2": 0.0231
+        },
+        "single_accuracy_halfwidth": 0.0259
+      },
+      "raw": 9741,
+      "source_split": "train"
+    },
+    "commonsense_qa/validation": {
+      "benchmark": "commonsense_qa",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 1221,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 1221,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "c78b88cce7f6347cff4bc4ab14e1cb1f1744c27969bc304022a03fddae6584a4",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 1221,
+      "source_split": "validation"
+    },
+    "hellaswag/train": {
+      "benchmark": "hellaswag",
+      "clean": 676,
+      "clean_rows_sharing_native_id": 13,
+      "clean_set_fingerprint": "217ba84d5eb1abece292ea3a2573de14b7180b7e4797497c70ec8e2a89a14ce7",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 1000,
+        "CONF_EXEMPLAR": 12359,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 38229,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 820,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 1000,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 38229,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "2aba8b9e7135f9c338f5d5171e8f24c6504446bdaaa6db340155d805327af629",
+      "precision": {
+        "n": 676,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0169,
+          "0.1": 0.0238,
+          "0.2": 0.0337
+        },
+        "single_accuracy_halfwidth": 0.0377
+      },
+      "raw": 39905,
+      "source_split": "train"
+    },
+    "hellaswag/validation": {
+      "benchmark": "hellaswag",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 10042,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 10042,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "6f7b970f058bd778c778eb4e100ea301bee8dda704b0d4938b0dfa6005d13607",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 10042,
+      "source_split": "validation"
+    },
+    "mmlu/dev": {
+      "benchmark": "mmlu",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 285,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 5,
+        "P1_EXEMPLAR": 285,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 285,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 5,
+        "P1_EXEMPLAR": 280,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "0a950020498e6415814481aa16d9c869ce0bc0dc612039ec88eec7b940aa9130",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 285,
+      "source_split": "dev"
+    },
+    "mmlu/test": {
+      "benchmark": "mmlu",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 5,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 14042,
+        "P1_EXEMPLAR": 5,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 14042,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 14042,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "85175f508ec25290002bddc0738be632748a3471841ff6e9cdf6546e7a59264b",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 14042,
+      "source_split": "test"
+    },
+    "mmlu/validation": {
+      "benchmark": "mmlu",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 1502,
+        "CONF_EXEMPLAR": 1,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 28,
+        "P1_EXEMPLAR": 1,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 1531,
+      "excluded_primary": {
+        "CONF_EVAL": 1502,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 28,
+        "P1_EXEMPLAR": 1,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "9a2d5a790d9a68a8657967e55966af3b3f5c9cb497fa6e964028094cb310b2a4",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 1531,
+      "source_split": "validation"
+    },
+    "openbookqa/test": {
+      "benchmark": "openbookqa",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 500,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 500,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "b9d2a74c2a7a22b88b73e9dc20a05ebb69260219aa2522b2bb3f4dca96a7506d",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 500,
+      "source_split": "test"
+    },
+    "openbookqa/train": {
+      "benchmark": "openbookqa",
+      "clean": 4952,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "69d78c29a3157f6659356d4e3b1e9db8f6afd2f8b588be2b66723efdc11d969a",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 5,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 5,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "c9957b793f4ad0fd26b6710b42ecf663fba4dd7d4a46353792a164c5b2fb418e",
+      "precision": {
+        "n": 4952,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0062,
+          "0.1": 0.0088,
+          "0.2": 0.0125
+        },
+        "single_accuracy_halfwidth": 0.0139
+      },
+      "raw": 4957,
+      "source_split": "train"
+    },
+    "openbookqa/validation": {
+      "benchmark": "openbookqa",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 500,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 500,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "in_distribution",
+      "min_clean": 300,
+      "pool_fingerprint": "0b5570eb935920e3a621e8c2be555afb92ec9fa77afda73d1a0851cbaf45b693",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 500,
+      "source_split": "validation"
+    },
+    "piqa/test": {
+      "benchmark": "piqa",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 3084
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 3084
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "0bf9451bf798604dc73c2a81af906f534ded6ab127c80370ceeada26f8e6f787",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 3084,
+      "source_split": "test"
+    },
+    "piqa/train": {
+      "benchmark": "piqa",
+      "clean": 16107,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "56b083e5357987d6d6020fec8ed5b3615ad011c1601f9c9fee7234c11a0ef7cc",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 6,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 6,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "e0a075cdb3fd07695542e5eb747c9ace1b47d11d74c5011db8eb2bd29fb728c6",
+      "precision": {
+        "n": 16107,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0035,
+          "0.1": 0.0049,
+          "0.2": 0.0069
+        },
+        "single_accuracy_halfwidth": 0.0077
+      },
+      "raw": 16113,
+      "source_split": "train"
+    },
+    "piqa/validation": {
+      "benchmark": "piqa",
+      "clean": 1837,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "8535fd3f4af69bb8016a8c3c586562e03a8c9bdafabfba4cace70d5e14184558",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 1,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 1,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "4f56418eebf75af9072cfaa82e6eb3938d7ee42e991f9e25c41e7a0bd549cfd4",
+      "precision": {
+        "n": 1837,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0102,
+          "0.1": 0.0145,
+          "0.2": 0.0205
+        },
+        "single_accuracy_halfwidth": 0.0229
+      },
+      "raw": 1838,
+      "source_split": "validation"
+    },
+    "social_iqa/train": {
+      "benchmark": "social_iqa",
+      "clean": 33381,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "fbae3be7ef3b3fa83a77e000a3de092dbf14905a9b38195651f10606708470de",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 29,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 29,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "e6fb91889feeb0113789d4b215b36ed2e3a6396bef79e4c502ebf5341cee59a7",
+      "precision": {
+        "n": 33381,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0024,
+          "0.1": 0.0034,
+          "0.2": 0.0048
+        },
+        "single_accuracy_halfwidth": 0.0054
+      },
+      "raw": 33410,
+      "source_split": "train"
+    },
+    "social_iqa/validation": {
+      "benchmark": "social_iqa",
+      "clean": 1930,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "1a70a8f146df371f7ed6fb036ccf7634846c61036c732394a0ff8c147b10f444",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 24,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 24,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "cbf59329144924e70e0567fc800a0d166b8d991dfdc17b8f1a842ccd734a1a12",
+      "precision": {
+        "n": 1930,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.01,
+          "0.1": 0.0141,
+          "0.2": 0.02
+        },
+        "single_accuracy_halfwidth": 0.0223
+      },
+      "raw": 1954,
+      "source_split": "validation"
+    },
+    "winogrande/test": {
+      "benchmark": "winogrande",
+      "clean": 0,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eligible": false,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 1767
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 1767
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "8916989e1d56d8689934c615d181943417b895ce873743e95a54c0d3ec15b200",
+      "precision": {
+        "n": 0,
+        "paired_difference_halfwidth": {},
+        "single_accuracy_halfwidth": null
+      },
+      "raw": 1767,
+      "source_split": "test"
+    },
+    "winogrande/train": {
+      "benchmark": "winogrande",
+      "clean": 40394,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "aadfefe5c401a94043a10fe718a2a97061f9e52d2b5a51f2096e08a9537feb51",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 4,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 4,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "274c0c78ca8144527eae692adcefe40882a398729116320c6914c87178a296f4",
+      "precision": {
+        "n": 40394,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0022,
+          "0.1": 0.0031,
+          "0.2": 0.0044
+        },
+        "single_accuracy_halfwidth": 0.0049
+      },
+      "raw": 40398,
+      "source_split": "train"
+    },
+    "winogrande/validation": {
+      "benchmark": "winogrande",
+      "clean": 1267,
+      "clean_rows_sharing_native_id": 0,
+      "clean_set_fingerprint": "4a27a5a62ac3239c91af4c630fe001e08a1fd26a0f300bc96ca498ff948137df",
+      "eligible": true,
+      "excluded_any_reason": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "excluded_by_id_only": 0,
+      "excluded_by_text_only": 0,
+      "excluded_primary": {
+        "CONF_EVAL": 0,
+        "CONF_EXEMPLAR": 0,
+        "CROSS_POOL_DUPLICATE": 0,
+        "INTERNAL_DUPLICATE": 0,
+        "P1_EVAL": 0,
+        "P1_EXEMPLAR": 0,
+        "UNLABELED": 0
+      },
+      "group": "new_benchmark",
+      "min_clean": 300,
+      "pool_fingerprint": "4a27a5a62ac3239c91af4c630fe001e08a1fd26a0f300bc96ca498ff948137df",
+      "precision": {
+        "n": 1267,
+        "note": "eligibility (>= min_clean) is not statistical adequacy; compare these widths with the effect sizes the plan must detect (0.03 saving, 0.01 loss) before spending a pool",
+        "paired_difference_halfwidth": {
+          "0.05": 0.0123,
+          "0.1": 0.0174,
+          "0.2": 0.0246
+        },
+        "single_accuracy_halfwidth": 0.0275
+      },
+      "raw": 1267,
+      "source_split": "validation"
+    }
+  },
+  "provenance": {
+    "code_sha256": {
+      "scripts/phase3_inventory.py": "5165549b22663d61ba3e0e5237c2bd999e10c6eb86a2d41ca1cee01eb1afd846",
+      "src/lookahead/phase3_inventory.py": "837d26fc66800d7239d856e8bacc7b7ed3b36fabbafbebb80f6907d2c1d71e10"
+    },
+    "confirmation_salt": "lh-confirm-v1",
+    "datasets_version": "5.0.1",
+    "fewshot_overlap_new_benchmarks": {
+      "piqa": {
+        "test": {
+          "rows_with_text_in_source": 1,
+          "source": "train",
+          "status": "disjoint_split"
+        },
+        "train": {
+          "source": "train",
+          "status": "same_split: exemplars would be drawn from the pool itself"
+        },
+        "validation": {
+          "rows_with_text_in_source": 1,
+          "source": "train",
+          "status": "disjoint_split"
+        }
+      },
+      "social_iqa": {
+        "train": {
+          "source": "train",
+          "status": "same_split: exemplars would be drawn from the pool itself"
+        },
+        "validation": {
+          "rows_with_text_in_source": 0,
+          "source": "train",
+          "status": "disjoint_split"
+        }
+      },
+      "winogrande": {
+        "test": {
+          "rows_with_text_in_source": 0,
+          "source": "train",
+          "status": "disjoint_split"
+        },
+        "train": {
+          "source": "train",
+          "status": "same_split: exemplars would be drawn from the pool itself"
+        },
+        "validation": {
+          "rows_with_text_in_source": 0,
+          "source": "train",
+          "status": "disjoint_split"
+        }
+      }
+    },
+    "lm_eval_version": "0.4.13",
+    "revisions": {
+      "arc_challenge": {
+        "hf_dataset": "allenai/ai2_arc",
+        "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+        "revision_used_before": "210d026faf9955653af8916fad021475a3f00453",
+        "same_as_before": true
+      },
+      "arc_easy": {
+        "hf_dataset": "allenai/ai2_arc",
+        "hf_revision": "210d026faf9955653af8916fad021475a3f00453",
+        "revision_used_before": "210d026faf9955653af8916fad021475a3f00453",
+        "same_as_before": true
+      },
+      "commonsense_qa": {
+        "hf_dataset": "tau/commonsense_qa",
+        "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+        "revision_used_before": "94630fe30dad47192a8546eb75f094926d47e155",
+        "same_as_before": true
+      },
+      "hellaswag": {
+        "hf_dataset": "Rowan/hellaswag",
+        "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+        "revision_used_before": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+        "same_as_before": true
+      },
+      "mmlu": {
+        "hf_dataset": "cais/mmlu",
+        "hf_revision": "c30699e8356da336a370243923dbaf21066bb9fe",
+        "revision_used_before": "c30699e8356da336a370243923dbaf21066bb9fe",
+        "same_as_before": true
+      },
+      "openbookqa": {
+        "hf_dataset": "allenai/openbookqa",
+        "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+        "revision_used_before": "388097ea7776314e93a529163e0fea805b8a6454",
+        "same_as_before": true
+      },
+      "piqa": {
+        "hf_dataset": "baber/piqa",
+        "hf_revision": "142f6d7367fd9877f0fb3b5734ea6a545f54cdd1"
+      },
+      "social_iqa": {
+        "hf_dataset": "lighteval/siqa",
+        "hf_revision": "54c6a1f8cb6daf4f5abf24a601852612fb35eb25"
+      },
+      "winogrande": {
+        "hf_dataset": "allenai/winogrande",
+        "hf_revision": "01e74176c63542e6b0bcb004dcdea22d94fb67b5"
+      }
+    },
+    "split_plan": {
+      "arc_challenge": "validation",
+      "arc_easy": "validation",
+      "commonsense_qa": "train",
+      "hellaswag": "train",
+      "mmlu": "validation",
+      "openbookqa": "validation"
+    },
+    "take": {
+      "arc_challenge": null,
+      "arc_easy": null,
+      "commonsense_qa": 1000,
+      "hellaswag": 1000,
+      "mmlu": null,
+      "openbookqa": null
+    },
+    "tasks": {
+      "arc_challenge": {
+        "arc_challenge": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      },
+      "arc_easy": {
+        "arc_easy": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      },
+      "commonsense_qa": {
+        "commonsense_qa": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      },
+      "hellaswag": {
+        "hellaswag": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      },
+      "mmlu": {
+        "fewshot_source_splits": [
+          "dev"
+        ],
+        "n_tasks": 57
+      },
+      "openbookqa": {
+        "openbookqa": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      },
+      "piqa": {
+        "piqa": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      },
+      "social_iqa": {
+        "social_iqa": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation"
+          ]
+        }
+      },
+      "winogrande": {
+        "winogrande": {
+          "fewshot_source_split": "train",
+          "fewshot_split_configured": null,
+          "splits": [
+            "train",
+            "validation",
+            "test"
+          ]
+        }
+      }
+    },
+    "tokenizer_mode": "real Ouro tokenizer (Phase 1 question-set hashes verified)"
+  },
+  "purpose": "Phase 3 fresh-data inventory (inventory only: no model outputs, labels of any model, hidden states, thresholds or confirmation predictions were read)",
+  "summary": {
+    "in_distribution": {
+      "arc_challenge/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "arc_challenge/train": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "arc_challenge/validation": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "arc_easy/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "arc_easy/train": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "arc_easy/validation": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "commonsense_qa/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "commonsense_qa/train": {
+        "clean": 1435,
+        "status": "eligible"
+      },
+      "commonsense_qa/validation": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "hellaswag/test": {
+        "clean": null,
+        "status": "unresolved"
+      },
+      "hellaswag/train": {
+        "clean": 676,
+        "status": "eligible"
+      },
+      "hellaswag/validation": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "mmlu/dev": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "mmlu/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "mmlu/validation": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "openbookqa/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "openbookqa/train": {
+        "clean": 4952,
+        "status": "eligible"
+      },
+      "openbookqa/validation": {
+        "clean": 0,
+        "status": "ineligible"
+      }
+    },
+    "new_benchmark": {
+      "piqa/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "piqa/train": {
+        "clean": 16107,
+        "status": "eligible"
+      },
+      "piqa/validation": {
+        "clean": 1837,
+        "status": "eligible"
+      },
+      "social_iqa/train": {
+        "clean": 33381,
+        "status": "eligible"
+      },
+      "social_iqa/validation": {
+        "clean": 1930,
+        "status": "eligible"
+      },
+      "winogrande/test": {
+        "clean": 0,
+        "status": "ineligible"
+      },
+      "winogrande/train": {
+        "clean": 40394,
+        "status": "eligible"
+      },
+      "winogrande/validation": {
+        "clean": 1267,
+        "status": "eligible"
+      }
+    }
+  },
+  "unresolved": [
+    {
+      "pool": "hellaswag/test",
+      "reason": "split could not be loaded: hellaswag: ValueError: invalid literal for int() with base 10: ''"
+    }
+  ],
+  "unresolved_contamination_risks": [
+    "Pretraining and SFT contamination of Ouro-1.4B is unknowable from the data: its training mixture is not itemised, so any benchmark's train or validation split may have been seen by the model. The inventory removes overlap with what OUR pipeline used; it cannot remove overlap with what the model saw. A finding that depends on a pool being unseen by the model is not supported by this audit.",
+    "Text matching is exact after lower-casing and whitespace normalisation. Paraphrases and near-duplicates (for example ARC items that differ in one word) are not detected.",
+    "Native ids are only unique within a dataset revision; HellaSwag ids repeat inside train, so an id match can exclude more rows than were used (conservative; `excluded_by_id_only` shows how many).",
+    "A pool that is clean today is clean for one dataset revision. The revisions recorded here must be pinned when the fresh allocation is frozen.",
+    "Few-shot exemplars for the future fresh tests are not drawn yet; the sampler draws them at build time. For new benchmarks the report states the few-shot source split and the overlap of each candidate pool with it."
+  ],
+  "used_set": {
+    "counts_added": {
+      "CONF_EVAL": 4869,
+      "CONF_EXEMPLAR": 81070,
+      "P1_EVAL": 29353,
+      "P1_EXEMPLAR": 473559
+    },
+    "fingerprint": "ddd88b73930fb718fb9d022468e99e93fc814441f861b7b7fd7af8cfe48f94bd",
+    "kinds": {
+      "CONF_EVAL": "Gate 2 confirmation question",
+      "CONF_EXEMPLAR": "few-shot exemplar of a confirmation question",
+      "P1_EVAL": "every Phase 1 scored question (covers Gate 1 and Gate 2 train/validation)",
+      "P1_EXEMPLAR": "few-shot exemplar of a Phase 1 question"
+    },
+    "n_distinct_ids": 59859,
+    "n_distinct_texts": 82478
+  }
+}
