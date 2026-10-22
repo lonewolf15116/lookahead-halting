@@ -118,10 +118,18 @@ def make_root(tmp_path, world, *, tamper_hash=False):
 REV = {"ds/hs": "r1", "ds/new": "r2"}
 
 
+NOT_USED = range(30, 35)  # five non-allocated train rows that the pipeline never used: not permitted as exemplars
+
+
+def used_texts(world):
+    hs = hashes(world, "fake_hs", "train")
+    return {h for i, h in hs.items() if i >= 20 and i not in NOT_USED}
+
+
 def run(root, world, pinned, rev=REV):
     mod = _load(REPO_ROOT / "scripts" / "prepare_phase3.py", "prep3")
     return mod.main([], task_manager=world, lm=T.Stub(), root=root, pinned=pinned, specs=SPECS,
-                    fetch_revision=lambda r: rev[r], ood=("fake_new",))
+                    fetch_revision=lambda r: rev[r], ood=("fake_new",), used_texts=used_texts(world))
 
 
 def test_build_strips_allocated_rows_from_the_fewshot_pool_and_writes_frozen_sets(tmp_path, world):
@@ -134,16 +142,21 @@ def test_build_strips_allocated_rows_from_the_fewshot_pool_and_writes_frozen_set
     for k in ("dev/fake_hs", "test/fake_hs"):
         r = rep["sets"][k]
         assert r["exemplar_is_allocated_row"] == 0 and r["self_exemplar"] == 0 and r["live_exemplar_failures"] == 0
-        assert r["pool_removed"] == 20 and r["pool_size_after"] == 20 and r["exemplar_draws"] == 2 * 10
+        assert r["exemplar_not_previously_used"] == 0
+        assert r["pool_removed_allocated"] == 20 and r["pool_removed_not_used"] == 5
+        assert r["pool_removed"] == 25 and r["pool_size_after"] == 15 and r["exemplar_draws"] == 2 * 10
+        assert len(r["exemplar_selection_sha256"]) == 64
     # independent check on the built prompts: no allocated question's text occurs in another question's context
     from lookahead.extract import load_questions
 
     allocated = {f"What is {300 + i} plus {300 + i}?" for i in TEST_ROWS + DEV_ROWS}
+    never_used = {f"What is {300 + i} plus {300 + i}?" for i in NOT_USED}
     for role in ("dev", "test"):
         for q in load_questions(root / "data" / P.QDIR[role] / "fake_hs.jsonl.gz"):
             own = f"What is {300 + int(q.doc_id.rsplit('@r', 1)[1])} plus"
             others = [t for t in allocated if t in q.context and not t.startswith(own)]
             assert not others, (q.doc_id, others)
+            assert not [t for t in never_used if t in q.context], q.doc_id  # exemplars only from previously used rows
             assert q.doc_id.startswith("p3:fake_hs/train@r")
     dev_ids = (root / P.IDS["dev"]).read_text(encoding="utf-8").splitlines()
     test_ids = (root / P.IDS["test"]).read_text(encoding="utf-8").splitlines()

@@ -160,3 +160,7 @@
 - Implementation decisions for the reviewer to confirm: (1) every allocated row (TEST and DEV+) is stripped from the few-shot pool, so no TEST or DEV+ question is ever an exemplar (exemplar identities therefore differ from Phase 1 for HellaSwag and CommonsenseQA; format and shots unchanged); (2) OOD metrics PIQA acc_norm, Social IQa acc, fixed before any outcome; (3) the full extraction runs only after the reviewer has seen the build report.
 - Found and fixed in testing: one combined id list made the DEV+ split loader reject TEST rows; ids are now one file per role.
 - Tests: tests/test_phase3_build.py 16 passed; test_phase1_scripts and test_extract still pass. HOLD: running the extraction beyond -Stage build, D1-D4, training.
+
+## 2026-10-23 Phase 3 extraction: reviewer GO for Stage build only
+- Approved: few-shot pool stripping; PIQA acc_norm; Social IQa acc; two-stage extraction; 40-question smoke extraction on condition that TEST correctness and predictions are not exposed. HOLD: full extraction, D1-D4, training.
+- Conditions enforced: smoke TEST records only under the sealed data/extracted_phase3_test_smoke, never reused by the full extraction; verifier prints integrity only. Exemplar pool tightened to previously used rows (verified used-set) minus allocated rows; build report gains exemplar_not_previously_used, pool_removed_allocated / _not_used, and exemplar_selection_sha256 (determinism). 16 tests pass.

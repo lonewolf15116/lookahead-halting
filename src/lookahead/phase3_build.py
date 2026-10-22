@@ -1,13 +1,15 @@
 """Phase 3 (A1 frozen): build the DEV+ and sealed TEST questions from the frozen allocation, and check them before extraction.
 
 Questions are built exactly as Phase 1 and the Gate 2 confirmation set were (lm_eval prompt format, Phase 1 shots and few-shot
-seed), with one addition required by A1: the few-shot pool of every task is stripped of every allocated row (TEST and DEV+), so
-no TEST or DEV+ question is ever shown as an exemplar, to any question. Exemplars therefore come only from rows the pipeline had
-already used. Every built doc must reproduce its allocation text hash.
+seed), with one addition required by A1: the few-shot pool of every task is restricted to rows the pipeline had already used
+(text hash in the verified used-set) and stripped of every allocated row (TEST and DEV+). So no TEST or DEV+ question is ever
+shown as an exemplar, and every exemplar is a previously used row (reviewer Stage-build condition). Every built doc must
+reproduce its allocation text hash; the exact exemplar selection is fingerprinted so a rebuild can confirm determinism.
 
 TEST questions live under paths containing `phase3_test`. `assert_not_sealed` refuses such paths (and the Gate 2 `confirm`
 paths); every development or selection loader must call it. Nothing here reads a model output.
 """
+import hashlib
 import json
 from pathlib import Path
 
@@ -66,7 +68,7 @@ def read_allocation(root: Path, pinned: dict = PINNED) -> dict:
     return out
 
 
-def build_set(benchmark, lm, rows, split, tm, spec, excluded_texts: set, text_hash_fn, role):
+def build_set(benchmark, lm, rows, split, tm, spec, excluded_texts: set, text_hash_fn, role, permitted_texts: set):
     """Build the questions of `rows` (one benchmark, one source split). Returns (questions, report).
 
     Raises on any identity problem (a built doc whose text hash differs from its allocation row, duplicate ids). Exemplar
@@ -77,7 +79,9 @@ def build_set(benchmark, lm, rows, split, tm, spec, excluded_texts: set, text_ha
         by_task.setdefault(r["task"], []).append(r)
     index_of = {t: sorted(rs, key=lambda r: r["row"]) for t, rs in by_task.items()}
     report = {"benchmark": benchmark, "role": role, "split": split, "n_rows": len(rows), "exemplar_draws": 0,
-              "exemplar_is_allocated_row": 0, "self_exemplar": 0, "pool_removed": 0, "pool_size_after": 0}
+              "exemplar_is_allocated_row": 0, "exemplar_not_previously_used": 0, "self_exemplar": 0,
+              "pool_removed": 0, "pool_removed_allocated": 0, "pool_removed_not_used": 0, "pool_size_after": 0}
+    fp = hashlib.sha256()
     built = []
     with C.record_exemplars() as rec:
         def on_task(task):
@@ -85,8 +89,11 @@ def build_set(benchmark, lm, rows, split, tm, spec, excluded_texts: set, text_ha
             s = getattr(task, "sampler", None)
             if s is not None:
                 docs = list(s.fewshot_docs())
-                keep = [d for d in docs if text_hash_fn(benchmark, d, task) not in excluded_texts]
+                hs = [text_hash_fn(benchmark, d, task) for d in docs]
+                keep = [d for d, h in zip(docs, hs) if h in permitted_texts and h not in excluded_texts]
                 report["pool_removed"] += len(docs) - len(keep)
+                report["pool_removed_allocated"] += sum(h in excluded_texts for h in hs)
+                report["pool_removed_not_used"] += sum(h not in permitted_texts and h not in excluded_texts for h in hs)
                 report["pool_size_after"] += len(keep)
                 s.df, s._loaded = keep, True
             rec.begin_task(task)
@@ -100,6 +107,8 @@ def build_set(benchmark, lm, rows, split, tm, spec, excluded_texts: set, text_ha
             qr = rec.by_doc_id[q.doc_id]
             report["exemplar_draws"] += len(qr.inserted)
             report["exemplar_is_allocated_row"] += sum(d.text_hash in excluded_texts for d in qr.superset + qr.inserted)
+            report["exemplar_not_previously_used"] += sum(d.text_hash not in permitted_texts for d in qr.superset + qr.inserted)
+            fp.update((f"{q.subtask}|{r['row']}|" + ",".join(d.text_hash for d in qr.inserted) + "\n").encode())
             report["self_exemplar"] += sum(d.text_hash == th for d in qr.inserted)
             new = f"p3:{q.subtask}/{split}@r{r['row']}"
             rec.rekey(q.doc_id, new)
@@ -115,6 +124,7 @@ def build_set(benchmark, lm, rows, split, tm, spec, excluded_texts: set, text_ha
     order = {(r["task"], r["row"]): k for k, r in enumerate(rows)}
     built.sort(key=lambda q: order[(q.subtask, int(q.doc_id.rsplit("@r", 1)[1]))])
     report["question_set_sha256"] = question_set_hash(built)
+    report["exemplar_selection_sha256"] = fp.hexdigest()
     return built, report
 
 

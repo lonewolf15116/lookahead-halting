@@ -59,3 +59,27 @@ verified these safeguards. Nothing here has been run on real data.
   - A tampered question file is refused, a revision change writes the report only, a wrong allocation hash or a text-hash
     mismatch is refused, and the extractor routes both Phase 3 sets through the pinned check.
 - `tests/test_phase1_scripts.py` and `tests/test_extract.py` still pass with the extractor and verifier changes.
+
+## Reviewer decision (Stage build GO, 2026-10-23) and how its two conditions are enforced
+Approved: few-shot pool stripping, PIQA `acc_norm`, Social IQa `acc`, two stages, and a 40-question smoke extraction on the
+condition that it does not expose TEST correctness or predictions. On HOLD: full extraction, D1-D4 and training.
+
+1. **The smoke test stays sealed.**
+   - TEST smoke records are written only to `data/extracted_phase3_test_smoke/`. That is a sealed path, which
+     `assert_not_sealed` refuses.
+   - The full extraction writes to `data/extracted_phase3_test/` and recomputes every question. Smoke records are never
+     merged into it or reused, so they cannot influence development.
+   - The verifier prints only PASS/FAIL, question counts and record-status counts. Its report holds integrity checks only:
+     schema, finiteness, hashes, resume state, and the recomputation of the stored prediction fields. It holds no accuracy.
+2. **Exemplars come only from permitted, previously used rows; this was tightened after the review.**
+   - The few-shot pool is now restricted to rows whose text is in the verified used-set. The used-set is rebuilt and checked
+     against the manifests, exactly as in the inventory. Allocated rows are also removed.
+   - On real data this removes, for example, the 498 HellaSwag train rows that were never used. Those rows are neither
+     allocated nor used: they were excluded from the clean pool only for sharing a source or context.
+   - The build report gives, per set, the following, and any non-zero violation count fails the build:
+     - `exemplar_is_allocated_row` (must be 0) and `exemplar_not_previously_used` (must be 0);
+     - `pool_removed_allocated` and `pool_removed_not_used`;
+     - `exemplar_selection_sha256`, a fingerprint of the exact exemplars of every question, so a rebuild can confirm
+       determinism.
+   - Tests: the permitted pool removes 20 allocated rows and 5 never-used rows, with 0 violations. The independent
+     prompt check also confirms that no never-used row's text appears in any context.
