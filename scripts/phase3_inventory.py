@@ -87,8 +87,13 @@ def inv_native_id(benchmark, doc, split):
     return None if benchmark in NEW_BENCHMARKS else C.native_id(benchmark, doc, split)
 
 
-def is_labeled(task, doc) -> bool:
-    """Does the DATASET ship a gold answer for this row? (a property of the data, not of any model)"""
+def is_labeled(task, doc, benchmark=None) -> bool:
+    """Does the DATASET ship a gold answer for this row? (a property of the data, not of any model)
+
+    WinoGrande's doc_to_target is the text after the blank (not an option index), so its gold field is read directly.
+    """
+    if benchmark == "winogrande":
+        return str(doc.get("answer", "")) in ("1", "2")
     try:
         gold = task.doc_to_target(doc)
         choices = task.doc_to_choice(doc)
@@ -158,9 +163,11 @@ def build_used_set(root, benchmarks, lm, tm, specs, split_plan, take, salt, with
 # --------------------------------------------------------------------------- pools
 
 def enumerate_pools(tm, benchmark):
-    """{source_split: [Rec]} for every split the dataset offers, plus few-shot source info. Raises on load problems."""
+    """({source_split: [Rec]}, tasks_info, failures). A split that cannot be loaded (for example HellaSwag's unlabeled test
+    split, whose process_docs casts the empty label) is reported in `failures` and does not stop the other splits. Raises only
+    when the benchmark's tasks cannot be loaded at all."""
     loaded = tm.load([benchmark])["tasks"]
-    pools, tasks_info = {}, {}
+    pools, tasks_info, failures = {}, {}, {}
     for task_name in sorted(loaded):
         task = loaded[task_name]
         avail = [s for s in SPLIT_NAMES if s in task.dataset]
@@ -169,12 +176,18 @@ def enumerate_pools(tm, benchmark):
             fs = "train" if task.has_training_docs() else ("validation" if task.has_validation_docs() else "test")
         tasks_info[task_name] = {"splits": avail, "fewshot_source_split": fs, "fewshot_split_configured": task.config.fewshot_split}
         for split in avail:
-            C.switch_eval_split(task, split)
-            for i, doc in enumerate(task.eval_docs):
-                pools.setdefault(split, []).append(inv.Rec(
-                    benchmark, split, task_name, i, inv_native_id(benchmark, doc, split), inv_text_hash(benchmark, doc, task),
-                    is_labeled(task, doc)))
-    return pools, tasks_info
+            try:
+                C.switch_eval_split(task, split)
+                recs = [inv.Rec(benchmark, split, task_name, i, inv_native_id(benchmark, doc, split),
+                                inv_text_hash(benchmark, doc, task), is_labeled(task, doc, benchmark))
+                        for i, doc in enumerate(task.eval_docs)]
+            except Exception as e:
+                failures.setdefault(split, f"{task_name}: {type(e).__name__}: {str(e)[:200]}")
+                continue
+            pools.setdefault(split, []).extend(recs)
+    for split in failures:  # a split that failed for any task is not audited at all: partial pools would look clean
+        pools.pop(split, None)
+    return pools, tasks_info, failures
 
 
 def fewshot_overlap(pools, tasks_info):
@@ -268,7 +281,11 @@ def main(argv=None, *, task_manager=None, lm=None, root=None, specs=None, split_
     for group, names in (("in_distribution", benchmarks), ("new_benchmark", new_benchmarks)):
         for b in names:
             try:
-                pools, tinfo = enumerate_pools(tm, b)
+                pools, tinfo, failures = enumerate_pools(tm, b)
+                for split, why in sorted(failures.items()):
+                    unresolved.append({"pool": f"{b}/{split}", "reason": f"split could not be loaded: {why}"})
+                    groups[f"{b}/{split}"] = group
+                    print(f"{b}/{split}: UNRESOLVED ({why[:80]})", flush=True)
             except Exception as e:  # provenance or loading problem: unresolved, never assumed clean
                 unresolved.append({"pool": f"{b}/*", "reason": f"pool could not be loaded: {type(e).__name__}: {str(e)[:200]}"})
                 groups[f"{b}/*"] = group

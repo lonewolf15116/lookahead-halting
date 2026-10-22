@@ -385,3 +385,61 @@ def test_script_never_names_outcome_or_frozen_artifacts():
         for path in (REPO_ROOT / "scripts/phase3_inventory.py", REPO_ROOT / "src/lookahead/phase3_inventory.py"):
             assert bad not in path.read_text(encoding="utf-8"), (path.name, bad)
     shutil  # (kept: tests above copy nothing, but the import documents that the guard is file-based)
+
+
+# ---------------------------------------------------------------- regressions from the first real run
+
+def test_winogrande_label_is_read_from_the_answer_field_not_from_doc_to_target():
+    script = _load_script()
+
+    class T:  # doc_to_target is the suffix text, as in lm_eval's winogrande: it is never an option index
+        def doc_to_target(self, doc):
+            return "after the blank"
+
+        def doc_to_choice(self, doc):
+            return ["prefix A", "prefix B"]
+
+    assert script.is_labeled(T(), {"answer": "1"}, "winogrande") and script.is_labeled(T(), {"answer": "2"}, "winogrande")
+    assert not script.is_labeled(T(), {"answer": ""}, "winogrande")  # the test split ships no answers
+    assert not script.is_labeled(T(), {}, "winogrande")
+
+
+def test_generic_label_check_handles_index_string_and_errors():
+    script = _load_script()
+
+    class T:
+        def __init__(self, gold, choices=("a", "b")):
+            self.gold, self.choices = gold, list(choices)
+
+        def doc_to_target(self, doc):
+            if isinstance(self.gold, Exception):
+                raise self.gold
+            return self.gold
+
+        def doc_to_choice(self, doc):
+            return self.choices
+
+    assert script.is_labeled(T(1), {}) and script.is_labeled(T("b"), {})
+    assert not script.is_labeled(T(-1), {}) and not script.is_labeled(T(2), {}) and not script.is_labeled(T("z"), {})
+    assert not script.is_labeled(T(ValueError("empty label")), {})
+
+
+def test_one_unloadable_split_is_unresolved_but_the_other_splits_are_still_audited(tmp_path, world, monkeypatch):
+    script = _load_script()
+    root = make_root(tmp_path, world, script)
+    real = script.C.switch_eval_split
+
+    def flaky(task, split):  # like HellaSwag's test split, whose process_docs cannot cast an empty label
+        if split == "test" and task.config.task == "fake_arc":
+            raise ValueError("invalid literal for int() with base 10: ''")
+        return real(task, split)
+
+    monkeypatch.setattr(script.C, "switch_eval_split", flaky)
+    assert run(script, world, root) == 3
+    rep = report(root)
+    assert "fake_arc/test" not in rep["pools"]  # not audited: a partial pool would look clean
+    bad = [u for u in rep["unresolved"] if u["pool"] == "fake_arc/test"]
+    assert bad and "split could not be loaded" in bad[0]["reason"] and "ValueError" in bad[0]["reason"]
+    assert rep["summary"]["in_distribution"]["fake_arc/test"]["status"] == "unresolved"
+    assert rep["pools"]["fake_arc/train"]["clean"] > 0 and rep["summary"]["in_distribution"]["fake_arc/train"]["status"] != "unresolved"
+    assert [u["pool"] for u in rep["unresolved"]] == ["fake_arc/test"]  # nothing else became unresolved
