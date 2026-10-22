@@ -23,7 +23,7 @@ from lookahead.extract import load_questions, load_splits, run_benchmark, sha256
 from lookahead.questions import BENCHMARKS, SYNTHETIC, question_set_hash
 
 ALL = list(BENCHMARKS) + list(SYNTHETIC)
-SETS = ("phase1", "confirmation")  # confirmation: six natural benchmarks only (data/questions_confirm, plan Gate 2 section 3)
+SETS = ("phase1", "confirmation", "phase3_dev", "phase3_test")  # confirmation: Gate 2; phase3_*: A1 (phase3_test is sealed)
 
 
 def code_identity(root: Path) -> dict:
@@ -48,6 +48,10 @@ def check_inputs(root: Path, benches, limit, which="phase1"):
         from lookahead.confirm import check_confirmation_inputs
 
         return check_confirmation_inputs(root, benches, limit)
+    if which.startswith("phase3_"):
+        from lookahead.phase3_build import check_phase3_inputs
+
+        return check_phase3_inputs(root, benches, limit, which.split("_", 1)[1])
     mdir = root / "data" / "manifests"
     manifest = json.loads((mdir / "questions.json").read_text(encoding="utf-8"))
     split_text_sha = sha256_file(mdir / "splits.csv")
@@ -81,9 +85,18 @@ def main() -> int:
 
     root = REPO_ROOT
     conf = args.which == "confirmation"
-    args.benchmarks = args.benchmarks or (list(BENCHMARKS) if conf else ALL)
-    default_out = ("extracted_confirm_smoke" if args.limit else "extracted_confirm") if conf else (
-        "extracted_smoke" if args.limit else "extracted")
+    p3 = args.which.startswith("phase3_")
+    if p3:
+        from lookahead.phase3_build import MANIFEST, XDIR
+
+        role = args.which.split("_", 1)[1]
+        p3_sets = json.loads((root / MANIFEST).read_text(encoding="utf-8"))["sets"]
+        args.benchmarks = args.benchmarks or sorted(k.split("/", 1)[1] for k in p3_sets if k.startswith(role + "/"))
+        default_out = XDIR[role] + ("_smoke" if args.limit else "")
+    else:
+        args.benchmarks = args.benchmarks or (list(BENCHMARKS) if conf else ALL)
+        default_out = ("extracted_confirm_smoke" if args.limit else "extracted_confirm") if conf else (
+            "extracted_smoke" if args.limit else "extracted")
     out = Path(args.out) if args.out else root / "data" / default_out
     out.mkdir(parents=True, exist_ok=True)
     manifest, split_sha, splits, questions = check_inputs(root, args.benchmarks, args.limit, args.which)

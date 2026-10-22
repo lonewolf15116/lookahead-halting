@@ -168,7 +168,7 @@ def model_sample_check(model, qs, df, hidden, n):
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=None)
-    ap.add_argument("--set", dest="which", choices=("phase1", "confirmation"), default="phase1")
+    ap.add_argument("--set", dest="which", choices=("phase1", "confirmation", "phase3_dev", "phase3_test"), default="phase1")
     ap.add_argument("--benchmarks", nargs="*", default=None)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--sample", type=int, default=10, help="questions per benchmark re-run through the model")
@@ -176,12 +176,25 @@ def main(argv=None) -> int:
     ap.add_argument("--no-model", action="store_true", help="skip the model re-run (CPU-only check of stored files)")
     args = ap.parse_args(argv)
     conf = args.which == "confirmation"
-    args.benchmarks = args.benchmarks or (list(BENCHMARKS) if conf else ALL)
-    default_out = ("extracted_confirm_smoke" if args.limit else "extracted_confirm") if conf else (
-        "extracted_smoke" if args.limit else "extracted")
+    p3 = args.which.startswith("phase3_")
+    if p3:  # A1: frozen-input checks against the phase3 manifest (SystemExit on any mismatch)
+        from lookahead.phase3_build import IDS, MANIFEST, QDIR, ROLE_SPLIT, XDIR, check_phase3_inputs
+
+        role = args.which.split("_", 1)[1]
+        p3_sets = json.loads((REPO_ROOT / MANIFEST).read_text(encoding="utf-8"))["sets"]
+        args.benchmarks = args.benchmarks or sorted(k.split("/", 1)[1] for k in p3_sets if k.startswith(role + "/"))
+        default_out = XDIR[role] + ("_smoke" if args.limit else "")
+        qdir = REPO_ROOT / "data" / QDIR[role]
+    else:
+        args.benchmarks = args.benchmarks or (list(BENCHMARKS) if conf else ALL)
+        default_out = ("extracted_confirm_smoke" if args.limit else "extracted_confirm") if conf else (
+            "extracted_smoke" if args.limit else "extracted")
+        qdir = REPO_ROOT / "data" / ("questions_confirm" if conf else "questions")
     out = Path(args.out) if args.out else REPO_ROOT / "data" / default_out
-    qdir = REPO_ROOT / "data" / ("questions_confirm" if conf else "questions")
-    if conf:  # frozen-input checks: ids and audit shas, question hashes (SystemExit on any mismatch)
+    if p3:
+        check_phase3_inputs(REPO_ROOT, args.benchmarks, None, role)
+        splits = load_splits(REPO_ROOT / IDS[role], allowed=ROLE_SPLIT[role])
+    elif conf:  # frozen-input checks: ids and audit shas, question hashes (SystemExit on any mismatch)
         from lookahead.confirm import check_confirmation_inputs
 
         check_confirmation_inputs(REPO_ROOT, args.benchmarks)
@@ -279,7 +292,9 @@ def main(argv=None) -> int:
     name = args.report or ("extraction_check_smoke.json" if args.limit else "extraction_check.json")
     if conf:
         name = name.replace("extraction_check", "extraction_check_confirm")
-    rdir = results_dir("gate2" if conf else "phase1")
+    if p3:
+        name = name.replace("extraction_check", f"extraction_check_phase3_{role}")
+    rdir = results_dir("phase3" if p3 else "gate2" if conf else "phase1")
     (rdir / name).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
     if not ok_all:  # stop rule: keep the failing report even if a later run rewrites the main one
         import time

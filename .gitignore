@@ -27,3 +27,7 @@ data/extracted_confirm_smoke/
 data/questions_confirm_limit*/
 data/manifests/*_limit*
 results/gate2/*_limit*
+data/questions_phase3_dev/
+data/questions_phase3_test/
+data/extracted_phase3_dev*/
+data/extracted_phase3_test*/
