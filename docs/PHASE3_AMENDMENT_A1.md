@@ -1,9 +1,42 @@
-# Phase 3 amendment A1: allocation, narrowed population, D1-D4 population (DRAFT rev 2; nothing frozen)
+# Phase 3 amendment A1: allocation, narrowed population, D1-D4 population (FROZEN, tag `phase3-a1`)
 
-Rev 2 applies the reviewer's "Phase 3 A1 — Revised Amendment Review" (CONDITIONAL GO): HellaSwag rule v2 and 750 TEST accepted subject to the cross-split audit (A1.9); effect-precision rule rewritten (A1.5); tables reconciled; D3 change declared as an amendment (A1.7).
+**Status: frozen.** Reviewer decision "Phase 3 A1 — Final Allocation Review" (2026-10-23): GO for the protocol freeze. This
+is a protocol milestone, not an experimental result. The scientific question is still open, and the next decisive evidence
+comes from the preregistered feasibility diagnostics (D1-D4). D1-D4 outcome analysis and policy training remain on HOLD
+until the extraction safeguards have been verified. Later changes need a further documented amendment.
+
+**Scope disclosure, kept from the draft.** The primary H3 evaluation covers only three benchmarks: OpenBookQA,
+CommonsenseQA and HellaSwag. ARC-Challenge, ARC-Easy and MMLU have no clean fresh data, and H3 makes no claim about them.
+PIQA and Social IQa are separate transfer evaluations.
+
+**Frozen artifacts (sha256 of the committed bytes):**
+| file | sha256 |
+|---|---|
+| docs/PHASE3_PLAN.md (v1.1, amended by this file) | e599f07c688f040467494a42d7efcaa36e13f437502da860ec8952944053b28f |
+| results/phase3/allocation.json | 1327e1cca5360f9b80de7759360b6d06519e8c881aad984e988a723417ea9a1b |
+| results/phase3/allocation_test_ids.csv (8,517 TEST rows) | 298873a90b26617685fa872e6f77825784829a8bb677f075575cff4c32cefeff |
+| results/phase3/allocation_dev_ids.csv (2,635 DEV+ rows) | c1ed6e3851c6ee2c3deec178a67970f11133272b529bc4fdb8a04b2344d097d1 |
+| results/phase3/inventory.json | 7ec501aee8e2f1b1ca078f14af969f887ec947fd0b2ec9e778151fd93ce517f1 |
+| results/phase3/inventory_clean_ids.csv | bb16dcfff2d24cb39c49a33272fbd754fb6cc2dd0f841ce02d0c80f4432f87aa |
+| results/phase3/hellaswag_id_audit.json | 4ec6a3960a2d1cec014955edd257ed02e4c91fbba5969703c72b3d4803db7ea3 |
+| scripts/phase3_allocate.py | 86d5fad937778e2288e3f0027aea9d032de4f878c557fe4bd406f7764c0837db |
+| src/lookahead/phase3_allocation.py | f1363018cc126bd53823b62b847b09a30a968743edf16f87abd9a38c3cfc8771 |
+| scripts/phase3_inventory.py | 5165549b22663d61ba3e0e5237c2bd999e10c6eb86a2d41ca1cee01eb1afd846 |
+| src/lookahead/phase3_inventory.py | 682b057f793b6097c785240ae16ae5dcdbd6dbba74c64ac09faea8f733120fb5 |
+
+Checks done at freeze:
+- The two list hashes in allocation.json equal the CSV files.
+- TEST and DEV+ share no row, and no HellaSwag source.
+- Every non-HellaSwag row is inventory-clean.
+- The plan hash equals tag phase3-plan-v1.1.
+- The D3 wording quoted in A1.7 is v1.1 section 7, line 128.
+
+Rev 2 applied the reviewer's "Phase 3 A1 — Revised Amendment Review". It set HellaSwag rule v2 and 750 TEST after the
+cross-split audit (A1.9), reworded the effect-precision rule (A1.5), reconciled the tables, and declared the D3 change as an
+amendment (A1.7).
 
 Amends the frozen plan `docs/PHASE3_PLAN.md` v1.1 (sha256 e599f07c688f…, tag phase3-plan-v1.1). The plan file is not
-edited. A1 is frozen as its own file after reviewer approval, before any extraction or outcome analysis.
+edited. A1 is frozen as its own file (this one), before any extraction or outcome analysis.
 
 Inputs: inventory `results/phase3/inventory.json` (sha256 7ec501ae…, commit 848d1b9); reviewer decision "Phase 3
 Inventory — Reviewer Decision" (2026-10-22). No Phase 3 outcome has been computed. No Gate 2 confirmation outcome is used.
@@ -168,16 +201,16 @@ frozen `lh-fold-v1` hash).
 - **Allocation:** OpenBookQA 3,000 TEST / 1,952 DEV+; CommonsenseQA 1,000 / 435; HellaSwag 750 / 248; PIQA 1,837 TEST;
   Social IQa 1,930 TEST. TEST 8,517 rows, DEV+ 2,635 rows.
 
-## A1.8 Reviewer decisions (Revised Amendment Review, 2026-10-22)
+## A1.8 Reviewer decisions (Revised Amendment Review 2026-10-22; Final Allocation Review 2026-10-23)
 | item | status |
 |---|---|
 | Three-benchmark H3 population (A1.2) | accepted |
-| DEV+ / TEST allocation | accepted conditionally (final lists from A1.9) |
-| HellaSwag rule v2 | accepted conditionally (cross-split audit, A1.9) |
-| HellaSwag TEST 750 | accepted if the final pool and source grouping permit (A1.9 stops otherwise) |
+| DEV+ / TEST allocation | accepted (final lists from A1.9, frozen) |
+| HellaSwag rule v2 | accepted (cross-split audit done, A1.9: 998 clean) |
+| HellaSwag TEST 750 | accepted (750 rows from 749 sources; DEV+ 248) |
 | PIQA and Social IQa OOD; WinoGrande excluded | accepted |
 | Observed versus demonstrated compliance; effect precision as reworded | accepted |
-| Freeze | HOLD until A1.9 has run and the reviewer has seen `allocation.json` |
+| Freeze | **GO** (Final Allocation Review); frozen with tag `phase3-a1` |
 
 ## A1.9 Final allocation run (implements A1.3, A1.4 and the HellaSwag cross-split audit)
 - `scripts/phase3_allocate.py`, with the pure logic in `src/lookahead/phase3_allocation.py` (9 synthetic tests). CPU only. It reads
@@ -194,6 +227,6 @@ frozen `lh-fold-v1` hash).
 - **Outputs.** `results/phase3/allocation.json` (counts, rule versions, list hashes, precision at the final sizes, extraction
   estimate), plus `allocation_test_ids.csv` and `allocation_dev_ids.csv`. The script refuses to overwrite them. If HellaSwag
   falls short of 750 it writes only the json, with RETURN_FOR_REVIEW (exit 3).
-- **Freeze.** After the reviewer has seen `allocation.json`, these are committed and tagged together as `phase3-a1`, with their
-  sha256 values recorded here: this file renamed to `docs/PHASE3_AMENDMENT_A1.md`, the allocation outputs, and the actual
-  counts filled into A1.3 and A1.5. Only then are extraction and G3a authorized.
+- **Freeze (done).** This file, the allocation outputs and their hashes (table at the top) are committed together and tagged
+  `phase3-a1`. Next authorized: implementing and testing the DEV+ extraction and the sealed-TEST extraction, with TEST outcomes
+  inaccessible to development and selection. D1-D4 and training stay on HOLD until those safeguards are verified.
