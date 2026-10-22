@@ -37,7 +37,7 @@ from lookahead.questions import BENCHMARKS, load_lm_eval_questions, question_set
 
 NEW_BENCHMARKS = ("piqa", "winogrande", "social_iqa")
 NEW_HF_DATASETS = {"piqa": "baber/piqa", "winogrande": "allenai/winogrande", "social_iqa": "lighteval/siqa"}
-SPLIT_NAMES = ("train", "validation", "test")
+SPLIT_NAMES = ("train", "validation", "test", "dev")  # dev: MMLU few-shot split (shown so its exemplar use is visible)
 OUT_JSON, OUT_IDS, OUT_MD = "results/phase3/inventory.json", "results/phase3/inventory_clean_ids.csv", "docs/PHASE3_INVENTORY.md"
 INPUT_FILES = ("data/manifests/splits.csv", "data/manifests/questions.json", "data/manifests/confirmation.json",
                "data/manifests/confirmation_ids.csv", "data/manifests/confirmation_ids.sha256",
