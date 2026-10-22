@@ -45,7 +45,7 @@ frozen `lh-fold-v1` hash).
 |---|---|---|---|---|---|
 | OpenBookQA | 4,952 | 3,000 | 1,952 | 300 | 100 |
 | CommonsenseQA | 1,435 | 1,000 | 435 | 733 | 244 |
-| HellaSwag | 676 (repeated-id audit pending) | 500 | 176 | 6,025 | 2,008 |
+| HellaSwag | 676 under rule v1; **999** under the proposed rule v2 (below) | 750 (if v2) / 500 (if v1) | rest | 6,025 | 2,008 |
 
 - **Selection procedure.** Rank the clean rows of each benchmark by sha256(`lh-phase3-alloc-v1|benchmark|task|row|text_hash`),
   ascending. The first N go to TEST and the rest to DEV+. Frozen with A1: the exact TEST and DEV+ id lists (CSV),
@@ -53,9 +53,22 @@ frozen `lh-fold-v1` hash).
 - **HellaSwag grouping.** HellaSwag rows that share a `source_id` (the same video or article, different segment) are
   allocated as one group, keyed by the hash of their smallest row. This keeps TEST and DEV+ from sharing a source. The TEST
   count is then the smallest number of whole groups reaching ≥ N. The other two datasets have no source key.
-- **HellaSwag size is open.** If the repeated-id audit shows that some of the 820 id-only rows are identifier collisions, and
-  the reviewer amends the exclusion rule, the pool grows. A1 then fixes N for HellaSwag before freezing. The reviewer's
-  500 is kept if the pool stays at 676.
+- **HellaSwag repeated-id audit (done, `results/phase3/hellaswag_id_audit.json`).** HellaSwag's train ids come in at most
+  pairs: 32,599 distinct ids over 39,905 rows, with 14,612 rows in repeated-id groups. All **820** id-only exclusions are
+  **unrelated** to the used row that shares their id: different context, different source video or article, and different
+  activity in every case (0 of 820 share any of the three). They are identifier collisions, not overlaps. The audit also
+  found a different and real proximity risk that the v1 rule missed. Among rows never used by text, 488 share a
+  `source_id` with a used row (another segment of the same video or article), and 16 share a context.
+- **Proposed audit rule v2 for HellaSwag** (reviewer decision; applies to HellaSwag only, because only its ids repeat):
+  1. Drop the native-id criterion, since its matches are collisions.
+  2. Keep the text-hash criterion.
+  3. **Add** a source criterion: exclude any row that shares a `source_id` or context with a used row.
+  This is stricter on what matters (no segment of a used video or article enters the test) and less strict on what does not
+  (an id number). It gives **999** clean rows under the within-train check, against 676 under v1. Before freezing, the
+  allocation script must apply the source criterion against **every** used HellaSwag row, including the Phase 1 validation
+  split (the audit compared within train only). So the final count can only fall from 999, and it is recorded at freeze.
+- **HellaSwag TEST size.** If v2 is accepted: 750 TEST (two-sided paired half-width about 2.3 pp at d = 0.10, against 2.8 pp at
+  500), and the rest DEV+. If v1 is kept: the reviewer's 500 of 676.
 - **Why DEV+ is needed (reviewer concern on independent development data).** The binding case is not HellaSwag but
   **OpenBookQA**. It has only 300 Phase 1 train questions, so 1 pp is 3 questions, and inside a nested 4-of-5-fold D2 it is
   about 2. Per-benchmark thresholds selected at that resolution are unreliable. With DEV+ the OpenBookQA development set
@@ -135,6 +148,6 @@ frozen `lh-fold-v1` hash).
 1. Accept the three-benchmark H3 population and the macro definitions of A1.2. That includes fitting on all six benchmarks
    with selection per benchmark, and the task-agnostic rule constrained over all six.
 2. Accept DEV+ (fresh non-test rows as development data) and the TEST sizes, including HellaSwag grouping by `source_id`.
-3. HellaSwag pool size after the repeated-id audit (keep 676, or amend the id rule).
+3. HellaSwag audit rule v2 (drop the colliding-id criterion; add the source/context criterion against every used HellaSwag row) and TEST 750, or keep v1 (676 rows, TEST 500).
 4. OOD: PIQA and Social IQa primary, WinoGrande excluded, OOD train splits sealed, 0-shot.
 5. Observed versus demonstrated compliance as in A1.5, including the pre-test check that the effect is resolvable.

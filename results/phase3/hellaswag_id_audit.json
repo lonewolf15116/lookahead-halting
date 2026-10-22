@@ -1,0 +1,87 @@
+{
+  "audit_rule_version": "phase3-inventory-v1",
+  "id_only_relation_to_used_partner": {
+    "no_used_partner_in_pool": 0,
+    "same_activity": 0,
+    "same_context": 0,
+    "same_source": 0,
+    "unrelated": 820
+  },
+  "largest_id_group": 2,
+  "n_distinct_native_ids": 32599,
+  "n_fresh_rows_sharing_context_with_a_used_row": 16,
+  "n_fresh_rows_sharing_source_with_a_used_row": 488,
+  "n_id_only": 820,
+  "n_rows": 39905,
+  "n_rows_in_repeated_id_groups": 14612,
+  "n_rows_used_by_text": 38409,
+  "note": "descriptive only; the inventory's exclusion rule is unchanged until the reviewer amends it",
+  "pool": "hellaswag/train",
+  "verification": {
+    "confirmation": {
+      "manifest_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc",
+      "matches": true,
+      "n_questions": {
+        "arc_challenge": 299,
+        "arc_easy": 570,
+        "commonsense_qa": 1000,
+        "hellaswag": 1000,
+        "mmlu": 1500,
+        "openbookqa": 500
+      },
+      "rebuilt_ids_sha256": "4cc7aac3febca19163aee8c9d554ac805f94390f2f4c48f1b2d52885cd752dbc"
+    },
+    "phase1": {
+      "arc_challenge": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 1172,
+        "n_questions": 1172,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "arc_easy": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 2376,
+        "n_questions": 2376,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "commonsense_qa": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 1221,
+        "n_questions": 1221,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "hellaswag": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 10042,
+        "n_questions": 10042,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "mmlu": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 14042,
+        "n_questions": 14042,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      },
+      "openbookqa": {
+        "doc_ids_equal_splits_csv": true,
+        "exemplar_live_failures": 0,
+        "manifest_n_questions": 500,
+        "n_questions": 500,
+        "n_questions_match": true,
+        "question_set_hash_matches": true
+      }
+    }
+  },
+  "would_be_clean_if_id_rule_dropped": 1496,
+  "would_be_clean_if_id_rule_dropped_and_shared_source_or_context_excluded": 999
+}
