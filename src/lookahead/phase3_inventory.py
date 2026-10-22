@@ -200,3 +200,59 @@ def build_report(*, pools: list[dict], groups: dict, provenance: dict, inputs: d
         "summary": {g: dict(sorted(v.items())) for g, v in summary.items()},
         "unresolved": sorted(unresolved, key=lambda u: (u["pool"], u["reason"])),
     }
+
+
+# --------------------------------------------------------------------------- repeated-id audit (HellaSwag)
+
+def id_collision_report(rows: list[dict]) -> dict:
+    """Are rows excluded only because their native id repeats genuinely the same example, or identifier collisions?
+
+    rows: one dict per pool row with keys row, nid (str|None), text_hash, used_text (text hash is in the used set),
+    id_used (native id is in the used set), source_id, ctx_a, activity. Pure function; no dataset access.
+
+    A row is `id_only` when its id matches a used row but its text does not. For each such row the relation to the used
+    rows that share its id is graded from strongest to weakest: same_context (ctx_a equal), same_source (source_id
+    equal), same_activity, unrelated. `would_be_clean_*` counts are what the pool would hold if the id rule were dropped,
+    first as it is, then also excluding rows that share a context or a source with a used row of the same pool.
+    Nothing here changes the inventory; any rule change is a reviewer decision.
+    """
+    ids = [r["nid"] for r in rows if r["nid"] is not None]
+    from collections import Counter
+
+    cnt = Counter(ids)
+    used_by_id: dict[str, list] = {}
+    for r in rows:
+        if r["used_text"] and r["nid"] is not None:
+            used_by_id.setdefault(r["nid"], []).append(r)
+    used_sources = {r["source_id"] for r in rows if r["used_text"] and r["source_id"] not in (None, "")}
+    used_ctx = {r["ctx_a"] for r in rows if r["used_text"] and r["ctx_a"] not in (None, "")}
+    rel = {"same_context": 0, "same_source": 0, "same_activity": 0, "unrelated": 0, "no_used_partner_in_pool": 0}
+    id_only = [r for r in rows if r["id_used"] and not r["used_text"]]
+    for r in id_only:
+        partners = used_by_id.get(r["nid"], [])
+        if not partners:
+            rel["no_used_partner_in_pool"] += 1  # the colliding used row lives in another split
+        elif any(p["ctx_a"] and p["ctx_a"] == r["ctx_a"] for p in partners):
+            rel["same_context"] += 1
+        elif any(p["source_id"] not in (None, "") and p["source_id"] == r["source_id"] for p in partners):
+            rel["same_source"] += 1
+        elif any(p["activity"] and p["activity"] == r["activity"] for p in partners):
+            rel["same_activity"] += 1
+        else:
+            rel["unrelated"] += 1
+
+    def dedup_count(rs):
+        return len({r["text_hash"] for r in rs})
+
+    free = [r for r in rows if not r["used_text"]]  # not used by text: the id rule is the only thing excluding id_only rows
+    strict = [r for r in free if r["source_id"] not in used_sources and r["ctx_a"] not in used_ctx]
+    return {
+        "n_rows": len(rows), "n_distinct_native_ids": len(cnt), "n_rows_in_repeated_id_groups": sum(c for c in cnt.values() if c > 1),
+        "largest_id_group": max(cnt.values()) if cnt else 0,
+        "n_rows_used_by_text": sum(r["used_text"] for r in rows), "n_id_only": len(id_only), "id_only_relation_to_used_partner": rel,
+        "n_fresh_rows_sharing_source_with_a_used_row": sum(r["source_id"] in used_sources for r in free),
+        "n_fresh_rows_sharing_context_with_a_used_row": sum(r["ctx_a"] in used_ctx for r in free),
+        "would_be_clean_if_id_rule_dropped": dedup_count(free),
+        "would_be_clean_if_id_rule_dropped_and_shared_source_or_context_excluded": dedup_count(strict),
+        "note": "descriptive only; the inventory's exclusion rule is unchanged until the reviewer amends it",
+    }

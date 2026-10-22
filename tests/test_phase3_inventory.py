@@ -8,6 +8,7 @@ import shutil
 import pytest
 
 from lookahead import phase3_inventory as inv
+from lookahead.phase3_inventory import id_collision_report
 from lookahead.config import REPO_ROOT
 
 H = lambda s: hashlib.sha256(s.encode()).hexdigest()  # noqa: E731
@@ -443,3 +444,53 @@ def test_one_unloadable_split_is_unresolved_but_the_other_splits_are_still_audit
     assert rep["summary"]["in_distribution"]["fake_arc/test"]["status"] == "unresolved"
     assert rep["pools"]["fake_arc/train"]["clean"] > 0 and rep["summary"]["in_distribution"]["fake_arc/train"]["status"] != "unresolved"
     assert [u["pool"] for u in rep["unresolved"]] == ["fake_arc/test"]  # nothing else became unresolved
+
+
+# ---------------------------------------------------------------- repeated-id audit
+
+def _row(i, nid, *, used=False, id_used=None, src="s", ctx="c", act="a", th=None):
+    return {"row": i, "nid": nid, "text_hash": th or f"h{i}", "used_text": used, "id_used": used if id_used is None else id_used,
+            "source_id": src, "ctx_a": ctx, "activity": act}
+
+
+def test_id_collision_report_grades_relations_and_counts_what_would_be_clean():
+    rows = [
+        _row(0, "7", used=True, src="vid1", ctx="ctx-1", act="act1"),  # the used row
+        _row(1, "7", id_used=True, src="vid9", ctx="ctx-9", act="act9"),  # id-only, unrelated to it
+        _row(2, "7", id_used=True, src="vid1", ctx="ctx-2", act="actX"),  # id-only, same source
+        _row(3, "7", id_used=True, src="vid3", ctx="ctx-1", act="actY"),  # id-only, same context
+        _row(4, "7", id_used=True, src="vid4", ctx="ctx-4", act="act1"),  # id-only, same activity
+        _row(5, "8", id_used=True, src="vid5", ctx="ctx-5"),  # id collides with a used row in ANOTHER split
+        _row(6, "9", src="vid6", ctx="ctx-6"),  # fresh: no id or text hit, no shared source/context
+        _row(7, "9", src="vid6", ctx="ctx-6", th="h6"),  # internal text duplicate of row 6
+    ]
+    r = id_collision_report(rows)
+    assert r["n_rows"] == 8 and r["n_distinct_native_ids"] == 3 and r["n_rows_in_repeated_id_groups"] == 7
+    assert r["n_id_only"] == 5 and r["n_rows_used_by_text"] == 1
+    assert r["id_only_relation_to_used_partner"] == {"same_context": 1, "same_source": 1, "same_activity": 1, "unrelated": 1,
+                                                     "no_used_partner_in_pool": 1}
+    assert r["would_be_clean_if_id_rule_dropped"] == 6  # rows 1-7 are not used by text, minus one internal duplicate
+    # stricter view: rows sharing the used row's source (2) or context (3) are also excluded
+    assert r["would_be_clean_if_id_rule_dropped_and_shared_source_or_context_excluded"] == 4
+    assert r["n_fresh_rows_sharing_source_with_a_used_row"] == 1 and r["n_fresh_rows_sharing_context_with_a_used_row"] == 1
+
+
+def test_id_collision_report_handles_missing_ids_and_is_descriptive_only():
+    r = id_collision_report([_row(0, None), _row(1, None)])
+    assert r["n_distinct_native_ids"] == 0 and r["n_id_only"] == 0 and r["largest_id_group"] == 0
+    assert "unchanged" in r["note"]
+
+
+def test_hellaswag_id_audit_script_end_to_end_on_the_fake_world(tmp_path, world):
+    spec = importlib.util.spec_from_file_location("hs_audit", REPO_ROOT / "scripts" / "phase3_hellaswag_id_audit.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    script = _load_script()
+    root = make_root(tmp_path, world, script)
+    rc = mod.main([], task_manager=world, root=root, specs={"fake_arc": SPEC, "fake_hs": SPEC}, split_plan=PLAN,
+                  take={"fake_arc": None, "fake_hs": None}, benchmarks=["fake_arc", "fake_hs"], name="fake_hs")
+    assert rc == 0
+    rep = json.loads((root / "results/phase3/hellaswag_id_audit.json").read_text(encoding="utf-8"))
+    assert rep["pool"] == "fake_hs/train" and rep["n_rows"] == 30 and rep["audit_rule_version"] == inv.AUDIT_RULE_VERSION
+    assert rep["verification"]["confirmation"]["matches"] is True
+    assert mod.main([], task_manager=world, root=root) == 2  # refuses to overwrite
