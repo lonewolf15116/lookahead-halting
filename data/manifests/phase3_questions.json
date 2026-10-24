@@ -1,0 +1,116 @@
+{
+  "allocation_json_sha256": "1327e1cca5360f9b80de7759360b6d06519e8c881aad984e988a723417ea9a1b",
+  "amendment": "A1",
+  "build_report_sha256": "f1b40423f19fe6e4519e3f222f846378a5a085d275ff8ce35a050697ff3ad083",
+  "ids_sha256": {
+    "dev": "bc3ab561770e0a0f074ab211cb4276bc598145a4e6ae84bf933aae3bbf8d212b",
+    "test": "bd6230ce9ab1bc1d1d1890029e4512f8bc3b9611b6777e926d3c093d106567de"
+  },
+  "lm_eval_version": "0.4.13",
+  "sets": {
+    "dev/commonsense_qa": {
+      "exemplar_draws": 4350,
+      "exemplar_selection_sha256": "c389a0d942835c1706b438941d6ba6c75a56dd43ce5501fbf9f6b5fe2ae62142",
+      "hf_dataset": "tau/commonsense_qa",
+      "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+      "metric": "acc",
+      "n_rows": 435,
+      "pool_removed": 1435,
+      "question_set_sha256": "7fe264bd1b0ab3d888bf40956f83aa8f724be5a9ae6d49c7ac2bbdf34a072e22",
+      "shots": 10,
+      "split": "train",
+      "split_label": "dev"
+    },
+    "dev/hellaswag": {
+      "exemplar_draws": 2480,
+      "exemplar_selection_sha256": "66dc589eabebf9ba78fbe0054fed904ee07986560aeef3930d1b37067038919f",
+      "hf_dataset": "Rowan/hellaswag",
+      "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+      "metric": "acc_norm",
+      "n_rows": 248,
+      "pool_removed": 1496,
+      "question_set_sha256": "e7251fd7d0caa4d7b8934f478d7c9ee3c125658a6a09d7d1699cc42391fa817d",
+      "shots": 10,
+      "split": "train",
+      "split_label": "dev"
+    },
+    "dev/openbookqa": {
+      "exemplar_draws": 0,
+      "exemplar_selection_sha256": "3c5cc98fb303d66d57bc1e6bf3f8241a8c3046aab09a92184e0ad4ea09523a2b",
+      "hf_dataset": "allenai/openbookqa",
+      "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+      "metric": "acc_norm",
+      "n_rows": 1952,
+      "pool_removed": 4957,
+      "question_set_sha256": "2287f88d9a47e35feb45b85545f005682eaaec3285777a09d7711eb34f2ed364",
+      "shots": 0,
+      "split": "train",
+      "split_label": "dev"
+    },
+    "test/commonsense_qa": {
+      "exemplar_draws": 10000,
+      "exemplar_selection_sha256": "0b74c6c59c22958a272a3525ff5cf6250f342a35d6b77078d15e28e7b9e93e08",
+      "hf_dataset": "tau/commonsense_qa",
+      "hf_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+      "metric": "acc",
+      "n_rows": 1000,
+      "pool_removed": 1435,
+      "question_set_sha256": "6258ed68a85df90353016fc674a19e4325e231f53e288f0290ebcbc4e03938ae",
+      "shots": 10,
+      "split": "train",
+      "split_label": "test"
+    },
+    "test/hellaswag": {
+      "exemplar_draws": 7500,
+      "exemplar_selection_sha256": "d5579d82cc6b2783e730e47ccbe62d97e90b57a4347043ada3b9885e6a66c7ec",
+      "hf_dataset": "Rowan/hellaswag",
+      "hf_revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+      "metric": "acc_norm",
+      "n_rows": 750,
+      "pool_removed": 1496,
+      "question_set_sha256": "45ebc4a74101043ee480c4e7c9127cc466e56693365e6987448984e1b48bdcee",
+      "shots": 10,
+      "split": "train",
+      "split_label": "test"
+    },
+    "test/openbookqa": {
+      "exemplar_draws": 0,
+      "exemplar_selection_sha256": "41be0c936d383d026af113765f88f8bc81e06726d3962fd1fd9594cb467f64c4",
+      "hf_dataset": "allenai/openbookqa",
+      "hf_revision": "388097ea7776314e93a529163e0fea805b8a6454",
+      "metric": "acc_norm",
+      "n_rows": 3000,
+      "pool_removed": 4957,
+      "question_set_sha256": "8ed1d49ad8b5c71f49d5c5a3de4ecdac01c4ee4d8154bd6f33a1e8ccd51f2f7c",
+      "shots": 0,
+      "split": "train",
+      "split_label": "test"
+    },
+    "test/piqa": {
+      "exemplar_draws": 0,
+      "exemplar_selection_sha256": "e1de3cfb9d37d64a5448df2e809bd95f2e5a3ca540bb85adad69473df3235f5f",
+      "hf_dataset": "baber/piqa",
+      "hf_revision": "142f6d7367fd9877f0fb3b5734ea6a545f54cdd1",
+      "metric": "acc_norm",
+      "n_rows": 1837,
+      "pool_removed": 16113,
+      "question_set_sha256": "6606319c6b51126e92a7c00e54c643faefe27287464d2c7abf721654e89b18ce",
+      "shots": 0,
+      "split": "validation",
+      "split_label": "test_ood"
+    },
+    "test/social_iqa": {
+      "exemplar_draws": 0,
+      "exemplar_selection_sha256": "4f195fb9f277e6b944241bdd0b948626af88edb534e0d27e2e741741cf0a6561",
+      "hf_dataset": "lighteval/siqa",
+      "hf_revision": "54c6a1f8cb6daf4f5abf24a601852612fb35eb25",
+      "metric": "acc",
+      "n_rows": 1930,
+      "pool_removed": 33410,
+      "question_set_sha256": "b208ed4c76b17c55a2cb4928e8072117cd9e00b5778d4078019dc78b28224339",
+      "shots": 0,
+      "split": "validation",
+      "split_label": "test_ood"
+    }
+  }
+}
