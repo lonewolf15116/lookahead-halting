@@ -201,3 +201,8 @@
   - D-a2 implemented: the D-a rows (hash-checked) and the recorded conditions; float32 per-loop localisation; a float64 CPU reference on the 10 PIQA questions with the largest float32 difference.
   - Ouro's forced-float32 RMSNorm, RoPE and eager softmax are replaced by the same formulas in float64, verified at run time, with a dtype audit. Criterion ≤ 1e-9.
   - 9 tests pass, including an end-to-end run on the real Ouro classes.
+- 2026-10-26 D-a2 full-cpu run stopped at the memory preflight (4.2 GB free; 4.6 GB after closing applications; 23.5 GB total). Nothing was computed or written.
+  - Reviewer: option 1 GO; option 2 may be developed but not run without an implementation review.
+  - Option 2 built (`--mode stream-gpu`): bf16 weights on the GPU, cast to float64 per module call and restored bit-exactly (checked by sha256), with the existing float64 patches and dtype audit.
+  - Test: bit-identical to a model held entirely in float64 on the real Ouro classes (tiny weights). On the laptop the test also runs on CUDA before the diagnostic.
+  - Not run; awaiting review.

@@ -116,6 +116,13 @@ def conditions(torch, model) -> dict:
 
 
 def main(argv=None) -> int:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--mode", choices=("full-cpu", "stream-gpu"), default="full-cpu",
+                    help="full-cpu: whole model in float64 in RAM (approved D-a2). stream-gpu: option 2, weights in bf16 on the "
+                         "GPU, each module cast to float64 only during its forward (needs separate reviewer approval)")
+    mode = ap.parse_args(argv).mode
     root = REPO_ROOT
     out_path = root / REPORT
     if out_path.exists():
@@ -126,13 +133,13 @@ def main(argv=None) -> int:
     da = json.loads((root / DA_REPORT).read_text(encoding="utf-8"))
     DA = _load("da", "scripts/diagnose_short_context_ood.py")
     D = _load("diag", "scripts/diagnose_short_context.py")
-    report = {"diagnostic": "D-a2", "da_report_sha256": DA_REPORT_SHA256, "k_worst": K_WORST, "f64_tol": F64_TOL,
+    report = {"diagnostic": "D-a2", "float64_mode": mode, "da_report_sha256": DA_REPORT_SHA256, "k_worst": K_WORST, "f64_tol": F64_TOL,
               "criterion": "float64 packed-vs-ctx and packed-vs-explicit-mask-ctx max |diff| <= 1e-9 on every selected "
                            "question and loop -> numerical; > 1e-9 -> differs; incomplete or a reference check failing -> "
                            "unresolved", "failures": []}
     ram = free_ram_gb()
     report["free_ram_gb_at_start"] = ram
-    if not ram >= MIN_FREE_RAM_GB:  # nothing computed yet: no report, so it can be re-run after freeing memory
+    if mode == "full-cpu" and not ram >= MIN_FREE_RAM_GB:  # nothing computed yet: no report, so it can be re-run after freeing memory
         print(f"only {ram:.1f} GB RAM free; {MIN_FREE_RAM_GB} GB needed for the float64 reference. Close other programs "
               "and re-run. Nothing was computed or written.", file=sys.stderr)
         return 3
@@ -190,15 +197,20 @@ def main(argv=None) -> int:
     del model
     torch.cuda.empty_cache()
 
-    # 3: float64 reference on the CPU
-    model, _ = load_ouro(device="cpu")
-    model = model.to(torch.float64)
+    # 3: float64 reference (full-cpu: whole model float64 in RAM; stream-gpu: bf16 weights, float64 per module call)
+    if mode == "full-cpu":
+        model, _ = load_ouro(device="cpu")
+        model = model.to(torch.float64)
+        stream = None
+    else:
+        model, _ = load_ouro(device="cuda")
+        stream = F.Float64Streaming(model)
     patched = F.patch_float64(model)
     rot = model.model.rotary_emb
     ref_checks = {"patched": patched, "rmsnorm_rel_err": F.rmsnorm_check(model.model.norm), "rotary": F.rotary_check(rot)}
     ref_checks["ok"] = (bool(patched["rmsnorm"]) and bool(patched["rotary"]) and ref_checks["rmsnorm_rel_err"] <= 1e-14
                         and ref_checks["rotary"]["ok"])
-    report["conditions_cpu_float64"] = conditions(torch, model)
+    report["conditions_float64"] = conditions(torch, model)
     audit = F.DtypeAudit(model)
     f64_rows, cross, complete = [], [], True
     try:
@@ -217,6 +229,10 @@ def main(argv=None) -> int:
         report["failures"].append(f"float64 run incomplete: {type(e).__name__}: {e}")
     finally:
         audit.close()
+        if stream is not None:
+            ref_checks["stream_weights_restored_bit_identical"] = stream.close()
+            ref_checks["stream_module_casts"] = stream.n_casts
+            ref_checks["ok"] = ref_checks["ok"] and ref_checks["stream_weights_restored_bit_identical"]
     ref_checks["dtype_audit_non_float64_outputs"] = audit.bad
     ref_checks["dtype_audit_calls"] = audit.n_calls
     ref_checks["ok"] = ref_checks["ok"] and not audit.bad

@@ -127,3 +127,47 @@ class DtypeAudit:
     def close(self):
         for h in self.handles:
             h.remove()
+
+
+class Float64Streaming:
+    """Option 2 (memory-bounded float64): weights stay in bf16 at rest; every module that owns parameters has them cast to
+    float64 just before its forward and restored just after. bf16 -> float64 -> bf16 is exact, so the arithmetic is the
+    same as a model held entirely in float64, while at most one module's weights are float64 at a time. Combined with
+    `patch_float64` (no forced-float32 steps) and `DtypeAudit` (no non-float64 module output). `close()` removes the hooks
+    and checks that every parameter is back in its original dtype with bit-identical values."""
+
+    def __init__(self, model):
+        self.model = model
+        self.owners = [m for m in model.modules() if any(True for _ in m.parameters(recurse=False))]
+        covered = {id(p) for m in self.owners for p in m.parameters(recurse=False)}
+        if covered != {id(p) for p in model.parameters()}:
+            raise RuntimeError("some parameters are not owned by a hooked module")
+        self.dtypes = {id(p): p.dtype for p in model.parameters()}
+        self.digest = self._digest()
+        self.n_casts = 0
+        self.handles = []
+        for m in self.owners:
+            self.handles.append(m.register_forward_pre_hook(self._up))
+            self.handles.append(m.register_forward_hook(self._down))
+
+    def _digest(self) -> str:
+        import hashlib
+
+        h = hashlib.sha256()
+        for name, p in self.model.named_parameters():
+            h.update(name.encode() + str(p.dtype).encode() + p.detach().cpu().contiguous().view(torch.uint8).numpy().tobytes())
+        return h.hexdigest()
+
+    def _up(self, module, _inputs):
+        for p in module.parameters(recurse=False):
+            p.data = p.data.to(F64)
+        self.n_casts += 1
+
+    def _down(self, module, _inputs, _output):
+        for p in module.parameters(recurse=False):
+            p.data = p.data.to(self.dtypes[id(p)])
+
+    def close(self) -> bool:
+        for h in self.handles:
+            h.remove()
+        return all(p.dtype == self.dtypes[id(p)] for p in self.model.parameters()) and self._digest() == self.digest

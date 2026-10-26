@@ -311,3 +311,32 @@ overwrite it.
   - The selection, per-loop and interpretation rules hold, and the D-a report is pinned and is never the output.
   - **End to end on the real Ouro classes** with tiny random weights: the patches apply, the dtype audit records only
     float64, and the packed state equals the context-only state to 1e-12 at all 4 loops.
+
+### D-a2 memory constraint and option 2 (2026-10-26): built for review, NOT run
+- **The constraint.** On the laptop, the approved full-CPU float64 run stopped at its memory preflight before computing
+  anything. Free RAM was 4.2 GB, and 4.6 GB after closing applications, against the 16 GB required; total RAM is 23.5 GB. No
+  report was written. The reviewer gave GO to option 1 (free the memory). Option 2 may be developed, but it may only be run
+  after an implementation review shows numerical equivalence.
+- **Option 2: `--mode stream-gpu`.** The default is still `full-cpu`.
+  - The weights stay in bf16 on the GPU. Even CPU streaming would not fit in the 4.6 GB free.
+  - `Float64Streaming` (in `src/lookahead/f64_reference.py`) casts the parameters of every module that owns any to float64
+    just before that module's forward, and restores them just after. Construction refuses if any parameter is not owned by
+    a hooked module.
+  - bf16 → float64 → bf16 is exact. So every weight a module uses is the float64 value a fully float64 model would use, and
+    at most one module's weights are float64 at a time: about 0.8 GB at most, for the embedding or the LM head.
+  - Activations are float64 throughout. The embedding output is float64, and everything after it inherits that dtype.
+  - The existing `patch_float64` removes Ouro's three forced-float32 steps. `DtypeAudit` records any module output that is
+    not float64.
+  - On the GPU, float64 matmuls are IEEE float64 (TF32 does not apply to float64). SDPA has no flash or memory-efficient
+    float64 kernel, so it uses the math kernel. The run records the backend flags.
+- **Run-time checks added for this mode.** When the run ends, every weight must be back in bf16 with bit-identical values;
+  this is checked with a sha256 over all parameters. If it fails, the result is "unresolved". The number of module casts
+  is recorded.
+- **Equivalence shown in tests** (`tests/test_phase3_da2.py`). On the real Ouro classes with tiny random weights, the
+  streamed float64 model reproduces a model held entirely in float64 **bit for bit**: all 4 loops of the packed and
+  context-only states. The dtype audit is clean and the weights are restored bit-identically.
+  - This test runs on the CPU here. It also runs on CUDA on the laptop, as part of the runner's pytest step, before the
+    diagnostic starts. If it fails there, the diagnostic does not run.
+- **Unchanged in this mode:** the criterion (≤ 1e-9), the D-a rows, the selection by float32 difference, the float32 GPU
+  stage and the report format. The report records `float64_mode`.
+- **Run command, only after reviewer approval:** `run_phase3_da2_windows.ps1 -Mode stream-gpu`.

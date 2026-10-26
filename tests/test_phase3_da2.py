@@ -176,3 +176,58 @@ def test_patches_apply_to_the_real_ouro_modules_and_the_float64_pass_is_pure_flo
         assert float((packed[t] - s.hidden[0, -1]).abs().max()) <= 1e-12  # packed == context-only in float64
     audit.close()
     assert audit.n_calls > 0 and audit.bad == {}
+
+
+# ---------------------------------------------------------------- option 2: layer-streamed float64 (reviewer: develop, show equivalence)
+
+def _tiny_ouro():
+    from lookahead.config import load_config
+
+    local = REPO_ROOT / load_config("model")["local_dir"]
+    if not (local / "modeling_ouro.py").exists():
+        pytest.skip("Ouro modeling code not present")
+    from transformers import AutoConfig, AutoModelForCausalLM
+
+    cfg = AutoConfig.from_pretrained(str(local), trust_remote_code=True)
+    for k, v in dict(hidden_size=64, intermediate_size=128, num_hidden_layers=2, num_attention_heads=4,
+                     num_key_value_heads=4, head_dim=16, vocab_size=500, max_window_layers=2).items():
+        setattr(cfg, k, v)
+    torch.manual_seed(0)
+    return AutoModelForCausalLM.from_config(cfg, trust_remote_code=True).eval().to(torch.bfloat16)
+
+
+def _all_states(m, device):
+    from lookahead.ouro_adapter import OuroLoopRunner
+    from lookahead.packed import PackedScorer, build_packed
+
+    ctx, conts = [5, 17, 99, 3, 250, 11], [[7, 8, 9], [42, 43], [300, 301, 302, 303]]
+    out = [o.hidden.clone() for o in PackedScorer(m).loops(build_packed(ctx, conts))]
+    r = OuroLoopRunner(m)
+    s = r.start(torch.tensor([ctx], device=device))
+    for _ in range(4):
+        r.step(s)
+        out.append(s.hidden[0, -1].clone())
+    return out
+
+
+@pytest.mark.parametrize("device", ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(),
+                                                                                         reason="no GPU"))])
+def test_streamed_float64_is_bit_identical_to_a_full_float64_model_and_restores_weights(device):
+    import copy
+
+    base = _tiny_ouro()
+    full = copy.deepcopy(base).to(device).to(torch.float64)
+    F.patch_float64(full)
+    ref = _all_states(full, device)
+    st = copy.deepcopy(base).to(device)
+    stream = F.Float64Streaming(st)
+    F.patch_float64(st)
+    audit = F.DtypeAudit(st)
+    got = _all_states(st, device)
+    audit.close()
+    assert all(g.dtype == torch.float64 for g in got)
+    assert all(torch.equal(a, b) for a, b in zip(ref, got))  # same arithmetic, bit for bit
+    assert audit.bad == {} and stream.n_casts > 0
+    assert stream.close()  # every weight back to bf16 with identical bits
+    assert all(p.dtype == torch.bfloat16 for p in st.parameters())
+

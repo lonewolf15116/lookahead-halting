@@ -3,6 +3,8 @@
 # questions with the largest float32 difference. Needs >= 16 GB free RAM (close browsers etc. first). Prints only state
 # differences and the interpretation; no labels, predictions or accuracy. Roughly 10-20 minutes, mostly CPU.
 #   cmd:  powershell -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\Projects\lookahead-halting\scripts\run_phase3_da2_windows.ps1"
+# Option 2 (only after reviewer approval): add  -Mode stream-gpu  (bf16 weights on the GPU, float64 per module call; ~4 GB RAM)
+param([ValidateSet('full-cpu', 'stream-gpu')][string]$Mode = 'full-cpu')
 $ErrorActionPreference = 'Stop'
 $Root = Join-Path $HOME 'Projects\lookahead-halting'
 Set-Location $Root
@@ -14,6 +16,6 @@ function Check($what) { if ($LASTEXITCODE -ne 0) { throw "$what failed (exit $LA
 
 & $py -m pip install --quiet -e .; Check 'package install'
 & $py -m pytest -q tests\test_phase3_da2.py tests\test_phase3_da.py; Check 'D-a2 tests'
-& $py scripts\diagnose_short_context_ood_a2.py; Check 'D-a2 (see results\phase3\diagnose_short_context_ood_a2.json)'
+& $py scripts\diagnose_short_context_ood_a2.py --mode $Mode; Check 'D-a2 (see results\phase3\diagnose_short_context_ood_a2.json)'
 Write-Host 'D-a2 done. Send the output and results\phase3\diagnose_short_context_ood_a2.json for review.'
 [void][Lh3a2.Power]::SetThreadExecutionState([uint32]2147483648)
