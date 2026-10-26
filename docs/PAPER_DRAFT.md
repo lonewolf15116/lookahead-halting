@@ -89,7 +89,8 @@ and they are not measurements of Ouro's released inference path, which selects a
 - They compared the pretrained gate with post-hoc readouts: entropy, top-1 confidence, margin, predictive KL, logit change, and hidden-state
   displacement and cosine change.
 - They chose thresholds on validation data and evaluated on held-out data.
-- They found the gate "competitive but not uniformly Pareto-optimal".
+- They found the gate "competitive but not uniformly Pareto-optimal". Their full per-benchmark curves interleave, so the preferred method
+  visibly varies with the operating point in their data, though they report one validation-selected point per method and do not state how it was chosen.
 - Our readout definitions follow theirs [Popescu2026, appendix B.6]. Our threshold grid has a similar size but a different construction:
   - ours: 50 quantiles over the full range plus a never-exit point, inherited from earlier stages of this project;
   - theirs: 51 quantiles between the 0.5th and 99.5th percentiles [Popescu2026, appendix B.5].
