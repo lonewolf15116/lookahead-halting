@@ -1,0 +1,43 @@
+{
+ "completed": {
+  "default": true,
+  "deterministic": true
+ },
+ "deterministic_algorithms_enabled": {
+  "default": false,
+  "deterministic": true
+ },
+ "errors": {
+  "default": {
+   "run": null,
+   "setup": null
+  },
+  "deterministic": {
+   "run": null,
+   "setup": null
+  }
+ },
+ "max_abs_by_key": {
+  "default": {
+   "cdf": 0.0,
+   "conf": 3.752768640286064e-08,
+   "ent": 1.4542329562772238e-08,
+   "gate": 0.0,
+   "opt_ll": 6.103515625e-05,
+   "vent": 0.0
+  },
+  "deterministic": {
+   "cdf": 0.0,
+   "conf": 0.0,
+   "ent": 0.0,
+   "gate": 0.0,
+   "opt_ll": 0.0,
+   "vent": 0.0
+  }
+ },
+ "questions_differ": {
+  "default": 16,
+  "deterministic": 0
+ },
+ "reading": "default differs, deterministic agrees: evidence supports GPU nondeterminism as a cause"
+}
