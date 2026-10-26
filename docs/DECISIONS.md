@@ -214,3 +214,5 @@
   - (1) Streamed weights are restored even if a module raises (always-call hook, plus restoration at close and the sha256 check).
   - (2) "numerical" or "differs" requires exactly the 40 expected (question, loop) rows with finite values for both comparisons; anything else is "unresolved".
   - 23 tests pass in the cloud. The real-model run waits for the laptop CUDA test run.
+- 2026-10-26 Reviewer "D-a2 Safeguard Review" (098c136): GO for laptop CUDA validation, then the `stream-gpu` diagnostic if the CUDA tests pass. The D-a FAIL stands; the D-a2 report is written separately. The full extraction, D1-D4, training and TEST stay on HOLD.
+  - Runner hardening to enforce "no unexpected skips": in stream-gpu mode it sets LH_REQUIRE_CUDA=1, so a missing GPU fails the 3 CUDA tests instead of skipping them (verified: 3 fail without a GPU). No other change.

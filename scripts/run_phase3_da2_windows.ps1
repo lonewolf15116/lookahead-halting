@@ -15,7 +15,8 @@ Add-Type -Namespace Lh3a2 -Name Power -MemberDefinition '[DllImport("kernel32.dl
 function Check($what) { if ($LASTEXITCODE -ne 0) { throw "$what failed (exit $LASTEXITCODE). Stop here and send the output; any report is kept." } }
 
 & $py -m pip install --quiet -e .; Check 'package install'
-& $py -m pytest -q tests\test_phase3_da2.py tests\test_phase3_da.py; Check 'D-a2 tests'
+if ($Mode -eq 'stream-gpu') { $env:LH_REQUIRE_CUDA = '1' }  # CUDA tests must run, not skip
+& $py -m pytest -q -rs tests\test_phase3_da2.py tests\test_phase3_da.py; Check 'D-a2 tests'
 & $py scripts\diagnose_short_context_ood_a2.py --mode $Mode; Check 'D-a2 (see results\phase3\diagnose_short_context_ood_a2.json)'
 Write-Host 'D-a2 done. Send the output and results\phase3\diagnose_short_context_ood_a2.json for review.'
 [void][Lh3a2.Power]::SetThreadExecutionState([uint32]2147483648)

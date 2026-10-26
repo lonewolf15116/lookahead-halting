@@ -2,6 +2,7 @@
 summary and interpretation rules; the committed D-a report is pinned (no model, no data download)."""
 import importlib.util
 import math
+import os
 import types
 
 import pytest
@@ -14,6 +15,12 @@ from lookahead.config import REPO_ROOT
 _spec = importlib.util.spec_from_file_location("da2", REPO_ROOT / "scripts" / "diagnose_short_context_ood_a2.py")
 A2 = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(A2)
+
+
+# CUDA variants: skipped without a GPU, except when the runner demands them (LH_REQUIRE_CUDA=1, stream-gpu mode), where a
+# missing GPU must fail instead of silently skipping (reviewer: no unexpected skips).
+_CUDA = pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available() and os.environ.get("LH_REQUIRE_CUDA") != "1",
+                                                      reason="no GPU"))
 
 
 # ---------------------------------------------------------------- stand-ins with Ouro's exact float32-forcing code
@@ -221,8 +228,7 @@ def _all_states(m, device):
     return out
 
 
-@pytest.mark.parametrize("device", ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(),
-                                                                                         reason="no GPU"))])
+@pytest.mark.parametrize("device", ["cpu", _CUDA])
 def test_streamed_float64_is_bit_identical_to_a_full_float64_model_and_restores_weights(device):
     import copy
 
@@ -274,8 +280,7 @@ def test_op_audit_catches_an_internal_downcast_that_the_module_audit_misses():
     assert ops2.bad == {} and ops2.n_ops == 0
 
 
-@pytest.mark.parametrize("device", ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(),
-                                                                                         reason="no GPU"))])
+@pytest.mark.parametrize("device", ["cpu", _CUDA])
 def test_hidden_state_path_has_no_non_float64_op_when_patched_and_streamed(device):
     from lookahead.ouro_adapter import OuroLoopRunner
 
@@ -290,8 +295,7 @@ def test_hidden_state_path_has_no_non_float64_op_when_patched_and_streamed(devic
     assert all(s.dtype == torch.float64 for s in states)
 
 
-@pytest.mark.parametrize("device", ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(),
-                                                                                         reason="no GPU"))])
+@pytest.mark.parametrize("device", ["cpu", _CUDA])
 def test_real_layer_equivalence_check_passes_for_streaming_and_detects_a_difference(device):
     from lookahead.ouro_adapter import OuroLoopRunner
 
