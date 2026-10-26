@@ -340,3 +340,7 @@
   - Out of distribution, π1-x loses 3.26 pp on SIQA (upper bound 4.72) and 0.71 pp on PIQA (upper bound 1.52).
 - A second runner invocation by mistake was refused at preflight because the marker exists. TEST was not re-read. The second transcript overwrote the console log; the first run's output survives in the conversation.
 - Post-run package snapshot 9a205c9c…: it differs from the pre-run snapshot 436fa628… only in the editable lookahead line (fed36b0 → 196a882, i.e. the pull to the approved commit); all third-party versions are identical. test_report.json and TEST_OPENED.json were committed from the laptop (d22ca6b).
+
+## 2026-10-27 — Paper outline v1 and reference verification (docs/PAPER_OUTLINE.md)
+- Framing: an empirical study of selection-rule sensitivity. Evidence labels [C]/[S]/[P]/[E] are used throughout. RQ2 comparing against KL exit: [S] with [P] emphasis. RQ3: [S], PIQA and SIQA only.
+- References verified from primary sources by a Sonnet sub-agent. Corrections: PonderNet is a workshop paper; AdaPonderLM and Ouro are preprints; Ouro is cited as Zhu et al. arXiv:2510.25741. Geiping et al. (NeurIPS 2025, section 6.1, KL exit) is the prior art for r-kl.
