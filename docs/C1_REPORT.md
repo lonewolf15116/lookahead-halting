@@ -103,3 +103,14 @@ freeze-time GPU measurements. This is an accounting estimate under the C1.3 boun
 - C1 (pre-registered combined risk rule): PASS, Δ +0.053 gross and +0.038 net (estimated).
 - Every write-up must report the two results together, along with the r-kl tie, the upper-bound exceedances on TEST and the out-of-distribution
   budget violation of π1-x. The literature references (ACT, PonderNet, PABEE, Geiping et al., SpecExit, NEAT, AdaPonderLM) still need to be verified.
+
+## Errata (2026-10-27; found while drafting sections 3–6; results unchanged)
+
+- Qualification 2 says the development data showed the same near-tie between r-kl and π1-x. That holds only for the in-sample freeze selection
+  (π1-x 0.246, r-kl 0.243). The E1 cross-fitted held-out estimate had π1-x ahead (0.258 vs r-kl 0.207), so the TEST near-tie was not predicted
+  by the held-out development estimate.
+- "Other secondaries" says π1-x exits mostly at loop 3 on OBQA. In fact the counts are 1,377 at loop 3 and 1,374 at loop 4, which is a split, not "mostly".
+- G3a's −0.0236 is the nested held-out result on development data. The exposed validation figure is −0.0289.
+- The selection grid is 50 quantiles plus +∞, which is 51 thresholds.
+- The Phase 3 check D-b, on halting-decision agreement across bf16 numerical paths, never ran because Phase 3 stopped at D2. The sensitivity of
+  halting decisions to the numerical path is therefore unmeasured.

@@ -49,7 +49,7 @@ Status: outline v2 (reviewer revisions applied), with no prose drafted. Results 
   selection is new.
 - **Our rule is a heuristic screen, not risk control.** C1's development-set rule (point loss ≤ 1 pp AND bootstrap 95% upper bound ≤ 1 pp) differs in four ways:
   - the bootstrap is asymptotic, not a finite-sample bound;
-  - there is no multiplicity control across the 51-point grid (plus ∞);
+  - there is no multiplicity control across the 51-point grid (50 quantiles plus ∞);
   - selection and bound use the same data (winner's curse);
   - there is no (α, δ) statement.
 
@@ -93,7 +93,7 @@ Status: outline v2 (reviewer revisions applied), with no prose drafted. Results 
 
 | Rule | π1-x − native-pb (gross macro saving) | Evidence |
 |---|---|---|
-| point-only (G3a, validation) | −0.024 | G3a STOP |
+| point-only (G3a, nested held-out on development) | −0.024 (exposed validation: −0.029) | G3a STOP [E] |
 | point-only (TEST) | −0.022 [−0.026, −0.018] | [S] |
 | bootstrap-screened (TEST) | **+0.053 [+0.049, +0.057]** | [C] PASS |
 | bootstrap-screened, net (TEST) | +0.038 [+0.033, +0.042] | [S], estimated |
@@ -116,8 +116,8 @@ Status: outline v2 (reviewer revisions applied), with no prose drafted. Results 
   |---|---|---|
   | π1-x vs r-kl | +0.0012 | [−0.0041, +0.0065] |
 
-  The reselecting bootstrap picked r-kl in 10,000 of 10,000 resamples. There is no demonstrated advantage. This is not evidence of equivalence: no equivalence margin was pre-specified, and the CI only shows that differences larger than about ±0.65 pp of saving are unlikely.
-  The near-tie was also seen on development data (0.246 vs 0.243). All other r-* rules trail by 0.060–0.090.
+  The reselecting bootstrap picked r-kl in 10,000 of 10,000 resamples. There is no demonstrated advantage. This is not evidence of equivalence: no equivalence margin was pre-specified, and the CI is asymmetric: about +0.65 pp in favour of π1-x and −0.41 pp in favour of r-kl.
+  Development data gave mixed signals: the in-sample freeze selection showed a near-tie (π1-x 0.246, r-kl 0.243), but the E1 cross-fitted held-out estimate had π1-x ahead (0.258 vs 0.207). The TEST near-tie therefore matches the in-sample freeze numbers, not the held-out E1 estimate. All other r-* rules trail by 0.060–0.090.
 - **RQ3** [S]:
 
   | benchmark | method | loss (pp) | upper bound | saving |
