@@ -1,0 +1,61 @@
+{
+ "git_commit": "196a88219bb98fcefb528c1f8368f08e1f6e30df",
+ "note": "TEST counts as opened from this moment; this file is never removed",
+ "opened_utc": "2026-10-26T18:18:05.555829+00:00",
+ "pinned": {
+  "data/manifests/phase3_questions.json": "b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec",
+  "docs/C1_PROTOCOL.md": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050",
+  "results/c1/frozen.json": "65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f",
+  "results/c1/pi1x_models.npz": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad",
+  "results/phase3/extraction_check_phase3_test.json": "c8d9c20206209ae2fafae46c8cb5c420657f10698170ade205e9e646ca9318b2"
+ },
+ "test_code_bundle_files": [
+  "scripts/c1_test_run.py",
+  "src/lookahead/__init__.py",
+  "src/lookahead/c1.py",
+  "src/lookahead/c1_rho.py",
+  "src/lookahead/c1_test.py",
+  "src/lookahead/config.py",
+  "src/lookahead/confirm.py",
+  "src/lookahead/e1.py",
+  "src/lookahead/extract.py",
+  "src/lookahead/f64_reference.py",
+  "src/lookahead/gate1.py",
+  "src/lookahead/gate2.py",
+  "src/lookahead/gate2_eval.py",
+  "src/lookahead/lm_eval_ouro.py",
+  "src/lookahead/ouro_adapter.py",
+  "src/lookahead/packed.py",
+  "src/lookahead/phase3_allocation.py",
+  "src/lookahead/phase3_build.py",
+  "src/lookahead/phase3_g3a.py",
+  "src/lookahead/phase3_inventory.py",
+  "src/lookahead/phase3_readouts.py",
+  "src/lookahead/questions.py",
+  "src/lookahead/splits.py",
+  "src/lookahead/synthetic.py"
+ ],
+ "test_code_bundle_sha256": "c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568",
+ "test_metadata": {
+  "commonsense_qa": {
+   "n": 1000,
+   "parts": 4
+  },
+  "hellaswag": {
+   "n": 750,
+   "parts": 3
+  },
+  "openbookqa": {
+   "n": 3000,
+   "parts": 12
+  },
+  "piqa": {
+   "n": 1837,
+   "parts": 8
+  },
+  "social_iqa": {
+   "n": 1930,
+   "parts": 8
+  }
+ }
+}
