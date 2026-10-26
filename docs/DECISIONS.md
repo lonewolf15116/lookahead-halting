@@ -250,3 +250,6 @@
   - Pairing is asserted; the validation estimate's selection never receives validation data (tested).
   - OP1-OP8 are locked with the reviewer's resolutions. OP5 is still to be signed off: D3 decides with Gate 2's indirect estimand, P(WC) - P(CW) with Gate 2's recorded C (checked against validation_report.json), and reports the direct classifier as information.
   - 51 G3a tests and 13 readout tests pass. Not run on real data.
+- 2026-10-26 Reviewer "G3a Revision 2 — Reviewer assessment": CONDITIONAL APPROVAL. Accepted: nested D2, contamination tests, OP1-OP8, and OP5 (indirect method; the to-final reuse of adjacent C is disclosed as an extrapolation).
+  - Rev 3 applies the two requested checks: the exposed-validation comparator now uses the same eligibility rule and the same frozen code as D2; held-out pairing is asserted on question-id fingerprints, not counts.
+  - 53 G3a and 13 readout tests pass. The real run awaits the reviewer's GO.

@@ -53,8 +53,10 @@ OPEN_POINTS = {   # with the reviewer's G3a implementation review (2026-10-26); 
                                   "development data.",
     "OP5_D3_model": "NEEDS SIGN-OFF. Decision method 'indirect' keeps Gate 2's estimand: score P(WC) - P(CW) from two "
                     "per-loop L2-logistic probes on h_t or x_t, fitted on all ok rows (six benchmarks), Gate 2's recorded "
-                    "per-loop C (validation_report.json 'secondary'), out of fold over lh-fold-v1; to-final probes use the "
-                    "same C. The 'direct' WC-vs-CW classifier (inner-CV C) is reported beside it as information only.",
+                    "per-loop C (validation_report.json 'secondary'), out of fold over lh-fold-v1. ACCEPTED by the reviewer with a disclosed "
+                    "qualification: the to-final probes reuse the adjacent-transition C, an extrapolation fixed in advance, "
+                    "not a value Gate 2 validated for to-final prediction. The 'direct' WC-vs-CW classifier (inner-CV C) "
+                    "is reported beside it as information only.",
     "OP6_D3_cells": "ACCEPTED provisionally: cells (kind, benchmark, loop), kind in {adjacent, to-final}, three primary "
                     "benchmarks; counted if >= 30 WC+CW transitions, both classes, both AUROCs defined; hx kept iff h > x in "
                     ">= half of counted cells; none counted -> not kept. Every cell's status (counted / too_few / empty / "
@@ -342,7 +344,8 @@ def evaluate(d: DevData, S: np.ndarray, sel: dict, mask: np.ndarray) -> dict:
         if not len(r):
             raise ValueError(f"{b}: no evaluation rows")
         sav, loss = R.outcome(d.correct[r], d.ok[r], R.exit_loops(S[r], d.ok[r], s["tau"], s["m"]))
-        out[b] = {"saving": float(sav), "loss": float(loss), "n": int(len(r))}
+        ids = hashlib.sha256("\n".join(sorted(d.doc_id[r].tolist())).encode()).hexdigest()
+        out[b] = {"saving": float(sav), "loss": float(loss), "n": int(len(r)), "ids_sha256": ids}
     return out
 
 
@@ -471,10 +474,10 @@ def d2(d: DevData, stats: dict) -> dict:
     """Nested D2 (plan 7, A2.4): every method selected on four folds and evaluated on the fifth, rotated; candidates
     re-fitted inside each outer fold (outer_fold). Gross saving (OP1): a screening estimate, not net improvement."""
     per_fold = [outer_fold(d, k, stats) for k in range(g2.N_FOLDS)]
-    for k, rec in enumerate(per_fold):   # paired: every method evaluated on exactly the same held-out rows
-        ns = {name: {b: v["n"] for b, v in r["heldout"].items()} for name, r in rec.items()}
-        if len({json.dumps(v, sort_keys=True) for v in ns.values()}) != 1:
-            raise AssertionError(f"fold {k}: methods evaluated on different held-out rows")
+    for k, rec in enumerate(per_fold):   # paired: every method evaluated on exactly the same held-out QUESTIONS
+        ids = {name: {b: v["ids_sha256"] for b, v in r["heldout"].items()} for name, r in rec.items()}
+        if len({json.dumps(v, sort_keys=True) for v in ids.values()}) != 1:
+            raise AssertionError(f"fold {k}: methods evaluated on different held-out questions")
     folds = [{b: {kk: rec[b][kk] for kk in ("eligible", "selection_saving", "heldout_saving")} for b in BASELINES}
              for rec in per_fold]
     comp = R.nested_comparator(folds)
@@ -511,8 +514,12 @@ def validation_selection(dev: DevData, stats_dev: dict) -> dict:
         Sd = cand[name] if name in cand else stats_dev[name]
         sels[name] = select_all(dev, Sd, allrows, fixed_only=(name == "B_pb"))
     sel_saving = {n: macro({b: {"saving": sels[n][b]["saving"]} for b in PRIMARY}, PRIMARY) for n in sels}
-    comp = sorted(BASELINES, key=lambda b: (-sel_saving[b], b))[0]
-    return {"selections": sels, "selection_saving": sel_saving, "comparator": comp}
+    eligible = {n: all(sels[n][b]["loss"] <= g1.LOSS_LIMIT + g1.TOL for b in PRIMARY) for n in sels}
+    # same rule and same frozen code as the D2 comparator (A2.4): eligible on the selection data, highest selection macro
+    # saving, ties by name. heldout_saving is a placeholder here: nested_comparator never uses it for the choice.
+    comp = R.nested_comparator([{b: {"eligible": eligible[b], "selection_saving": sel_saving[b], "heldout_saving": 0.0}
+                                 for b in BASELINES}])["chosen"][0]
+    return {"selections": sels, "selection_saving": sel_saving, "eligible": eligible, "comparator": comp}
 
 
 def d2_validation_exposed(dev: DevData, val: DevData, stats_dev: dict, stats_val: dict) -> dict:
@@ -527,8 +534,8 @@ def d2_validation_exposed(dev: DevData, val: DevData, stats_dev: dict, stats_val
         Sv = cand_val[name] if name in cand_val else stats_val[name]
         sel = {b: s for b, s in vs["selections"][name].items() if b in val.benchmarks}
         ev = evaluate(val, Sv, sel, vrows)
-        res[name] = {"selection_saving": vs["selection_saving"][name], "validation_saving": macro(ev, PRIMARY),
-                     "validation": ev}
+        res[name] = {"selection_saving": vs["selection_saving"][name], "eligible": vs["eligible"][name],
+                     "validation_saving": macro(ev, PRIMARY), "validation": ev}
     comp = vs["comparator"]
     return {"comparator": comp, "methods": res,
             "improvement_vs_comparator": {c: res[c]["validation_saving"] - res[comp]["validation_saving"] for c in CANDIDATES}}

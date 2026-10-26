@@ -203,9 +203,40 @@ def test_the_old_whole_data_crossfit_would_have_leaked():
 def test_d2_methods_are_paired_on_identical_held_out_rows():
     d = synth(n=100, seed=23)
     out = G.d2(d, {n: G.baseline_stat(d, n) for n in G.BASELINES})
-    for rec in out["per_fold_detail"]:
-        ns = {name: {b: v["n"] for b, v in r["heldout"].items()} for name, r in rec.items()}
-        assert len({json.dumps(v, sort_keys=True) for v in ns.values()}) == 1
+    for k, rec in enumerate(out["per_fold_detail"]):
+        ids = {name: {b: v["ids_sha256"] for b, v in r["heldout"].items()} for name, r in rec.items()}
+        assert len({json.dumps(v, sort_keys=True) for v in ids.values()}) == 1
+        for b in d.benchmarks:   # and the fingerprint is exactly fold k's questions of benchmark b
+            exp = __import__("hashlib").sha256("\n".join(sorted(d.doc_id[(d.fold == k) & (d.bench == b)].tolist())).encode()).hexdigest()
+            assert rec["B_pb"]["heldout"][b]["ids_sha256"] == exp
+
+
+def test_pairing_assertion_fires_on_different_question_sets(monkeypatch):
+    d = synth(n=60, seed=27)
+    real = G.evaluate
+    calls = {"n": 0}
+
+    def skewed(dd, S, sel, mask):
+        calls["n"] += 1
+        if calls["n"] == 3:                      # one method silently evaluated on a different held-out set (same n)
+            mask = mask.copy()
+            r0 = np.flatnonzero(mask)[0]
+            r1 = np.flatnonzero(~mask & (dd.bench == dd.bench[r0]))[0]
+            mask[r0], mask[r1] = False, True
+        return real(dd, S, sel, mask)
+
+    monkeypatch.setattr(G, "evaluate", skewed)
+    with pytest.raises(AssertionError, match="different held-out questions"):
+        G.d2(d, {n: G.baseline_stat(d, n) for n in G.BASELINES})
+
+
+def test_validation_comparator_uses_the_same_eligibility_rule_as_d2():
+    dev = synth(n=100, seed=28)
+    stats = {n: G.baseline_stat(dev, n) for n in G.BASELINES}
+    vs = G.validation_selection(dev, stats)
+    exp = R.nested_comparator([{b: {"eligible": vs["eligible"][b], "selection_saving": vs["selection_saving"][b],
+                                    "heldout_saving": 0.0} for b in G.BASELINES}])["chosen"][0]
+    assert vs["comparator"] == exp and vs["eligible"][vs["comparator"]]
 
 
 def test_validation_estimate_selection_never_reads_validation():

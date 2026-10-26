@@ -5,7 +5,7 @@ writing D1-D4 and testing them on synthetic fixtures only. Running on real devel
 this implementation. Training, model selection and TEST stay on HOLD.
 
 Files: `src/lookahead/phase3_g3a.py` (logic and loader), `scripts/phase3_g3a.py` (guarded entry point),
-`tests/test_phase3_g3a.py` (51 tests), `scripts/run_phase3_g3a_windows.ps1` (laptop runner; to be used only after
+`tests/test_phase3_g3a.py` (53 tests), `scripts/run_phase3_g3a_windows.ps1` (laptop runner; to be used only after
 sign-off).
 
 ## Crosswalk: frozen specification → code → test
@@ -37,7 +37,7 @@ sign-off).
 | OP2 two D2 candidates | **Accepted provisionally, locked.** STOP iff both π1-x and π1-hx have improvement < 0.02, so either may pass |
 | OP3 grid pool | **Accepted.** It matches the frozen `phase3_readouts.grid`, which pools over the supplied ok rows and the defined loops |
 | OP4 D1 baseline | **Accepted** as descriptive and non-binding |
-| OP5 D3 model | **Needs sign-off.** The reviewer noted that the direct classifier changes the estimand. Now proposed: the decision uses the **indirect** Gate 2 estimand, P(WC) − P(CW) from two per-loop probes fitted on all ok rows with Gate 2's recorded per-loop C. To-final probes reuse the same C. The direct classifier is reported beside it as information |
+| OP5 D3 model | **Accepted (rev 2 review), with a disclosed qualification:** the to-final probes reuse the adjacent-transition C. That is an extrapolation fixed in advance, not a value Gate 2 validated for to-final prediction. Original proposal: The reviewer noted that the direct classifier changes the estimand. Now proposed: the decision uses the **indirect** Gate 2 estimand, P(WC) − P(CW) from two per-loop probes fitted on all ok rows with Gate 2's recorded per-loop C. To-final probes reuse the same C. The direct classifier is reported beside it as information |
 | OP6 D3 cells | **Accepted provisionally.** Every cell's status (counted, too_few, empty or unscorable) and the counts over the primary cells are reported |
 | OP7 D4 regularization | **Accepted** (informative only) |
 | OP8 failed questions | **Accepted** |
@@ -62,7 +62,7 @@ sign-off).
    data, and a test perturbs validation and finds every selection unchanged.
 
 ## Synthetic validation (no real outcome evaluated)
-- 51 G3a tests pass, plus the 13 frozen readout tests.
+- 53 G3a tests pass, plus the 13 frozen readout tests.
 - `python scripts/phase3_g3a.py --synthetic OUT.json` runs the whole script path on synthetic data and writes a report of
   the real format. The numbers it prints are synthetic and mean nothing.
 - The frozen-input check passes against the committed files.
@@ -75,3 +75,18 @@ CPU only:
 - D4: 30 hx fits at C = 0.001.
 
 Estimated 40-120 minutes, and about 1-2 GB of RAM.
+
+## Revision 3: the reviewer's Revision 2 assessment (conditional approval)
+1. **Exposed-validation comparator, made consistent with D2.** The frozen A2.4 comparator is "eligible (qualified under
+   the per-benchmark rule on the selection data), then highest selection macro saving, ties by name".
+   - `validation_selection` now computes eligibility on the development data and chooses the comparator with the same
+     frozen `nested_comparator`. The comparator choice never reads a validation value.
+   - Because τ = +∞ nests fixed depth 4 (A2 freeze note), every baseline is eligible at selection in practice. So the result
+     equals rev 2's, but the rule is now literally the same.
+   - Test: `test_validation_comparator_uses_the_same_eligibility_rule_as_d2`.
+2. **Pairing by question identity.** Each held-out evaluation records the sha256 of its sorted question ids, per
+   benchmark, and `d2` asserts that the fingerprints are identical across all methods in every fold.
+   - Tests: the fingerprints equal fold k's actual questions, and the assertion fires when one method is evaluated on a
+     different set of the same size.
+3. **OP5 accepted**, with the extrapolation disclosed in the code and here.
+4. **Tests:** 53 G3a tests plus 13 readout tests pass.
