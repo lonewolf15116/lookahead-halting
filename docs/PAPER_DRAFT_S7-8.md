@@ -16,6 +16,9 @@ The evidence supports three statements, each at a different strength.
 2. **The preferred method depends on the selection rule** [C] together with [S]. Under the point-only rule, the native gate was preferred on development data (G3a, −0.024 [E])
    and on TEST (−0.022 [−0.026, −0.018] [S]). Under the bootstrap-screened rule, π1-x was preferred [C]. Each rule selects its own
    operating points, so this is a statement about comparisons made through a selection procedure, not about fixed policies changing order.
+   The point-only preference for the native gate on TEST compares operating points that broke the observed 1 pp budget on TEST: native-pb on two of
+   three benchmarks, π1-x on all three (Table 5). That comparison therefore shows which method a point-only rule prefers. It does not show which method
+   is better among budget-compliant policies.
 3. **The added trained probe showed no demonstrated advantage over an untrained KL-between-loops readout** [S], and this comparison is
    emphasised post hoc [P]. Separately, one out-of-distribution benchmark showed a budget failure for π1-x [S].
 
@@ -121,7 +124,9 @@ We have no causal analysis. The following are hypotheses for future work [P]:
 
 On a frozen Ouro-1.4B, a pre-registered comparison on a sealed test set found that a trained stability probe saved more loops than Ouro's
 native gate when operating points were chosen with a bootstrap-screened accuracy rule: +0.053 gross macro saving [C], +0.038 net (estimated) [S].
-The same comparison under a point-only rule preferred the native gate, both on development data [E] and on the sealed test set [S].
+The same comparison under a point-only rule preferred the native gate, both on development data [E] and on the sealed test set [S]. On the test set,
+however, the point-only operating points of both methods exceeded the observed 1 pp budget on most benchmarks, so the reversal concerns which method each
+rule prefers, not which method is better among compliant policies.
 
 The trained probe showed no demonstrated advantage over an untrained KL-between-loops readout. That comparison was pre-specified [S], and we
 give it post hoc emphasis [P]. On one out-of-distribution benchmark the probe broke its accuracy budget [S].
@@ -144,8 +149,8 @@ Future work needs new held-out data:
 
 1. **[Popescu2026]** (Popescu, Sáez de Ocáriz Borde, Liò, *Adaptive Depth in Looped Transformers: Diagnosing Learned Halting Gates and
    Trajectory Readouts*, arXiv:2607.20519, 8 July 2026, a preprint) is verified from the arXiv PDF through a summarising fetch. It studies
-   Ouro-1.4B and 2.6B and uses a 51-point validation-quantile grid, which is the same construction as ours. Our grid was taken from it (see
-   `phase3_readouts.py`). It must be cited in Section 2 as the closest prior work, and the introduction's novelty statement must be written with it in view.
+   Ouro-1.4B and 2.6B. Correction: our threshold grid was not taken from it. It comes from `gate1.grid_thresholds` (Gate 1, 2026-10-20). Only the
+   readout definitions follow Popescu (appendix B.6). See `PAPER_DRAFT_S1-2.md`, note 1. It must be cited in Section 2 as the closest prior work, and the introduction's novelty statement must be written with it in view.
 2. The numbers in Section 7.3 (0.359 vs 0.337; drops of −0.173 and −0.098) come from Table 5 of Sections 5–6.
 3. Section 7.6 attributes the D-a2 result to "numerical causes" and gives a float64 difference of 1.67×10⁻¹³. Check the exact wording against `docs/DECISIONS.md` / the D-a2 report before submission.
 4. Sections 1 and 2 are not yet drafted. The abstract should be written last, keeping the [C]/[S]/[P] distinctions in its sentences.
