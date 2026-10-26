@@ -281,3 +281,6 @@
   - H-scale is not supported; H-target is at most weak.
   - A5's combo-max is degenerate (scale mismatch), reported and not fixed.
   - No confirmatory claim; TEST sealed. Awaiting the reviewer's results audit.
+- 2026-10-26 Reviewer "E1 results audit": ACCEPTED as exploratory evidence (report hash matched). TEST is not unsealed.
+  - Required first: a separate frozen confirmatory protocol covering the primary comparison (π1-x vs native-pb under the identical combined risk rule), the primary endpoint with a minimum meaningful improvement, accuracy protection (a saving advantage alone never counts), and a statistical decision rule with pass/fail/inconclusive outcomes. B_pb is kept as a reference.
+  - Drafted: docs/C1_PROTOCOL_DRAFT.md (not frozen). Open reviewer decisions D-a to D-e: selection data; δ = 0.02; gross primary vs net; bootstrap B and seed; native-pb vs the strongest baseline as comparator.
