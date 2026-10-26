@@ -274,3 +274,10 @@
 - 2026-10-26 Reviewer: E1 implementation (a49c5eb) APPROVED for the exploratory development-data run. The A6 combined rule (point loss ≤ 1 pp and bootstrap upper bound ≤ 1 pp) is accepted, to be described as such. Cautions: the A1 paired CI is exploratory (dependence from overlapping training folds); A4 is not causal.
   - First laptop run: stopped at the test step, 86 passed and 1 failed. The failing test was test_entry_script_synthetic_dry_run, which launched its subprocess with a minimal Linux-only environment; on Windows, without SYSTEMROOT, the socket layer fails (WinError 10106) when sklearn imports. This was a test-harness defect, not E1 logic.
   - Fix: the subprocess keeps the inherited environment and adds PYTHONPATH. No other change. E1 itself had not started.
+- 2026-10-26 **E1 run** (laptop, 4a5d4cc clean, 87 tests passing, 2.1 min; report sha256 0fa367b4076958f5…; reproduces G3a's native-pb, π1-x and π1-hx exactly). Exploratory results (docs/E1_REPORT.md):
+  - Under the point rule the native gate still leads every probe variant.
+  - Under the identical risk-controlled rule the order reverses: π1-x +0.053 over native-pb, all 5 folds positive.
+  - The probes rank better than the native cdf on every target (A4).
+  - H-scale is not supported; H-target is at most weak.
+  - A5's combo-max is degenerate (scale mismatch), reported and not fixed.
+  - No confirmatory claim; TEST sealed. Awaiting the reviewer's results audit.
