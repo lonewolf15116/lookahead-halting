@@ -195,3 +195,5 @@
   - D-a: GO. D-b: protocol only. D-b runs after D1-D4 and only if they allow Phase 3 to continue; DEV only.
   - Full extraction: HOLD until D-a passes and its provenance is checked.
   - D-a implemented (scripts/diagnose_short_context_ood.py; 8 tests pass): 100 never-used, unallocated TRAIN rows per benchmark, chosen by salted rank and fingerprinted (PIQA a27f3f74…, SIQA ab6d70b2…). A separate float32 verdict per benchmark at the unchanged 1e-4; it stops on too few rows; it computes no outcome.
+- 2026-10-26 D-a run (dd000ae): Social IQa PASS (float32 max 3.1e-5); **PIQA FAIL** (float32 max 1.17e-4 > 1e-4; rel L2 1.7e-5; contexts 6-25 tokens). The explicit-mask context-only pass is identical to the plain one again. Tolerance unchanged; report kept (results/phase3/diagnose_short_context_ood.json); full extraction stays on HOLD.
+  - Proposed investigation D-a2, with criteria fixed before running and awaiting reviewer approval: record the configuration (TF32 and attention); per-loop localisation; float64 on CPU for the 10 PIQA questions with the largest float32 difference, ≤ 1e-9 meaning the two passes are equivalent and > 1e-9 meaning stop as a possible bug.

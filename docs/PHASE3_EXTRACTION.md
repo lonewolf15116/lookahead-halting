@@ -220,3 +220,41 @@ recorded as given:
     values are replaced by per-option scores and context-only states.
 - **What it never touches.** TEST. It changes no decision rule, threshold or verdict. Its results are reported as a
   limitation on numerical invariance across implementations.
+
+### D-a result (2026-10-26): Social IQa PASS, PIQA FAIL. Full extraction stays on HOLD
+Run at commit dd000ae (code clean), torch 2.11.0+cu128, RTX 5050, Ouro 574fa66c, with the dataset revisions equal to the
+inventory's. Report: `results/phase3/diagnose_short_context_ood.json`, kept as written. All 100 rows were built per
+benchmark, with 0 exemplars.
+
+| | context tokens | float32 packed vs ctx: max (median), rel L2, exact | verdict at 1e-4 | bf16 max, rel L2 | explicit-mask ctx vs ctx |
+|---|---|---|---|---|---|
+| PIQA | 6-25 | **1.17e-4** (6.4e-6), 1.7e-5, 7% | **FAIL** | 1.0, 0.13 | 0 (both dtypes) |
+| Social IQa | 22-46 | 3.1e-5 (0), 7.0e-6, 87% | PASS | 1.31, 0.18 | 0 (both dtypes) |
+| *Phase 1 OBQA (ref.)* | 3-66 | 2.1e-5, 3.2e-6, 44% | pass | 0.375, 0.078 | 0 |
+
+- The tolerance is not changed. The PIQA failure stands as recorded.
+- **What the numbers show.** These are facts, not yet an explanation:
+  - The explicit-mask context-only pass again equals the plain one exactly, so the mask code path is still not the cause.
+  - A mask or position bug that let option tokens leak into the context would normally produce differences of order 0.1-1
+    in float32, not 1e-4. But nothing yet shows that a float32 difference of this size is only rounding.
+  - The largest state value on PIQA is about 15 (on OBQA, about 29), so a larger scale does not explain the excess.
+  - PIQA has the shortest contexts of any benchmark checked.
+- **A second point for D-b and the OOD interpretation.** The bf16 path differences on PIQA and Social IQa (relative L2
+  0.13 and 0.18) are larger than on OBQA (0.078). Hidden-state readouts and probes on the OOD benchmarks will therefore
+  carry more numerical noise between computation paths.
+- **Proposed investigation D-a2** (it needs reviewer approval; its criteria are fixed here, before any run):
+  1. **Record the configuration.** Record the TF32 and float32-matmul-precision flags and the attention implementation. The
+     code never sets TF32, and PyTorch's default leaves it off for matmuls, but nothing records this.
+  2. **Locate the difference.** On the same 100 PIQA rows, with Social IQa as control, record float32 packed-vs-context
+     differences per loop and per question. A difference that is already present at loop 1 and stays flat points to a
+     structural difference. One that starts near 1e-6 and grows through the loops points to rounding being amplified.
+  3. **The decisive test: float64 on the CPU** for the 10 PIQA questions with the largest float32 difference. Questions are
+     ranked by that difference, which is a numerical quantity, not an outcome.
+     - If float64 packed-vs-context max |diff| ≤ 1e-9: the two passes compute the same function, and the float32 excess is
+       rounding. The reviewer then decides how the PIQA D-a FAIL is handled. The 1e-4 tolerance does not change either way.
+     - If it is > 1e-9: there is a real computational difference. Stop and treat it as a possible bug. The full extraction
+       stays on HOLD.
+     - The script checks that at least 16 GB of RAM is free before loading the model in float64 (about 11 GB of weights),
+       and stops if not.
+  4. **Output.** `results/phase3/diagnose_short_context_ood_a2.json`. The D-a report is never overwritten. No scores,
+     labels or outcomes are computed.
