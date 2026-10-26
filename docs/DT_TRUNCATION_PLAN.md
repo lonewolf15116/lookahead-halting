@@ -1,4 +1,4 @@
-# D-t: truncated-execution check of the retrospective evaluation (plan, rev 2 with implementation, NOT RUN)
+# D-t: truncated-execution check of the retrospective evaluation (plan, rev 3, FROZEN for the run after the reviewer's conditional GO, NOT RUN)
 
 Purpose: the reviewer's full-paper review (2026-10-27) asked us to validate the retrospective evaluation against real truncated execution, on
 a small independent diagnostic set, without reopening TEST. Every C1 result was computed by applying frozen policies to stored full-depth
@@ -89,3 +89,23 @@ Changes from rev 1:
 - **r-kl selection.** r-kl's frozen (τ, m) is taken from `frozen.json` → `secondary_risk_all_baselines["r-kl"]`.
 - **C1 TEST bundle hash.** Adding `dt_truncation.py` to `src/lookahead` changes it. TEST is spent and the TEST script is never run again (its
   marker refuses), so this has no consequence. It is recorded here and in DECISIONS.
+
+## Rev 3: frozen after the reviewer's conditional GO (2026-10-27)
+
+The reviewer required four checks, and each is now recorded:
+1. **Exit-loop agreement.** Part of P-1, which needs 100%.
+2. **Prediction agreement.** This is new: the predicted option at the stopping loop, from the truncated run and from the stored trace, must agree on
+   every question. It is now part of P-1. Every disagreement is logged with both predictions and the statistic at each loop.
+3. **Accuracy and savings.** The report gives accuracy and simulated saving for both the truncated and the retrospective runs, plus their
+   differences (`accuracy_difference_pp`, `saving_difference`). Mismatches are listed in full.
+4. **Execution evidence.** The report records:
+   - the checkpoint: repo id, pinned revision 574fa66c…, dtype, and the sha256 of every file in the local checkpoint copy;
+   - the GPU name, compute capability, CUDA and cuDNN versions, the TF32 flags, float32 matmul precision and the deterministic-algorithms flag;
+   - the attention implementation and the library versions;
+   - the git commit and the sha256 of the run script and every `src/lookahead` module.
+
+Scope, as the reviewer set it:
+- A pass supports the claim that retrospective evaluation equals truncated execution on this development subset only. It does not extend to
+  the sealed TEST set or to runtime.
+- The timing numbers are descriptive and are not a latency measurement.
+- A fail is kept and reported, and Section 3.6 is revised to match.

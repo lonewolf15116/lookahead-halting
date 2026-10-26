@@ -273,7 +273,7 @@ def test_report_p1_p2_p3_and_structure(env, report):
         for b in (*G.PRIMARY, "all"):
             r = report["policies"][p][b]
             assert r["n"] == (6 if b != "all" else 18)
-            assert r["exit_agreement_pct"] == 100.0 and r["correctness_agreement_pct"] == 100.0 and r["disagreements"] == []
+            assert r["exit_agreement_pct"] == 100.0 and r["correctness_agreement_pct"] == 100.0 and r["prediction_agreement_pct"] == 100.0 and r["disagreements"] == []
             assert r["P2"]["checks"] >= r["n"] and r["P2"]["fail_vs_stored"] == 0
             assert r["stat_max_abs_diff_batch_vs_single"] < 1e-12            # batch shape may move the last bit (BLAS), nothing more
             assert r["P2"]["fail_vs_stored_batch"] == 0 or p == "pi1-x"

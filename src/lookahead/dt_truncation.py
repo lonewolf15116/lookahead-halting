@@ -412,6 +412,7 @@ def run_check(root, dev: G.DevData, questions: dict, models: list, frozen: dict,
         for p in POLICIES:
             tr = trunc[p]
             e_ret, c_ret, c4 = retro_at[p][b][i]
+            pred_ret = int(sub.pred[k, e_ret - 1]) if sub.ok[k] else -1    # stored prediction at the retrospective exit loop
             S_fresh = policy_stat(p, fd, models)[0] if fd is not None else np.full(3, np.nan)
             chk = {"checks": 0, "fail_vs_stored": 0, "fail_vs_stored_batch": 0, "fail_vs_fresh_full": 0, "fail_stored_masked": 0}
             for t, S_t in tr["stats"].items():
@@ -424,7 +425,7 @@ def run_check(root, dev: G.DevData, questions: dict, models: list, frozen: dict,
                 chk["fail_stored_masked"] += not bits_equal(masked[:kk], S_single[p][k, :kk], p)
             rec["policy"][p] = {
                 "e": tr["e"], "correct": tr["correct"], "pred": tr["pred"], "loops_run": tr["loops_run"], "ms": tr["ms"],
-                "nonfinite": tr["nonfinite"], "e_ret": e_ret, "c_ret": c_ret, "c4_ret": c4, "p2": chk,
+                "nonfinite": tr["nonfinite"], "e_ret": e_ret, "c_ret": c_ret, "c4_ret": c4, "pred_ret": pred_ret, "p2": chk,
                 "stat_fresh_full_vs_stored_single": _maxabs(S_fresh, S_single[p][k]),
                 "stat_batch_vs_single": _maxabs(S_batch[p][k], S_single[p][k]),
                 "online": {str(t): S.tolist() for t, S in tr["stats"].items()},
@@ -460,6 +461,7 @@ def aggregate(per_q: list, p3: dict, n_per_bench: int) -> dict:
             e, er = np.array([x["e"] for x in pr]), np.array([x["e_ret"] for x in pr])
             c, cr = np.array([x["correct"] for x in pr]), np.array([x["c_ret"] for x in pr])
             c4 = np.array([x["c4_ret"] for x in pr])
+            pd, pdr = np.array([x["pred"] for x in pr]), np.array([x["pred_ret"] for x in pr])
             tr_ms, full_ms = sum(x["ms"] for x in pr), sum(r["full_ms"] for r in rs)
             p2 = {k: int(sum(x["p2"][k] for x in pr)) for k in ("checks", "fail_vs_stored", "fail_vs_stored_batch",
                                                                 "fail_vs_fresh_full", "fail_stored_masked")}
@@ -467,16 +469,19 @@ def aggregate(per_q: list, p3: dict, n_per_bench: int) -> dict:
             p2["pass_code_level_causality"] = p2["fail_vs_fresh_full"] == 0 and p2["fail_stored_masked"] == 0
             dis = [{"id": r["id"], "bench": r["bench"], "e_truncated": x["e"], "e_retrospective": x["e_ret"],
                     "correct_truncated": x["correct"], "correct_retrospective": x["c_ret"], "pred_truncated": x["pred"],
+                    "pred_retrospective": x["pred_ret"],
                     "statistic_online_by_loop": x["online"], "statistic_stored_full": x["stored"],
                     "statistic_fresh_full": x["fresh_full"]}
-                   for r, x in zip(rs, pr) if x["e"] != x["e_ret"] or x["correct"] != x["c_ret"]]
+                   for r, x in zip(rs, pr) if x["e"] != x["e_ret"] or x["correct"] != x["c_ret"] or x["pred"] != x["pred_ret"]]
             by[b] = {
                 "n": len(rs), "exit_agreement_pct": _pct(e, er), "correctness_agreement_pct": _pct(c, cr),
                 "n_exit_disagree": int((e != er).sum()), "n_correct_disagree": int((c != cr).sum()), "disagreements": dis,
-                "P1_pass": bool((e == er).all() and (c == cr).all()), "P2": p2,
+                "prediction_agreement_pct": _pct(pd, pdr), "n_prediction_disagree": int((pd != pdr).sum()),
+                "P1_pass": bool((e == er).all() and (c == cr).all() and (pd == pdr).all()), "P2": p2,
                 "loops_run_equals_exit": int(sum(x["loops_run"] == x["e"] for x in pr)),
                 "n_nonfinite": int(sum(x["nonfinite"] for x in pr)),
                 "accuracy_truncated": float(c.mean()), "accuracy_retrospective": float(cr.mean()), "accuracy_loop4_stored": float(c4.mean()),
+                "accuracy_difference_pp": float(100 * (c.mean() - cr.mean())), "saving_difference": float(er.mean() / LOOPS - e.mean() / LOOPS),
                 "simulated_gross_saving": float(1 - e.mean() / LOOPS), "simulated_gross_saving_retrospective": float(1 - er.mean() / LOOPS),
                 "exit_hist_truncated": {str(k): int((e == k).sum()) for k in range(1, 5)},
                 "total_truncated_ms": float(tr_ms), "total_full_ms": float(full_ms),

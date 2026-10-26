@@ -28,8 +28,8 @@ from lookahead import phase3_build as P
 from lookahead import phase3_g3a as G
 from lookahead.config import REPO_ROOT
 
-CODE = ["src/lookahead/dt_truncation.py", "scripts/dt_truncation_check.py", "src/lookahead/c1_test.py",
-        "src/lookahead/phase3_readouts.py", "src/lookahead/extract.py", "src/lookahead/packed.py"]
+CODE = ["scripts/dt_truncation_check.py"] + [f"src/lookahead/{n}" for n in sorted(
+    x.name for x in (Path(__file__).resolve().parents[1] / "src" / "lookahead").glob("*.py"))]   # every package module
 
 
 def _sha(p: Path) -> str:
@@ -74,7 +74,25 @@ def environment(model) -> dict:
            "attn_implementation": getattr(model.config, "_attn_implementation", None), "platform": platform.platform()}
     if torch.cuda.is_available():
         env["gpu"] = torch.cuda.get_device_name(0)
+        env["gpu_capability"] = list(torch.cuda.get_device_capability(0))
+        env["cuda_runtime"] = torch.version.cuda
+        env["cudnn"] = torch.backends.cudnn.version()
+    env["tf32_matmul"] = bool(torch.backends.cuda.matmul.allow_tf32)
+    env["tf32_cudnn"] = bool(torch.backends.cudnn.allow_tf32)
+    env["float32_matmul_precision"] = torch.get_float32_matmul_precision()
+    env["deterministic_algorithms"] = bool(torch.are_deterministic_algorithms_enabled())
+    env["checkpoint"] = checkpoint_identity()
     return env
+
+
+def checkpoint_identity() -> dict:
+    """Pinned repo/revision from configs/model.yaml and sha256 of every file of the local checkpoint copy."""
+    from lookahead.config import load_config
+
+    cfg = load_config("model")
+    local = REPO_ROOT / cfg["local_dir"]
+    files = {p.relative_to(local).as_posix(): g1.sha256_file(p) for p in sorted(local.rglob("*")) if p.is_file()}
+    return {"repo_id": cfg.get("repo_id"), "revision": cfg.get("revision"), "dtype": cfg.get("dtype"), "files_sha256": files}
 
 
 def main(argv=None, *, root=None, loader=None, scorer_factory=None, pinned=None, report_rel=D.REPORT) -> int:
@@ -117,7 +135,7 @@ def main(argv=None, *, root=None, loader=None, scorer_factory=None, pinned=None,
           f"   code-level causality only: {'PASS' if v['P2_code_level_causality_pass'] else 'FAIL'}")
     for p, by in rep["policies"].items():
         for b, r in by.items():
-            print(f"{p:10s} {b:15s} n={r['n']:3d}  exit agree {r['exit_agreement_pct']:6.2f}%  correct agree {r['correctness_agreement_pct']:6.2f}%  "
+            print(f"{p:10s} {b:15s} n={r['n']:3d}  exit agree {r['exit_agreement_pct']:6.2f}%  correct agree {r['correctness_agreement_pct']:6.2f}%  pred agree {r['prediction_agreement_pct']:6.2f}%  "
                   f"P-2 fails {r['P2']['fail_vs_stored']}/{r['P2']['checks']}  saving sim {r['simulated_gross_saving']:.3f} "
                   f"measured {r['measured_time_saving']:.3f}")
     mx = rep["p3"]["all"]
