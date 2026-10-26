@@ -7,7 +7,7 @@
 Looped language models can stop iterating early, and recent work shows that post-hoc readouts of the loop trajectory often rival the
 learned exit gate of the looped model Ouro. Such comparisons reduce each method to one operating point chosen by a selection rule. We ask
 whether that rule decides the outcome. On a frozen Ouro-1.4B with four loops, we compared a trained stability probe (π1-x) with Ouro's
-native gate in pre-registered studies, the last evaluated once on a sealed test set of 8,517 questions. In the pre-registered confirmatory
+native gate, adapted to a per-question stopping decision, in pre-registered studies, the last evaluated once on a sealed test set of 8,517 questions. In the pre-registered confirmatory
 comparison, which selected operating points with a bootstrap-screened 1 pp accuracy-loss rule, the probe saved more of the four-loop budget
 than the native gate on three benchmarks (+0.053 gross macro saving, 95% CI [+0.049, +0.057]). Under a point-only rule, a pre-specified
 secondary analysis on the same test set reversed the preference (−0.022 [−0.026, −0.018]), with operating points that exceeded the budget.
@@ -51,8 +51,10 @@ at most 1 pp, and it was evaluated once on a sealed test set of 8,517 questions.
    result is non-superiority, not equivalence.
 3. On one of two out-of-distribution benchmarks (Social IQa), π1-x broke its accuracy budget by halting early on most questions: loss 3.26
    pp, upper bound 4.72 pp [S]. Ouro's gate stayed within the budget.
-4. On the test set, four of nine upper bounds exceeded 1 pp even though every point loss stayed within it [S]. This is consistent with our
-   screen being a heuristic, not a formal risk-control procedure [P].
+4. Under the primary bootstrap-screened rule, all nine benchmark-by-policy point losses on the test set were within 1 pp, but four of the
+   nine corresponding upper bounds exceeded it [S]. This is compatible with several causes that we cannot separate: small samples (one
+   exceedance is on HellaSwag, n = 750, for every method), the heuristic nature of our screen, and the difference between development and
+   test conditions [P].
 
 **Contributions.** We do not propose a new halting signal, and we do not claim that post-hoc readouts beating Ouro's gate is new; that was
 shown by Popescu et al. Our contributions are empirical and methodological:
@@ -335,7 +337,13 @@ The selection rule required each selected candidate's bootstrap upper bound to b
 - native-pb: HellaSwag 1.33 pp;
 - B_pb: HellaSwag 1.60 pp.
 
-At selection time the bounds of the frozen candidates were between 0.75 and 0.98 pp for the two adaptive methods. HellaSwag, with $n = 750$, exceeds 1 pp for every method including fixed depth, so the small sample is part of the cause, as the protocol anticipated (section 4.3). The exceedance for π1-x on CommonsenseQA is specific to π1-x [S]. We interpret the pattern as what one expects from a heuristic screen: the bound used for selection is asymptotic, uncorrected for the number of candidates, computed on the data that chose the candidate, and blind to the variability of the fitted probe (section 3.4). This interpretation is [P], and no analysis here isolates the cause. The practical reading is that the point budget was met on TEST and the demonstrated, upper-bound budget was not met everywhere. The PASS verdict rests on the point budget, as pre-registered.
+At selection time the bounds of the frozen candidates were between 0.75 and 0.98 pp for the two adaptive methods. HellaSwag, with $n = 750$, exceeds 1 pp for every method including fixed depth, so the small sample is part of the cause, as the protocol anticipated (section 4.3). The exceedance for π1-x on CommonsenseQA is specific to π1-x [S]. Several causes are plausible and we cannot separate them [P]:
+- sampling variability on the test set, which is large for HellaSwag;
+- selection effects of a heuristic screen whose bound is asymptotic, uncorrected for the number of candidates, and computed on the data that chose the candidate (Section 3.4);
+- variability that the development-time bound does not see: the probe was fitted once on all development data, and the bound conditions on that fit;
+- differences between development and test data.
+
+No analysis here isolates the cause, and we do not attribute the exceedances to selection bias alone. The practical reading is that the point budget was met on TEST and the demonstrated, upper-bound budget was not met everywhere. The PASS verdict rests on the point budget, as pre-registered.
 
 | Rule | Method | OpenBookQA saving / loss (pp) | CommonsenseQA saving / loss (pp) | HellaSwag saving / loss (pp) | Macro saving |
 |---|---|---|---|---|---|
@@ -444,15 +452,18 @@ pretrained gate at validation-selected operating points. They describe the gate 
 conclude that adaptive depth is "a trajectory–readout problem, not a gate-learning problem". Our primary result is consistent with that view
 and should be read as a pre-registered, sealed-test instance of it under one selection rule, not as a new finding that readouts can beat the
 gate. What we add is the following:
-- the preference depends on the selection rule (a point-only rule favours the native gate on our data);
+- the preference depends on the selection rule (a point-only rule favours the native gate on our data). Popescu et al. report one
+  validation-selected operating point per method and do not state the selection criterion; they do not compare selection rules, accuracy-loss
+  budgets or statistical bounds. Their observation that the gate is not uniformly Pareto-optimal implies that some operating points favour
+  each method. What we add is a concrete demonstration that two pre-registered budget rules lead to opposite preferences on a sealed test set;
 - the readout that matches the trained probe is a divergence between loops rather than a confidence readout;
 - a development-selected policy can fail its budget on an out-of-distribution benchmark.
 
 **Risk control for early exit.** Fast yet Safe [Jazbec2024] selects early-exit thresholds with a formal guarantee (a UCB bound at level 1−δ under
 i.i.d. calibration data). Learn then Test [Angelopoulos2025LTT] and Conformal Risk Control [Angelopoulos2024CRC] give the general machinery. Our
 selection rule is not one of these procedures and inherits none of their guarantees (Section 3.4). The TEST upper bounds that exceeded 1 pp
-(Section 5.3) are what one might expect from a heuristic screen [P]. They argue for using a formal procedure, not for treating our screen as
-one. A natural follow-up is to repeat the comparison with LTT or UCB selection, on calibration data separate from the data used for fitting.
+(Section 5.3) are compatible with a heuristic screen, with small test samples and with development–test differences [P]. They argue for a
+formal procedure on separate calibration data, not for treating our screen as one. A natural follow-up is to repeat the comparison with LTT or UCB selection, on calibration data separate from the data used for fitting.
 
 **Calibration and ranking quality.** Kubaty et al. [Kubaty2026] argue that calibration alone does not characterise early-exit quality. Our
 exploratory data fit with this. Better ranking of the stability label (π1-x AUROC 0.689 against 0.603 for the native CDF [E]) did not stop
@@ -480,7 +491,7 @@ We have no causal analysis. The following are hypotheses for future work [P]:
 
 1. Treat a halting comparison as a comparison of signal plus selection procedure. Report results under more than one operating rule, and report
    the selected operating points, not only the macro saving.
-2. Report upper bounds on TEST alongside point losses. In our study the point budget held everywhere on TEST, but four of nine upper bounds did not.
+2. Report upper bounds on TEST alongside point losses. Under the primary bootstrap-screened selection rule, all nine reported benchmark-by-policy point losses were within the 1 pp budget, but four of their nine corresponding upper bounds exceeded it.
 3. Where a guarantee is wanted, use a formal procedure (LTT, CRC, UCB as in Fast yet Safe) with held-out calibration data, and state its assumptions.
 4. Include strong untrained baselines, especially a divergence between successive loops, before attributing gains to a trained controller.
 5. Include at least one out-of-distribution check of a development-selected policy. A policy can save the most precisely by halting where it should not.
