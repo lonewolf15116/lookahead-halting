@@ -392,3 +392,50 @@ overwrite it.
   of full-model float64 equivalence.
 - **Tests:** 23 pass in the cloud. The 3 CUDA variants run on the laptop. The real-model run stays on HOLD until the CUDA
   tests pass on the laptop.
+
+### D-a2 result (2026-10-26, stream-gpu, commit 2eea88d, code clean): **numerical**
+Report: `results/phase3/diagnose_short_context_ood_a2.json` (sha256 d84c0fadfe52e3825f51229d7d6c132d1dc9e696c456793083e5fa6f987b2a4a). The D-a PIQA FAIL stands. This result is
+evidence about its cause, not a PASS.
+- **Run.** The fix in 2eea88d was not confirmed by the reviewer before this run; it is presented for retrospective review.
+  - The tests ran on the laptop, CUDA variants included, with none skipped: 28 passed.
+  - The D-a rows and question sets were confirmed identical (`same_as_da` true for both benchmarks).
+- **Float64 reference, the 10 PIQA questions with the largest float32 difference** (40 question-loop rows, all present
+  and finite):
+  - Packed vs context-only, max |diff| **1.67e-13**, median 5.0e-15, relative L2 at most 2.6e-14. Exactly equal in 50% of
+    rows.
+  - Explicit-mask context-only vs plain context-only: 0.
+  - Criterion ≤ 1e-9: **met** by about four orders of magnitude.
+- **Reference checks:**
+  - RMSNorm relative error 4.4e-16.
+  - RoPE frequencies against the stored buffer: relative difference 8.2e-8.
+  - Op audit: 508,040 ATen ops in the hidden-state path, none with a non-float64 output.
+  - Module audit: 72,460 calls, none with a non-float64 output.
+  - Real-size layers 0, 12 and 23 and the final norm, streamed vs resident float64: bit-identical.
+  - 53,246 weight casts, all weights restored bit-identical, 0 restored at close.
+- **Conditions recorded:**
+  - Hardware and versions: RTX 5050, torch 2.11.0+cu128, cuDNN 9.19, transformers 4.54.1.
+  - Precision: TF32 for matmul **off**; float32 matmul precision "highest". TF32 for cuDNN is on, which affects
+    convolutions only; there are none in this model.
+  - Attention: SDPA, with all four backends enabled. Deterministic algorithms are off.
+- **Float32 localisation:**
+  - PIQA max 1.194e-4: L1 9.3e-6, L2 3.1e-5, L3 1.2e-4, L4 3.7e-5.
+  - Social IQa max 2.10e-5.
+  - Both D-a2 runs gave these values **exactly**. So float32 is deterministic within the D-a2 procedure. It differs from D-a
+    (1.173e-4 and 3.10e-5), where float32 was run on the same model object after a bf16 pass. This corrects the earlier
+    DECISIONS line, which called it run-to-run variation.
+  - The cause of the D-a vs D-a2 difference is not established. Plausibly it is GPU kernel or algorithm selection state.
+- **Cross-precision: which float32 path carries the error?** Distance from the float64 context-only state, over the 40 rows:
+  - The float32 **packed** state: max 1.38e-4, median 9.6e-6.
+  - The float32 **context-only** state: max 2.3e-5, median 4.3e-6.
+  - So in float32 most of the discrepancy comes from the packed pass's own rounding, not from a different function.
+  - This bears on D-b and the stored values: the stored hidden states come from the packed pass, in bf16. A possible but
+    unverified cause is that the packed pass uses an explicit-mask SDPA kernel, while the context-only pass uses the causal
+    kernel.
+- **What this establishes, with the reviewer's qualifications:**
+  - For these 10 PIQA questions, the packed and context-only passes compute the same function to float64 precision. The
+    1.17e-4 float32 excess is consistent with float32 rounding.
+  - It does not prove equivalence for every PIQA input.
+  - The op audit covers operations visible to ATen, not the internals of fused kernels.
+  - A whole-model resident float64 run was never possible. Equivalence on the real model is shown per module.
+- **Next decision is the reviewer's:** whether proceeding to the full extraction with the documented PIQA D-a deviation is
+  scientifically acceptable. Nothing changes until then. The full extraction, D1-D4, training and TEST stay on HOLD.

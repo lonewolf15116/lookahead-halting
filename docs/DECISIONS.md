@@ -222,3 +222,8 @@
   - The float32 GPU maxima therefore do NOT reproduce D-a exactly from run to run. The PIQA maximum peaks at loop 3, not loop 4.
   - The run then crashed in `rotary_check` before any float64 computation: `original_inv_freq` is a plain attribute that stays on the CPU, and it was compared with a CUDA tensor. The CPU-only cloud tests could not catch this. No report was written.
   - Fix: compute the reference on the stored tensor's device (one line), plus a regression test that also runs on CUDA. Nothing else changed; criterion, rows and selection unchanged.
+- 2026-10-26 D-a2 result (stream-gpu, 2eea88d): **numerical**. Float64 packed vs context-only max 1.67e-13 on the 10 worst PIQA questions (40/40 rows finite). Every reference check passed: 508k ATen ops all float64, real layers bit-identical, weights restored. Report sha256 d84c0fadfe52e3825f51229d7d6c132d1dc9e696c456793083e5fa6f987b2a4a.
+  - The 2eea88d fix was run before the reviewer confirmed it; it is flagged for retrospective review.
+  - Correction to the previous entry: float32 is deterministic across both D-a2 runs (PIQA 1.1945e-4 both times); it differs from D-a, whose float32 pass followed a bf16 pass on the same model.
+  - Cross-precision: the float32 packed path is further from float64 (max 1.38e-4) than the float32 context-only path (max 2.3e-5).
+  - The D-a FAIL stands; awaiting the reviewer's decision on the documented PIQA deviation and the full extraction.
