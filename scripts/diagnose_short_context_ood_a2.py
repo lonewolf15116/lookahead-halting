@@ -21,6 +21,7 @@ No option score, prediction, label or correctness is computed or written. Writes
 results/phase3/diagnose_short_context_ood_a2.json (refuses to overwrite). Exit 0 iff the interpretation is "numerical".
 """
 import importlib.util
+import math
 import json
 import platform
 import sys
@@ -65,10 +66,21 @@ def per_loop(rows: list[dict]) -> dict:
     return out
 
 
-def interpret(f64_rows: list[dict], checks_ok: bool, complete: bool) -> tuple[str, float]:
-    if not complete or not checks_ok or not f64_rows:
-        return "unresolved", float("nan")
-    worst = max(max(r["packed_vs_ctx_maxabs"], r["packed_vs_ctxmask_maxabs"]) for r in f64_rows)
+def interpret(f64_rows: list[dict], checks_ok: bool, complete: bool, expected_ids: list[str]) -> tuple[str, float]:
+    """numerical | differs | unresolved. Reviewer safeguard 2: "numerical" or "differs" requires EXACTLY one row per
+    (selected question, loop 1..4), K_WORST distinct questions, and finite values for both comparisons; anything missing,
+    duplicated, extra or non-finite is "unresolved"."""
+    nan = float("nan")
+    if not complete or not checks_ok or len(set(expected_ids)) != K_WORST or len(expected_ids) != K_WORST:
+        return "unresolved", nan
+    pairs = [(r.get("doc_id"), r.get("loop")) for r in f64_rows]
+    expected = {(d, t) for d in expected_ids for t in range(1, LOOPS + 1)}
+    if len(pairs) != len(expected) or set(pairs) != expected:
+        return "unresolved", nan
+    vals = [r.get(k) for r in f64_rows for k in ("packed_vs_ctx_maxabs", "packed_vs_ctxmask_maxabs")]
+    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in vals):
+        return "unresolved", nan
+    worst = max(vals)
     return ("numerical" if worst <= F64_TOL else "differs"), worst
 
 
@@ -247,6 +259,7 @@ def main(argv=None) -> int:
         if stream is not None:
             ref_checks["stream_weights_restored_bit_identical"] = stream.close()
             ref_checks["stream_module_casts"] = stream.n_casts
+            ref_checks["stream_params_restored_at_close"] = stream.restored_at_close
             ref_checks["ok"] = ref_checks["ok"] and ref_checks["stream_weights_restored_bit_identical"]
     ref_checks["op_audit_non_float64_ops"] = ops.bad
     ref_checks["op_audit_ops_checked"] = ops.n_ops
@@ -258,7 +271,7 @@ def main(argv=None) -> int:
     report["float64_rows"] = f64_rows
     report["cross_precision"] = cross
     report["float64_summary"] = D.summarize(f64_rows) if f64_rows else None
-    interp, worst = interpret(f64_rows, ref_checks["ok"], complete and len({r["doc_id"] for r in f64_rows}) == K_WORST)
+    interp, worst = interpret(f64_rows, ref_checks["ok"], complete, sel_ids)
     report["interpretation"], report["float64_maxabs"] = interp, worst
     if interp != "numerical":
         report["failures"].append(f"interpretation {interp} (float64 max {worst})")

@@ -210,3 +210,7 @@
   - The tiny-model test and the implementation checks are approved; running on the real model needs readable code (repo private, so the source was sent as a file).
   - Added in response: an op-level audit (TorchDispatchMode) of the whole hidden-state path, and a real-size check that layers 0, 12 and 23 and the final norm, streamed, are bit-identical to resident float64 copies.
   - Tests: 21 pass here; 3 are CUDA-only and run on the laptop.
+- 2026-10-26 Reviewer "D-a2 — Source Implementation Audit": CONDITIONAL GO with two safeguards, both implemented.
+  - (1) Streamed weights are restored even if a module raises (always-call hook, plus restoration at close and the sha256 check).
+  - (2) "numerical" or "differs" requires exactly the 40 expected (question, loop) rows with finite values for both comparisons; anything else is "unresolved".
+  - 23 tests pass in the cloud. The real-model run waits for the laptop CUDA test run.

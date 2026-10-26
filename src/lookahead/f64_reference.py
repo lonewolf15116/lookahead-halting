@@ -150,7 +150,8 @@ class Float64Streaming:
         self.handles = []
         for m in self.owners:
             self.handles.append(m.register_forward_pre_hook(self._up))
-            self.handles.append(m.register_forward_hook(self._down))
+            # always_call: the restoring hook runs even if the module's forward raises (reviewer safeguard 1)
+            self.handles.append(m.register_forward_hook(self._down, always_call=True))
 
     def _digest(self) -> str:
         import hashlib
@@ -174,9 +175,21 @@ class Float64Streaming:
             for p in module.parameters(recurse=False):
                 p.data = p.data.to(self.dtypes[id(p)])
 
+    def restore_all(self) -> int:
+        """Return every parameter to its original dtype (exact for bf16 values); returns how many needed it."""
+        n = 0
+        with self._ctx():
+            for p in self.model.parameters():
+                if p.dtype != self.dtypes[id(p)]:
+                    p.data = p.data.to(self.dtypes[id(p)])
+                    n += 1
+        return n
+
     def close(self) -> bool:
+        """Remove the hooks, restore any parameter still converted (second line of defence), and verify bit-identity."""
         for h in self.handles:
             h.remove()
+        self.restored_at_close = self.restore_all()
         return all(p.dtype == self.dtypes[id(p)] for p in self.model.parameters()) and self._digest() == self.digest
 
 

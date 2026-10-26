@@ -370,3 +370,25 @@ overwrite it.
   - Equivalence on the real model is shown per module, on three of 24 layers plus the final norm, and with no
     non-float64 op anywhere in the hidden-state path.
   - A float64 match on 10 selected PIQA questions supports a numerical explanation for those questions only.
+
+### D-a2 source audit (2026-10-26): CONDITIONAL GO, two safeguards implemented
+- **Safeguard 1: weight restoration that survives exceptions.**
+  - The restoring hook is registered with `always_call=True`, so it runs even when a module's forward raises.
+  - `close()` also restores any parameter still left converted (`restored_at_close`, recorded in the report) before the
+    sha256 bit check.
+  - Tests:
+    - A module that raises inside its forward leaves no converted parameter in it or in its parent, and `close()` verifies
+      bit-identity.
+    - A parameter left converted on purpose is restored by `close()`.
+- **Safeguard 2: completeness.** `interpret()` gives "numerical" or "differs" only if every one of these holds:
+  - The run is complete and every reference check passed.
+  - There are exactly 10 distinct selected ids.
+  - There is exactly one row for each (selected question, loop 1-4) pair, with no duplicates or extras.
+  - Both `packed_vs_ctx_maxabs` and `packed_vs_ctxmask_maxabs` are finite.
+  - Anything else gives "unresolved". Tests cover a missing loop, a duplicate row, an extra question, NaN, inf, None, 9
+    selected ids, and 9 questions present.
+- **Reviewer's qualification, to go in the report.** The op audit covers operations visible to ATen, not the internals of
+  fused kernels. Together with the real-size layer comparisons it supports float64 equivalence. It is not a universal proof
+  of full-model float64 equivalence.
+- **Tests:** 23 pass in the cloud. The 3 CUDA variants run on the laptop. The real-model run stays on HOLD until the CUDA
+  tests pass on the laptop.

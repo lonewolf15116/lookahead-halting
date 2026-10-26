@@ -124,13 +124,24 @@ def test_per_loop_summary():
     assert pl["1"]["share_exact"] == 1.0 and pl["4"]["maxabs_max"] == 1e-4 and pl["4"]["share_exact"] == 0.5
 
 
-def test_interpretation_rule_is_the_frozen_one():
-    ok = _rows({f"q{i}": [1e-12] * 4 for i in range(10)})
-    assert A2.interpret(ok, True, True) == ("numerical", 1e-12)
-    bad = ok + _rows({"x": [0, 0, 0, 2e-9]})
-    assert A2.interpret(bad, True, True)[0] == "differs"
-    assert A2.interpret(ok, False, True)[0] == "unresolved" and A2.interpret(ok, True, False)[0] == "unresolved"
-    assert math.isnan(A2.interpret([], True, True)[1])
+def test_interpretation_rule_is_the_frozen_one_and_requires_complete_finite_rows():
+    ids = [f"q{i}" for i in range(10)]
+    ok = _rows({d: [1e-12] * 4 for d in ids})
+    assert A2.interpret(ok, True, True, ids) == ("numerical", 1e-12)
+    worse = _rows({d: ([1e-12] * 3 + [2e-9] if d == "q3" else [1e-12] * 4) for d in ids})
+    assert A2.interpret(worse, True, True, ids)[0] == "differs"
+    assert A2.interpret(ok, False, True, ids)[0] == "unresolved" and A2.interpret(ok, True, False, ids)[0] == "unresolved"
+    # safeguard 2: missing loop, duplicate row, extra question, non-finite value, wrong number of selected ids
+    assert A2.interpret([r for r in ok if not (r["doc_id"] == "q5" and r["loop"] == 4)], True, True, ids)[0] == "unresolved"
+    assert A2.interpret(ok + ok[:1], True, True, ids)[0] == "unresolved"
+    assert A2.interpret(ok + _rows({"zz": [0.0] * 4}), True, True, ids)[0] == "unresolved"
+    for bad_val in (float("nan"), float("inf"), None):
+        rows = [dict(r) for r in ok]
+        rows[7]["packed_vs_ctxmask_maxabs"] = bad_val
+        assert A2.interpret(rows, True, True, ids)[0] == "unresolved"
+    assert A2.interpret(ok, True, True, ids[:9])[0] == "unresolved"
+    assert A2.interpret(_rows({d: [1e-12] * 4 for d in ids[:9]}), True, True, ids)[0] == "unresolved"
+    assert math.isnan(A2.interpret([], True, True, ids)[1])
     assert A2.F64_TOL == 1e-9 and A2.K_WORST == 10
 
 
@@ -303,3 +314,44 @@ def test_real_layer_equivalence_check_passes_for_streaming_and_detects_a_differe
     r2 = OuroLoopRunner(m2)
     st2 = r2.start(torch.tensor([[5, 17, 99, 3, 250, 11]], device=device))
     assert not F.real_layer_equivalence(r2, st2, (0,))["ok"]
+
+
+def test_streamed_weights_are_restored_even_when_a_module_raises():
+    class Boom(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.lin = torch.nn.Linear(4, 4).to(torch.bfloat16)
+            self.fail = False
+
+        def forward(self, x):
+            y = self.lin(x)
+            if self.fail:
+                raise RuntimeError("deliberate failure inside forward")
+            return y
+
+    class Outer(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.inner = Boom()
+            self.scale = torch.nn.Parameter(torch.ones(4, dtype=torch.bfloat16))
+
+        def forward(self, x):
+            return self.inner(x) * self.scale
+
+    m = Outer()
+    s = F.Float64Streaming(m)
+    x = torch.randn(2, 4, dtype=torch.float64)
+    assert m(x).dtype == torch.float64
+    m.inner.fail = True
+    with pytest.raises(RuntimeError, match="deliberate"):
+        m(x)
+    # the always-call hooks already restored both the failing module and its parent
+    assert all(p.dtype == torch.bfloat16 for p in m.parameters())
+    assert s.close() and s.restored_at_close == 0
+
+
+def test_close_restores_parameters_left_converted_and_still_verifies_bits():
+    m = torch.nn.Linear(4, 4).to(torch.bfloat16)
+    s = F.Float64Streaming(m)
+    m.weight.data = m.weight.data.to(torch.float64)  # simulate a restoration that never happened
+    assert s.close() and s.restored_at_close == 1 and m.weight.dtype == torch.bfloat16
