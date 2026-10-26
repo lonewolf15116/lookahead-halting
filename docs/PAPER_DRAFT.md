@@ -1,6 +1,6 @@
 # When Does Adaptive Halting Win? Selection Rules Matter in Looped Language Models
 
-*Merged draft v1 (2026-10-27). The abstract is written last. Evidence labels: [C] confirmatory, [S] pre-specified secondary, [P] post hoc emphasis or interpretation, [E] exploratory. Numbers audited independently (docs/PAPER_NUMBER_AUDIT.md: 0 mismatches; the 3 rounding items are fixed). The abstract was written after the audit and its numbers are taken from the audited text.*
+*Evidence labels used throughout: [C] confirmatory, [S] pre-specified secondary, [P] post hoc emphasis or interpretation, [E] exploratory.*
 
 ## Abstract
 
