@@ -154,7 +154,7 @@ def test_unsealed_refuses_a_symlink_that_escapes(tmp_path):
 @pytest.fixture()
 def root(tmp_path):
     fz = json.loads((REPO_ROOT / "results/c1/frozen.json").read_text(encoding="utf-8"))
-    files = set(RUN.PINNED) | set(fz["provenance"]["code"]) | set(RUN.BUNDLE) | {P.IDS["test"], P.IDS["dev"]}
+    files = set(RUN.PINNED) | set(fz["provenance"]["code"]) | set(RUN.bundle_files(REPO_ROOT)) | {P.IDS["test"], P.IDS["dev"]}
     for rel in files:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(REPO_ROOT / rel, tmp_path / rel)
@@ -316,3 +316,38 @@ def test_failure_record_uses_exclusive_create_only():
     src = open(RUN.__file__, encoding="utf-8").read()
     body = src[src.index("def write_failure"):src.index("def main(")]
     assert "os.replace" not in body and "os.link" not in body and '"x"' in body
+
+
+def test_bundle_covers_every_package_module_and_detects_a_stray_file(root):
+    files = RUN.bundle_files(root)
+    assert files[0] == "scripts/c1_test_run.py"
+    for mod in ("c1_test", "c1", "e1", "phase3_g3a", "phase3_readouts", "gate1", "gate2", "phase3_build", "config"):
+        assert f"src/lookahead/{mod}.py" in files
+    sha = RUN.bundle_sha(root)
+    (root / "src/lookahead/gate2.py").write_text((root / "src/lookahead/gate2.py").read_text(encoding="utf-8") + "\n#x\n",
+                                                 encoding="utf-8")
+    assert RUN.bundle_sha(root) != sha                        # a change to a non-C1 module is caught
+    (root / "src/lookahead/gate2.py").write_bytes((REPO_ROOT / "src/lookahead/gate2.py").read_bytes())
+    assert RUN.bundle_sha(root) == sha
+    (root / "src/lookahead/stray.py").write_text("x = 1\n", encoding="utf-8")
+    assert RUN.bundle_sha(root) != sha                        # an extra module is caught
+
+
+def test_failure_recording_error_never_hides_the_original_exception(root, monkeypatch):
+    sha = RUN.bundle_sha(root)
+    monkeypatch.setattr(RUN, "write_failure", lambda *a: (_ for _ in ()).throw(OSError("disk full")))
+
+    def boom(r):
+        raise KeyError("original")
+
+    with pytest.raises(KeyError):
+        RUN.main(["--approved-code-sha", sha], root=root, loader=boom)
+    assert (root / RUN.MARKER).exists()
+
+
+def test_metadata_preflight_refuses_a_duplicated_frozen_test_list(root):
+    p = root / P.IDS["test"]
+    lines = p.read_text(encoding="utf-8").splitlines()
+    p.write_text("\n".join(lines + [lines[1]]) + "\n", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        T.metadata_preflight(root)

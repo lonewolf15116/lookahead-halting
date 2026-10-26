@@ -317,3 +317,9 @@
   - write_failure publishes only by exclusive create (open 'x'), with flush, fsync and a best-effort directory fsync. There is no os.link or os.replace fallback. An existing TEST_FAILED.json is never touched; a later record goes to a uniquely named file, also by exclusive create. Regression tests cover an existing record left byte-identical, fsync called, no message leak, and the source free of replace/link.
   - Metadata preflight now requires each benchmark's TEST id set to EQUAL its frozen per-benchmark list (test: ids swapped between benchmarks are refused).
   - 23 TEST-script tests; all five suites pass. New bundle sha256 6d214db240373108b108670ed6cdf0e4b3934e01fc50d485c33531d88014629e. Not run.
+- 2026-10-26 Reviewer "C1 TEST script revision 3 — conditional approval": execution on HOLD until the reviewer inspects the full rev 3 source (the diff file was not available to them). Checks they named, and two gaps found while answering:
+  - The bundle hash now covers the run script plus EVERY .py file of src/lookahead. Previously only c1_test.py and c1_test_run.py were covered, so gate1, gate2 and phase3_build were not hashed at all. Tested: a change to gate2 or an extra module changes the hash.
+  - A failure to write the failure record can no longer hide the original exception (tested). Partial-write behaviour is documented.
+  - The frozen TEST id list itself is checked for duplicate ids. In the test, the duplicated list is also caught earlier by its manifest hash.
+  - The reviewer advised NOT deleting the local frozen.json and pi1x_models.npz: on the laptop they are to be moved aside and hash-compared, not deleted.
+  - 26 TEST-script tests; all five suites (128 tests) pass. New bundle sha256 c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568 (24 files). Not run.

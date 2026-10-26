@@ -6,7 +6,7 @@ Order, enforced:
   1. Checks, before anything else (any failure exits with code 2 and touches nothing):
      protocol docs/C1_PROTOCOL.md, results/c1/frozen.json, results/c1/pi1x_models.npz, the phase3 manifest and the
      committed TEST extraction check equal their pinned sha256; every code file recorded in frozen.json at freeze is
-     unchanged; the TEST code bundle (src/lookahead/c1_test.py + scripts/c1_test_run.py) equals --approved-code-sha;
+     unchanged; the TEST code bundle (this script + EVERY .py file of src/lookahead) equals --approved-code-sha;
      results/c1/TEST_OPENED.json, test_report.json and TEST_FAILED.json do not exist; and a METADATA-ONLY check of the
      TEST extraction (c1_test.metadata_preflight: id lists vs manifest, per-part done.json counts/ids/statuses, raw-file
      checksums; no outcome is read) passes.
@@ -38,7 +38,8 @@ PINNED = {
     "data/manifests/phase3_questions.json": "b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec",
     "results/phase3/extraction_check_phase3_test.json": "c8d9c20206209ae2fafae46c8cb5c420657f10698170ade205e9e646ca9318b2",
 }
-BUNDLE = ("src/lookahead/c1_test.py", "scripts/c1_test_run.py")
+BUNDLE_SCRIPT = "scripts/c1_test_run.py"
+PACKAGE_DIR = "src/lookahead"             # EVERY module of the package is in the bundle: all code the run can execute
 MARKER = "results/c1/TEST_OPENED.json"
 REPORT = "results/c1/test_report.json"
 FAILED = "results/c1/TEST_FAILED.json"
@@ -48,12 +49,20 @@ def _sha_norm(p: Path) -> str:
     return g1.sha256_bytes(p.read_bytes().replace(b"\r\n", b"\n"))
 
 
+def bundle_files(root: Path) -> list:
+    """The executable code of the run: this script plus every .py file of the lookahead package (c1_test, c1, e1,
+    phase3_g3a, phase3_readouts, gate1, gate2, phase3_build, ... — everything an import can reach), sorted. A stray or
+    changed file in the package changes the hash."""
+    pkg = sorted(p.relative_to(root).as_posix() for p in (root / PACKAGE_DIR).glob("*.py"))
+    return [BUNDLE_SCRIPT] + pkg
+
+
 def bundle_sha(root: Path) -> str:
-    """sha256 of the TEST code bundle (line endings normalised), in BUNDLE order with a separator."""
+    """sha256 over the bundle files (path, NUL, LF-normalised bytes, NUL), in bundle_files order."""
     import hashlib
 
     h = hashlib.sha256()
-    for f in BUNDLE:
+    for f in bundle_files(root):
         h.update(f.encode() + b"\0" + (root / f).read_bytes().replace(b"\r\n", b"\n") + b"\0")
     return h.hexdigest()
 
@@ -93,7 +102,11 @@ def write_failure(root: Path, stage: str, exc: BaseException) -> Path:
     Published by EXCLUSIVE create only (open mode 'x'): an existing record is never overwritten, not even in a race. If
     TEST_FAILED.json already exists, the record goes to TEST_FAILED.<UTC timestamp>.<n>.json, again by exclusive create.
     The content is flushed and fsync'ed before the file is closed. The marker stays; no retry is possible. Returns the
-    path written."""
+    path written.
+
+    Partial writes: if the disk write itself fails after the exclusive create, the (possibly truncated) record is left as
+    is, never deleted or replaced, and the caller re-raises the ORIGINAL exception (main()). Directory fsync is POSIX only;
+    on Windows the file-level fsync is the durability step."""
     import os
     import traceback
 
@@ -137,7 +150,7 @@ def main(argv=None, *, root: Path | None = None, loader=None) -> int:
         print(f"PREFLIGHT FAILED (TEST untouched): {e}", file=sys.stderr)
         return 2
     marker = {"opened_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "pinned": PINNED,
-              "test_metadata": frozen.get("_test_metadata"),
+              "test_metadata": frozen.get("_test_metadata"), "test_code_bundle_files": bundle_files(root),
               "test_code_bundle_sha256": args.approved_code_sha, "git_commit": git_commit(root),
               "note": "TEST counts as opened from this moment; this file is never removed"}
     (root / MARKER).parent.mkdir(parents=True, exist_ok=True)
@@ -159,7 +172,11 @@ def main(argv=None, *, root: Path | None = None, loader=None) -> int:
         with open(root / REPORT, "x", encoding="utf-8", newline="\n") as f:
             f.write(json.dumps(rep, indent=1, sort_keys=True, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o)) + "\n")
     except BaseException as e:
-        write_failure(root, stage, e)
+        try:                                 # recording the failure must never hide the original exception
+            write_failure(root, stage, e)
+        except BaseException as rec_err:     # noqa: BLE001
+            print(f"WARNING: the failure record could not be written ({type(rec_err).__name__}); "
+                  f"the original error follows. TEST counts as opened.", file=sys.stderr)
         raise
     p = rep["primary"]
     print(f"VERDICT: {rep['verdict']}")

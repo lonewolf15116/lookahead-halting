@@ -271,10 +271,14 @@ def metadata_preflight(root) -> dict:
     lines = (root / P.IDS["test"]).read_text(encoding="utf-8").splitlines()
     if lines[0] != "benchmark,stratum,doc_id,split":
         raise SystemExit("unexpected TEST id-list header")
+    seen = []
     for ln in lines[1:]:
         if ln:
             b, _, doc, _ = ln.split(",")
             expected.setdefault(b, set()).add(doc)
+            seen.append(doc)
+    if len(seen) != len(set(seen)):
+        raise SystemExit("the frozen TEST id list contains duplicate ids")
     base = root / "data" / TEST_DIR
     out = {}
     for b in PRIMARY + OOD:
