@@ -67,7 +67,7 @@ P(c_4) − P(c_t) with the actual Δ_t = c_4 − c_t.
      barely separable either way, and "h > x" is often the better of two weak scores.
    - This is moot after the D2 stop.
 2. **Held-out loss often exceeds 1 pp.** Thresholds chosen at the 1 pp edge on four folds give held-out per-benchmark losses
-   above 1 pp in most folds, for every adaptive method (the fold maximum is 1.2-4.2 pp). B_pb's fold maximum is 0.5-1.6 pp.
+   above 1 pp in most folds, for every adaptive method (the worst benchmark per fold is 0.8-4.2 pp; above 1 pp in 47 of 50 method-folds). B_pb's fold maximum is 0.5-1.6 pp.
    - The held-out folds are small: about 230 CommonsenseQA and 450 OpenBookQA questions each.
    - G3a's stop rules use saving only (the frozen design). But this means "≤ 1 pp at selection" does not transfer reliably at
      these sizes, which matters for any future work.
