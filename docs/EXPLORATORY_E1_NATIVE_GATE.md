@@ -74,3 +74,37 @@ TEST.
    Held-out violations are reported under both selections.
 4. **A7:** descriptive only.
 5. **A1:** adds paired question-level differences against native-pb, alongside the aggregate ladder.
+
+## Implementation (for reviewer inspection; NOT run on real data)
+- **Files.** `src/lookahead/e1.py`, `scripts/e1_run.py`, `scripts/run_e1_windows.ps1`, and `tests/test_e1.py` (21 tests;
+  87 with the G3a and readout suites, all passing).
+- **What is reused unchanged.** `phase3_g3a` and the frozen `phase3_readouts`.
+- **Data.** Loaded only through `phase3_g3a.load_g3a`. The script runs the G3a `check_frozen` before loading.
+- **Report.** `results/exploratory/e1_report.json`. The script refuses to overwrite it, and `--synthetic` gives a dry run.
+- **How the reviewer's three implementation details are enforced:**
+  1. **A2: the same prediction time.** Every target's model reads loop-t features only (`design`); labels may use later loops.
+     `safe` = c_t ≥ c_4 is reported as "stopping now loses nothing", not as a predicted benefit. Its predictability (AUROC
+     against its own label) and its stopping utility (nested held-out saving) are separate blocks of the report.
+  2. **A3: no selection leakage.**
+     - The rank maps are re-fitted in every outer fold, on that fold's selection-row inner out-of-fold scores, per loop, and
+       applied unchanged to held-out rows.
+     - Cummax uses loops ≤ t only, so the first-crossing exit rule is unchanged.
+     - Tests cover both, and also that the fitted score at loop t ignores every feature of later loops.
+  3. **A6: identical risk control.**
+     - One function, `select_risk`, serves every method (native-pb, B_pb, the seven readouts and every probe). Its only
+       special case is fixed-depth-only for B_pb.
+     - Bootstrap counts are drawn once per (outer fold, benchmark): 2,000 resamples of questions, with rng
+       `default_rng([0, fold, benchmark index])`. The same counts are shared by every method; a test checks the
+       fingerprint.
+     - The selection-time upper bound and the observed held-out violations are reported separately, for both rules.
+- **One deviation for the reviewer to accept or reject.** `select_risk` also requires the **point** loss to be ≤ 1 pp, in
+  addition to the bootstrap upper bound being ≤ 1 pp. This guarantees by construction that the risk rule is never looser than
+  the point rule (risk saving ≤ point saving). In practice the 95% upper bound already implies it, except in degenerate
+  skewed cases. The alternative is the literal bound-only rule.
+- **Other implementation choices:**
+  - A1's paired analysis pools the held-out questions of the 5 folds, each under its own fold's selection. Its CI is a
+    stratified paired bootstrap of the primary-macro saving difference (`default_rng(0)`).
+  - A4 and A2(a) use plain 5-fold out-of-fold scores over all development rows (descriptive).
+  - `combo-max` uses fmax, so a NaN in one statistic does not hide the other.
+  - A7 uses the point rule only. Everything in A7 is chosen by a function with no validation argument.
+- **Code.** Written by a Sonnet sub-agent to a detailed spec, then reviewed and its tests re-run here.
