@@ -115,7 +115,7 @@ and they are not measurements of Ouro's released inference path, which selects a
 - Fast yet Safe [Jazbec2024] selects early-exit thresholds with a UCB bound. It controls the performance gap to the full model with
   probability 1−δ under i.i.d. calibration data, and leaves distribution shift to future work.
 - Conformal risk control [Angelopoulos2024CRC] controls the expected value of a monotone loss.
-- Kubaty et al. [Kubaty2026] show that calibration alone does not characterise early-exit quality.
+- Kubaty et al. [Kubaty2026] show that calibration alone is insufficient to measure the quality of early-exit classifiers.
 
 Our bootstrap-screened rule is none of these procedures. Its bound is asymptotic, uncorrected for the number of candidate thresholds, and
 computed on the data that selected the candidate. Our results therefore inherit none of their guarantees (Section 3.4). Part of our
@@ -475,7 +475,7 @@ selection rule is not one of these procedures and inherits none of their guarant
 (Section 5.3) are compatible with a heuristic screen, with small test samples and with development–test differences [P]. They argue for a
 formal procedure on separate calibration data, not for treating our screen as one. A natural follow-up is to repeat the comparison with LTT or UCB selection, on calibration data separate from the data used for fitting.
 
-**Calibration and ranking quality.** Kubaty et al. [Kubaty2026] argue that calibration alone does not characterise early-exit quality. Our
+**Calibration and ranking quality.** Kubaty et al. [Kubaty2026] show that calibration alone is insufficient to measure the quality of early-exit classifiers. Our
 exploratory data fit with this. Better ranking of the stability label (π1-x AUROC 0.689 against 0.603 for the native CDF [E]) did not stop
 the native gate from winning under the point-only rule [E], so ranking quality alone does not predict which method a given selection rule will prefer.
 

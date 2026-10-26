@@ -71,4 +71,31 @@ Inconsistencies between documents and JSON files, and claims I could not verify.
   - Popescu: "competitive but not uniformly Pareto-optimal"; "a trajectory–readout problem, not a gate-learning problem" (conclusion); B.5 51-point 0.5–99.5 percentile grid; B.6 readout definitions; B.8 threshold selection; Table 3 "best post-hoc readout, both validation-selected" with no criterion stated.
   - Popescu Figures 19–20 (page 27) were viewed as rendered images. The curves interleave and cross on several benchmarks (for example MMLU and CommonsenseQA), so section 7.2 now says the operating-point dependence is visible in their data. Novelty is narrowed accordingly.
   - Ouro is cited as v6. The "per token and per example" goal is in both versions (v1: "for each token and each example").
-- Still open: the TEXT of the Kubaty (PMLR) and LTT journal versions was not checked (arXiv LTT 2110.01052 was downloaded, not the AoAS version); D-t is awaiting GO.
+- (Superseded by the 2026-10-27 reference verification below; D-t and D-t2 have since been run.)
+
+## Reference verification: Kubaty2026 and Angelopoulos2025LTT (2026-10-27)
+
+### A. Claim verification (text of the cited papers; pdftotext on the PDFs in refs_local/)
+Sources actually read:
+- Kubaty: `kubaty26a.pdf`, arXiv 2508.21495 **v3** (27 May 2026), "Rethinking Calibration for Early-Exit Neural Networks", footer "Preprint. May 28, 2026". This is an arXiv preprint, not the PMLR proceedings PDF.
+- LTT: `ltt_arxiv_v4.pdf`, arXiv 2110.01052 **v4** (27 April 2022). This is the preprint, not the Annals of Applied Statistics (AoAS) journal text. The journal full text was not read; only its abstract page (section B).
+
+Results:
+- Kubaty, abstract: "calibration alone is not sufficient for EENNs to exploit adaptive computation". SUPPORTED.
+- Kubaty, Figure 2 caption: "calibration is insufficient to measure the quality of early-exit classifiers". SUPPORTED. This is the wording the manuscript now uses (Sections 2 and 7.2 changed from "does not characterise early-exit quality"; "argue" became "show" in 7.2).
+- LTT: reframes risk control as multiple hypothesis testing (abstract; Section 2.2). SUPPORTED.
+- LTT: FWER control at a pre-specified level δ (Section 2.2). SUPPORTED.
+- LTT: finite-sample guarantees (abstract, Section 1). SUPPORTED.
+- Limitation: the LTT checks use the arXiv v4 text. Wording in the journal version may differ. The journal abstract (section B) makes the same statements: finite-sample guarantees, risk control as multiple hypothesis testing.
+- Limitation: the manuscript's other statement that CALM uses LTT is checked against the CALM paper (see the 2026-10-27 PDF check above), not here.
+
+### B. Bibliographic verification (publisher records, fetched 2026-10-27)
+- Kubaty: PMLR page proceedings.mlr.press/v306/kubaty26a.html. Title, all five authors, venue "Proceedings of the 43rd International Conference on Machine Learning", PMLR volume 306, year 2026, pages 61372–61389, publication date 2026/09/29. `refs.bib` matches on every field. Nothing corrected.
+- LTT: Project Euclid page reached via https://doi.org/10.1214/24-AOAS1998 (opened in the desktop app's browser; plain fetches were blocked by a bot check). "Ann. Appl. Stat. 19(2): 1641-1662 (June 2025). DOI: 10.1214/24-AOAS1998". The five authors match. `refs.bib` matches on journal, volume 19, number 2, pages 1641–1662, year 2025 and DOI. Nothing corrected. The record gives June 2025, received 1 July 2023, revised 1 November 2024.
+- No `refs.bib` entry was changed.
+
+### C. Manuscript change and rebuild
+- Edited only the two Kubaty sentences in `paper/body.tex` and the matching two lines in `docs/PAPER_DRAFT.md`. No number, label or frozen record was touched.
+- Both PDFs rebuilt (`main_preprint`, `main_anon`): 18 pages each, 0 undefined citations or references. The sandbox lacks `lmodern`, so a temporary Times stand-in was used from outside the repo; line breaks differ slightly from the previous build for that reason.
+- Equivalence check: the word streams of the old and new PDFs (end-of-line hyphenation removed) differ only at those two Kubaty sentences; all 1,064 numeric tokens are identical in both versions.
+- Rebuild locally with the real TMLR fonts before submission.

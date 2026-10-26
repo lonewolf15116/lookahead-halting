@@ -186,7 +186,7 @@ and they are not measurements of Ouro's released inference path, which selects a
 \item
   Conformal risk control \citep{Angelopoulos2024CRC} controls the expected value of a monotone loss.
 \item
-  \citet{Kubaty2026} show that calibration alone does not characterise early-exit quality.
+  \citet{Kubaty2026} show that calibration alone is insufficient to measure the quality of early-exit classifiers.
 \end{itemize}
 
 Our bootstrap-screened rule is none of these procedures. Its bound is asymptotic, uncorrected for the number of candidate thresholds, and
@@ -690,7 +690,7 @@ selection rule is not one of these procedures and inherits none of their guarant
 (Section 5.3) are compatible with a heuristic screen, with small test samples and with development--test differences {[}P{]}. They argue for a
 formal procedure on separate calibration data, not for treating our screen as one. A natural follow-up is to repeat the comparison with LTT or UCB selection, on calibration data separate from the data used for fitting.
 
-\textbf{Calibration and ranking quality.} \citet{Kubaty2026} argue that calibration alone does not characterise early-exit quality. Our
+\textbf{Calibration and ranking quality.} \citet{Kubaty2026} show that calibration alone is insufficient to measure the quality of early-exit classifiers. Our
 exploratory data fit with this. Better ranking of the stability label (π1-x AUROC 0.689 against 0.603 for the native CDF {[}E{]}) did not stop
 the native gate from winning under the point-only rule {[}E{]}, so ranking quality alone does not predict which method a given selection rule will prefer.
 
