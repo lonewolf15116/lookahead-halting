@@ -168,3 +168,55 @@ integrity fields of the two smoke reports. I read no outcome, prediction or corr
   - For each A2 readout and each B_pb and native-pb setting, report the share of halt decisions on the threshold grid that
     differ between the stored path and the alternative path.
   - TEST is not used.
+
+## Reviewer decision (Numerical Fidelity Review, 2026-10-26) and its implementation
+CONDITIONAL GO. The verifier tolerances stay as they are, with their limits documented above. D-a: GO. D-b: GO for writing
+the protocol only, not for running it. Full extraction stays on HOLD until both D-a float32 checks pass and their provenance
+has been checked. D1-D4 and training stay on HOLD until the full extraction has been verified. The reviewer's qualifications,
+recorded as given:
+- A float32 match does not show that bf16 differences are harmless for halting decisions.
+- The stored packed scores make the comparison fair within this scoring implementation. They do not establish numerical
+  invariance across implementations.
+- A 0.92-nat difference is not intrinsically minor: it can decide a close comparison between options.
+
+### D-a (implemented: `scripts/diagnose_short_context_ood.py`, runner `scripts/run_phase3_da_windows.ps1`)
+- **Rows.** 100 per benchmark, from the PIQA and Social IQa **train** splits. They are taken from the frozen inventory's
+  clean list, whose hash is checked against `inventory.json` (pinned 7ec501ae…). Every row on that list has never been used:
+  it was not a Phase 1 or Gate 2 evaluation row, not an exemplar, and not a duplicate.
+  - Every A1 allocation row, DEV+ and TEST, is removed by text hash. The A1 OOD rows are validation rows in any case.
+  - Rows are chosen by sha256 rank with the salt `lh-phase3-da-v1`. The selection is fingerprinted, and the report lists
+    the row ids.
+  - Eligible rows: PIQA 16,107, Social IQa 33,381. Selection fingerprints: PIQA a27f3f74d95e810b…, Social IQa
+    ab6d70b28b9ce639…
+  - If fewer than 100 rows are eligible, the script stops rather than changing the sampling rule.
+- **Build.** Exactly the Phase 3 build: lm_eval format, 0-shot, the frozen OOD metric, and the text hash checked against
+  the inventory. Zero exemplar draws are required.
+  - The dataset revisions must equal the inventory's.
+- **Comparison.** The existing `diagnose_short_context.py` comparison: the state at the last context token, packed pass
+  against context-only pass (plain and explicit-mask), all 4 loops. It runs in bf16 (reported) and float32 (gated).
+- **Pass rule.** A separate verdict per benchmark. It passes iff the float32 maximum |diff| is ≤ 1e-4 on both packed
+  comparisons. This is FP32_TOL from the verifier, unchanged, and a test asserts the two are equal.
+- **Report.** `results/phase3/diagnose_short_context_ood.json`. The script refuses to overwrite it. It records the row ids,
+  selection fingerprints, sample counts, question-set hashes, the model and its revision, the dtypes, the device, the torch
+  and lm_eval versions, and the code identity (code sha256, git commit, script hashes).
+- **What it does not compute.** No option score, prediction, label or correctness value is computed or written.
+- **Tests.** `tests/test_phase3_da.py`, 8 tests:
+  - Rows are unused train rows and outside every allocation.
+  - The selection is deterministic, of size 100, and fingerprinted.
+  - Too few rows stop the script.
+  - The pass rule uses the unchanged tolerance.
+  - The frozen inputs are hash-checked.
+  - The report path is not sealed, and the script names no outcome field.
+
+### D-b (protocol only; not run)
+- **Purpose.** A non-binding sensitivity analysis on development data only. It fulfils the 2026-10-20 commitment.
+- **Sequence (reviewer):**
+  1. Full extraction and verification.
+  2. D1-D4 under the frozen protocol, unchanged.
+  3. Only if D1-D4 allow Phase 3 to continue, D-b on DEV+ and Phase 1 development data.
+- **What it reports.** For each evaluated controller (B_pb, native-pb, the seven A2 readouts and the π candidates), with
+  attention to the selected thresholds:
+  - the share of questions whose top option changes, and the share whose halt decision changes, when the stored packed
+    values are replaced by per-option scores and context-only states.
+- **What it never touches.** TEST. It changes no decision rule, threshold or verdict. Its results are reported as a
+  limitation on numerical invariance across implementations.

@@ -190,3 +190,8 @@
   - The verifier field `rerun_same_input.opt_ll` is in fact packed vs per-option scoring. Its 1-nat gate is a bug detector, not a ranking-fidelity bound.
   - The Phase 1 commitment to a halting-decision sensitivity analysis is missing from PHASE3_PLAN.
   - Proposed, awaiting approval: D-a (a float32 diagnostic on PIQA and SIQA train rows, before the full extraction) and D-b (DEV+-only decision agreement between the stored and alternative paths, reported, before D1-D4). No tolerance or threshold is changed.
+- 2026-10-26 Reviewer "Phase 3 — Numerical Fidelity Review": CONDITIONAL GO.
+  - Tolerances are kept, with their limits documented.
+  - D-a: GO. D-b: protocol only. D-b runs after D1-D4 and only if they allow Phase 3 to continue; DEV only.
+  - Full extraction: HOLD until D-a passes and its provenance is checked.
+  - D-a implemented (scripts/diagnose_short_context_ood.py; 8 tests pass): 100 never-used, unallocated TRAIN rows per benchmark, chosen by salted rank and fingerprinted (PIQA a27f3f74…, SIQA ab6d70b2…). A separate float32 verdict per benchmark at the unchanged 1e-4; it stops on too few rows; it computes no outcome.
