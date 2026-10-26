@@ -2,6 +2,7 @@
 feature sets, transforms, refusals, and an end-to-end synthetic run."""
 import hashlib
 import json
+import os
 import math
 import subprocess
 import sys
@@ -293,7 +294,8 @@ def test_a7_selection_never_reads_validation():
 
 def test_entry_script_synthetic_dry_run_writes_and_refuses_to_overwrite(tmp_path):
     out = tmp_path / "e1.json"
-    env = {"PYTHONPATH": str(ROOT / "src"), "PATH": "/usr/bin:/bin:/usr/local/bin"}
+    # keep the inherited environment (Windows needs SYSTEMROOT etc. for its socket layer); only PYTHONPATH is set
+    env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
     cmd = [sys.executable, str(ROOT / "scripts" / "e1_run.py"), "--synthetic", str(out)]
     r = subprocess.run(cmd, capture_output=True, text=True, env=env, cwd=ROOT)
     assert r.returncode == 0, r.stderr
