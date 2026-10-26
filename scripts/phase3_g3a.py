@@ -50,6 +50,12 @@ def check_frozen(root: Path) -> dict:
         if Cs != {G.FROZEN_C[variant]}:
             raise SystemExit(f"Gate 2 frozen C for {variant} is {Cs}, expected {G.FROZEN_C[variant]}")
     out["results/gate2/frozen_selection.json"] = g1.sha256_file(root / "results/gate2/frozen_selection.json")
+    sec = json.loads((root / "results/gate2/validation_report.json").read_text(encoding="utf-8"))["secondary"]
+    for (target, v), Cs in G.GATE2_DIRECTION_C.items():
+        rec = tuple(sec[f"{target}/{v}"]["hyper"][str(t)]["C"] for t in range(3))
+        if rec != tuple(Cs):
+            raise SystemExit(f"Gate 2 recorded C for {target}/{v} is {rec}, expected {Cs}")
+    out["results/gate2/validation_report.json"] = g1.sha256_file(root / "results/gate2/validation_report.json")
     return out
 
 
@@ -74,11 +80,11 @@ def summary_lines(rep: dict) -> list:
     lines = [f"D1  ceiling(ii) {d1['primary']['ceiling_ii']:.4f} - B_pb {d1['primary']['B_pb']:.4f} = "
              f"{d1['primary']['headroom_ii']:.4f}  (stop if < {G.D1_MIN})  -> {'STOP' if d1['stop'] else 'pass'}"]
     for c, v in d2["candidates"].items():
-        lines.append(f"D2  {c}: nested improvement over the A2 comparator {v['improvement_vs_comparator']:+.4f} "
+        lines.append(f"D2  [gross-saving screen] {c}: nested improvement over the A2 comparator {v['improvement_vs_comparator']:+.4f} "
                      f"(vs B_pb {v['improvement_vs_B_pb']:+.4f})")
     lines.append(f"D2  comparators per fold {d2['comparator_per_fold']}  (stop if both < {G.D2_MIN}) -> "
                  f"{'STOP' if d2['stop'] else 'pass'}")
-    lines.append(f"D3  h > x in {d3['n_h_better']} of {d3['n_counted']} counted cells -> hx variants "
+    lines.append(f"D3  ({d3['decision_method']}) h > x in {d3['n_h_better']} of {d3['n_counted']} counted cells -> hx variants "
                  f"{'kept' if d3['keep_hx'] else 'dropped'}")
     lines.append(f"DECISION: {rep['decision']}")
     return lines

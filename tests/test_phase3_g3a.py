@@ -136,8 +136,7 @@ def test_d3_keep_rule_boundary():
 def test_d2_comparator_is_chosen_on_selection_folds_and_improvement_is_the_mean_paired_difference():
     d = synth(n=120, seed=1)
     stats = {name: G.baseline_stat(d, name) for name in G.BASELINES}
-    cands = G.candidate_stats_crossfit(d)
-    out = G.d2(d, stats, cands)
+    out = G.d2(d, stats)
     per = out["per_fold_detail"]
     for k, chosen in enumerate(out["comparator_per_fold"]):
         sel = {b: per[k][b]["selection_saving"] for b in G.BASELINES if per[k][b]["eligible"]}
@@ -148,6 +147,90 @@ def test_d2_comparator_is_chosen_on_selection_folds_and_improvement_is_the_mean_
         assert v["improvement_vs_comparator"] == pytest.approx(manual)
         assert v["improvement_vs_best_on_heldout_conservative"] <= v["improvement_vs_comparator"] + 1e-12
     assert out["stop"] == G.d2_stop([v["improvement_vs_comparator"] for v in out["candidates"].values()])
+
+
+def _perturb_fold(d, k, seed=99):
+    """Replace every label, feature and score of fold k with unrelated random values."""
+    rng = np.random.default_rng(seed)
+    e = G.subset(d, np.ones(d.N, bool))
+    r = np.flatnonzero(e.fold == k)
+    e.correct = e.correct.copy(); e.correct[r] = rng.integers(0, 2, (len(r), 4))
+    e.pred = e.pred.copy(); e.pred[r] = rng.integers(0, 4, (len(r), 4))
+    e.cdf = e.cdf.copy(); e.cdf[r] = rng.random((len(r), 4))
+    e.x = e.x.copy(); e.x[r] = rng.normal(size=e.x[r].shape) * 5
+    e.h = e.h.copy(); e.h[r] = rng.normal(size=e.h[r].shape) * 5
+    T = e.T.copy(); T[r] = rng.choice(["CC", "CW", "WC", "WW"], size=(len(r), 3)); e.T = T
+    Tf = e.Tfin.copy(); Tf[r] = rng.choice(["CC", "CW", "WC", "WW"], size=(len(r), 3)); e.Tfin = Tf
+    e.z = [rng.normal(size=z.shape) if i in set(r) else z for i, z in enumerate(e.z)]
+    return e
+
+
+@pytest.mark.parametrize("k", [0, 3])
+def test_outer_fold_selection_is_untouched_by_anything_in_the_held_out_fold(k):
+    """Reviewer fix: changing held-out labels/features must not change any fitted model, selection statistic, threshold or
+    comparator chosen on the selection folds."""
+    d = synth(n=120, seed=21)
+    e = _perturb_fold(d, k)
+    a = G.outer_fold(d, k, {n: G.baseline_stat(d, n) for n in G.BASELINES})
+    b = G.outer_fold(e, k, {n: G.baseline_stat(e, n) for n in G.BASELINES})
+    for name in G.BASELINES + G.CANDIDATES:
+        assert a[name]["selected"] == b[name]["selected"], name
+        assert a[name]["selection_saving"] == b[name]["selection_saving"]
+        assert a[name]["eligible"] == b[name]["eligible"]
+    for c in G.CANDIDATES:
+        assert a[c]["outer_model_sha256"] == b[c]["outer_model_sha256"]
+        assert a[c]["selection_stat_sha256"] == b[c]["selection_stat_sha256"]
+    fa = [{n: {kk: a[n][kk] for kk in ("eligible", "selection_saving", "heldout_saving")} for n in G.BASELINES}]
+    fb = [{n: {kk: b[n][kk] for kk in ("eligible", "selection_saving", "heldout_saving")} for n in G.BASELINES}]
+    assert R.nested_comparator(fa)["chosen"] == R.nested_comparator(fb)["chosen"]
+    # ...while the held-out evaluation itself does see the change (the test would be vacuous otherwise)
+    assert any(a[n]["heldout_saving"] != b[n]["heldout_saving"] for n in G.BASELINES + G.CANDIDATES)
+
+
+def test_the_old_whole_data_crossfit_would_have_leaked():
+    """Documents the defect the reviewer found: statistics cross-fitted over ALL folds change on selection rows when fold
+    k changes; the inner cross-fit used now does not."""
+    d = synth(n=120, seed=22)
+    e = _perturb_fold(d, 0)
+    S, Se = d.stability(), e.stability()
+    sel = d.fold != 0
+    old_a, old_b = G.crossfit(d, "x", S, 1.0), G.crossfit(e, "x", Se, 1.0)
+    assert not np.allclose(old_a[sel], old_b[sel])
+    new_a, new_b = G.crossfit(d, "x", S, 1.0, within=sel), G.crossfit(e, "x", Se, 1.0, within=sel)
+    assert np.array_equal(new_a[sel], new_b[sel], equal_nan=True) and np.isnan(new_a[~sel]).all()
+
+
+def test_d2_methods_are_paired_on_identical_held_out_rows():
+    d = synth(n=100, seed=23)
+    out = G.d2(d, {n: G.baseline_stat(d, n) for n in G.BASELINES})
+    for rec in out["per_fold_detail"]:
+        ns = {name: {b: v["n"] for b, v in r["heldout"].items()} for name, r in rec.items()}
+        assert len({json.dumps(v, sort_keys=True) for v in ns.values()}) == 1
+
+
+def test_validation_estimate_selection_never_reads_validation():
+    dev = synth(n=100, seed=24)
+    val = synth(n=40, seed=25, source="p1_validation", prefix="v/")
+    stats = {n: G.baseline_stat(dev, n) for n in G.BASELINES}
+    a = G.d2_validation_exposed(dev, val, stats, {n: G.baseline_stat(val, n) for n in G.BASELINES})
+    v2 = _perturb_fold(val, 0)
+    v2 = _perturb_fold(v2, 1, seed=5)
+    b = G.d2_validation_exposed(dev, v2, stats, {n: G.baseline_stat(v2, n) for n in G.BASELINES})
+    assert a["comparator"] == b["comparator"]
+    assert all(a["methods"][n]["selection_saving"] == b["methods"][n]["selection_saving"] for n in a["methods"])
+    vs = G.validation_selection(dev, stats)      # takes no validation argument at all
+    assert vs["comparator"] == a["comparator"]
+
+
+def test_d3_reports_both_methods_and_cell_status():
+    d = synth(benches=G.PRIMARY + ("arc_easy",), n=150, seed=26)
+    out = G.d3(d)
+    assert out["decision_method"] == "indirect" == G.D3_DECISION_METHOD
+    assert set(out["primary_cell_status_counts"]) == {"counted", "too_few", "empty", "unscorable"}
+    assert sum(out["primary_cell_status_counts"].values()) == 2 * 3 * 3
+    c = out["cells"][0]
+    assert {"auroc_h_indirect", "auroc_x_indirect", "auroc_h_direct", "auroc_x_direct", "status"} <= set(c)
+    assert out["other_method_info"]["method"] == "direct"
 
 
 def test_every_selected_point_respects_the_budget_on_selection_data_and_B_pb_is_fixed_depth():

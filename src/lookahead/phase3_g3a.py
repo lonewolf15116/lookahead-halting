@@ -28,6 +28,11 @@ D1_MIN = 0.05            # plan 7 / A1.7: stop if ceiling(ii) - B_pb < 0.05 (pri
 D2_MIN = 0.02            # plan 7 / A2.4: stop if nested improvement over the A2 comparator < 0.02 (primary macro)
 D3_MIN_TRANSITIONS = 30  # plan 7 / A1.7: cells with >= 30 transitions
 FROZEN_C = {"x": 1.0, "hx": 0.001}   # Gate 2 frozen family-1 C (Q = x, P = hx), identical for loops 1-3; checked at run time
+# Gate 2's recorded per-loop C of its WC and CW direction probes (results/gate2/validation_report.json, "secondary";
+# checked at run time). D3's indirect method reuses them, and the to-final probes use the same values (OP5).
+GATE2_DIRECTION_C = {("WC", "h"): (3e-4, 3e-4, 1e-3), ("CW", "h"): (3e-4, 3e-4, 1e-3),
+                     ("WC", "x"): (1.0, 1.0, 1.0), ("CW", "x"): (0.1, 1.0, 1.0)}
+D3_DECISION_METHOD = "indirect"
 BASELINES = ("B_pb", "native-pb") + R.READOUTS                      # A2.4 comparator pool
 CANDIDATES = ("pi1-x", "pi1-hx")                                    # plan 7 D2 (frozen)
 DEVPLUS_DIR = "extracted_phase3_dev"
@@ -35,28 +40,27 @@ P1_DIR = "extracted"
 
 # Points the frozen documents leave open; resolved here as stated and listed in the report for reviewer confirmation
 # BEFORE any real run. Changing any of them after a real run is not allowed.
-OPEN_POINTS = {
-    "OP1_net_saving_at_G3a": "A2.4 says 'macro net saving', but rho_b is measured only at G3b (plan 5a). G3a uses gross "
-                             "saving (rho = 0) for every policy and baseline.",
-    "OP2_D2_candidate_rule": "Plan 7 names two screened candidates (pi1-x, pi1-hx) but one stop rule. Implemented: STOP iff "
-                             "BOTH candidates' nested improvement over the A2 comparator is < 0.02 (continue if either "
-                             "reaches 0.02). Both values and the improvement over B_pb alone are reported.",
-    "OP3_grid_pool": "The 51-point grid (plan 5, A2.3) pools the statistic over the ok questions of ALL benchmarks in the "
-                     "selection rows (six benchmarks; Phase 1 train + DEV+), loops where defined; in D2 only the selection "
-                     "folds' rows are pooled.",
-    "OP4_D1_nonbinding_baseline": "A2.4's non-binding Delta_oracle-readout uses the best baseline chosen on ALL "
-                                  "development data (no held-out fold exists for D1).",
-    "OP5_D3_model": "D3 classifies WC (1) vs CW (0) directly on the transitions of each loop (rows with label WC or CW), "
-                    "per-loop L2-logistic on h_t or on x_t, C chosen by inner CV over the Gate 2 C grid on the training "
-                    "folds, out of fold over the 5 lh-fold-v1 folds, fitted on all six benchmarks; AUROC within "
-                    "(benchmark, loop).",
-    "OP6_D3_cells": "D3 cells are (kind, benchmark, loop) with kind in {adjacent t->t+1, to-final t->4}, over the three "
-                    "primary benchmarks; a cell counts if it has >= 30 WC+CW transitions and both classes; hx is kept iff "
-                    "h > x in at least half of the counted cells; with no counted cell the result is 'not kept'.",
-    "OP7_D4_model": "D4 uses per-loop L2-logistic with the frozen Gate 2 C (x: 1.0, hx: 0.001), out of fold, for c_t and "
-                    "c_4; Delta_t is scored by P(c_4) - P(c_t) (Spearman). Informative only.",
-    "OP8_oracle_failed": "Failed questions (none expected) exit at loop 4 and are wrong in both oracles, as under every "
-                         "policy (Gate 1 rule).",
+OPEN_POINTS = {   # with the reviewer's G3a implementation review (2026-10-26); locked before any real run
+    "OP1_net_saving_at_G3a": "ACCEPTED provisionally: G3a uses gross saving (rho = 0; rho_b is measured only at G3b, plan "
+                             "5a). D2 is labelled a gross-saving screen, not evidence of net improvement.",
+    "OP2_D2_candidate_rule": "ACCEPTED provisionally, locked: STOP iff BOTH pi1-x and pi1-hx have nested improvement over the "
+                             "A2 comparator < 0.02 (either candidate may pass). Both values and the improvement over B_pb "
+                             "alone are reported.",
+    "OP3_grid_pool": "ACCEPTED: the 51-point grid pools the statistic over the ok questions of all benchmarks in the "
+                     "selection rows, loops where defined (as frozen phase3_readouts.grid does); in D2 only the selection "
+                     "folds' rows.",
+    "OP4_D1_nonbinding_baseline": "ACCEPTED as descriptive and non-binding: the best baseline is chosen on all "
+                                  "development data.",
+    "OP5_D3_model": "NEEDS SIGN-OFF. Decision method 'indirect' keeps Gate 2's estimand: score P(WC) - P(CW) from two "
+                    "per-loop L2-logistic probes on h_t or x_t, fitted on all ok rows (six benchmarks), Gate 2's recorded "
+                    "per-loop C (validation_report.json 'secondary'), out of fold over lh-fold-v1; to-final probes use the "
+                    "same C. The 'direct' WC-vs-CW classifier (inner-CV C) is reported beside it as information only.",
+    "OP6_D3_cells": "ACCEPTED provisionally: cells (kind, benchmark, loop), kind in {adjacent, to-final}, three primary "
+                    "benchmarks; counted if >= 30 WC+CW transitions, both classes, both AUROCs defined; hx kept iff h > x in "
+                    ">= half of counted cells; none counted -> not kept. Every cell's status (counted / too_few / empty / "
+                    "unscorable) is reported.",
+    "OP7_D4_model": "ACCEPTED (informative only): frozen Gate 2 C (x 1.0, hx 0.001), out of fold.",
+    "OP8_oracle_failed": "ACCEPTED: failed questions exit at loop 4 and are wrong in both oracles.",
 }
 
 
@@ -256,30 +260,55 @@ def _design(d: DevData, rows: np.ndarray, t: int, variant: str) -> np.ndarray:
     raise ValueError(variant)
 
 
-def _fit_predict(Xtr, ytr, Xte, C):
-    sc = g2.fit_scaler(Xtr)
-    m, _ = g2.fit_logistic(g2.apply_scaler(Xtr, sc), ytr, C)
-    return m.predict(g2.apply_scaler(Xte, sc))
+def _C(C, t):
+    return C[t] if isinstance(C, (dict, list, tuple)) else C
 
 
-def crossfit(d: DevData, variant: str, target: np.ndarray, C: float, fit_mask: np.ndarray | None = None) -> np.ndarray:
-    """[N, 3] out-of-fold P(target_t = 1): for fold k, per loop, fitted on the ok rows (within fit_mask) of the other folds."""
-    fit_mask = d.ok if fit_mask is None else (fit_mask & d.ok)
-    out = np.full((d.N, 3), np.nan)
-    for k in range(g2.N_FOLDS):
-        tr, te = np.flatnonzero(fit_mask & (d.fold != k)), np.flatnonzero(d.ok & (d.fold == k))
-        if not len(te):
-            continue
-        for t in range(3):
-            out[te, t] = _fit_predict(_design(d, tr, t, variant), target[tr, t], _design(d, te, t, variant), C)
+def fit_loopwise(d: DevData, rows: np.ndarray, variant: str, target: np.ndarray, C) -> list:
+    """Per-loop (scaler, model) fitted on `rows` (ok rows only are passed). C: scalar or per-loop."""
+    out = []
+    for t in range(3):
+        X = _design(d, rows, t, variant)
+        sc = g2.fit_scaler(X)
+        m, _ = g2.fit_logistic(g2.apply_scaler(X, sc), target[rows, t], _C(C, t))
+        out.append((sc, m))
     return out
 
 
-def fit_all_predict(d_fit: DevData, d_new: DevData, variant: str, target: np.ndarray, C: float) -> np.ndarray:
+def predict_loopwise(models: list, d: DevData, rows: np.ndarray, variant: str) -> np.ndarray:
+    out = np.full((len(rows), 3), np.nan)
+    for t, (sc, m) in enumerate(models):
+        if len(rows):
+            out[:, t] = m.predict(g2.apply_scaler(_design(d, rows, t, variant), sc))
+    return out
+
+
+def model_fingerprint(models: list) -> str:
+    h = hashlib.sha256()
+    for sc, m in models:
+        for a in (sc["mean"], sc["sd"], m.coef, np.atleast_1d(m.intercept)):
+            h.update(np.ascontiguousarray(np.asarray(a, dtype=np.float64)).tobytes())
+    return h.hexdigest()
+
+
+def crossfit(d: DevData, variant: str, target: np.ndarray, C, within: np.ndarray | None = None) -> np.ndarray:
+    """[N, 3] out-of-fold P(target_t = 1) for the ok rows inside `within` (default: all rows): for each lh-fold-v1 fold
+    label present there, models are fitted on the ok rows of `within` with the other labels. Rows outside `within` stay NaN
+    and are never used for fitting."""
+    within = np.ones(d.N, dtype=bool) if within is None else within
+    out = np.full((d.N, 3), np.nan)
+    for k in np.unique(d.fold[within]):
+        tr = np.flatnonzero(within & d.ok & (d.fold != k))
+        te = np.flatnonzero(within & d.ok & (d.fold == k))
+        if len(te):
+            out[te] = predict_loopwise(fit_loopwise(d, tr, variant, target, C), d, te, variant)
+    return out
+
+
+def fit_all_predict(d_fit: DevData, d_new: DevData, variant: str, target: np.ndarray, C) -> np.ndarray:
     tr, te = np.flatnonzero(d_fit.ok), np.flatnonzero(d_new.ok)
     out = np.full((d_new.N, 3), np.nan)
-    for t in range(3):
-        out[te, t] = _fit_predict(_design(d_fit, tr, t, variant), target[tr, t], _design(d_new, te, t, variant), C)
+    out[te] = predict_loopwise(fit_loopwise(d_fit, tr, variant, target, C), d_new, te, variant)
     return out
 
 
@@ -403,28 +432,55 @@ def d1(d: DevData, stats: dict) -> dict:
 
 
 # ------------------------------------------------------------------------------------------------------------ D2
-def d2(d: DevData, stats: dict, cand_stats: dict) -> dict:
-    """Nested: for each outer fold k, every method's (tau_b, m_b) selected on the other folds, evaluated on fold k."""
-    methods = {**{b: stats[b] for b in BASELINES}, **cand_stats}
-    folds, per_fold = [], []
-    for k in range(g2.N_FOLDS):
-        sel_mask, held = d.fold != k, d.fold == k
-        rec = {}
-        for name, S in methods.items():
-            sel = select_all(d, S, sel_mask, fixed_only=(name == "B_pb"))
-            ev = evaluate(d, S, sel, held)
-            rec[name] = {"selected": {b: {"tau": s["tau"], "m": int(s["m"]), "saving": float(s["saving"]),
-                                          "loss": float(s["loss"])} for b, s in sel.items()},
-                         "heldout": ev,
-                         "eligible": all(sel[b]["loss"] <= g1.LOSS_LIMIT + g1.TOL for b in PRIMARY),
-                         "selection_saving": macro({b: {"saving": sel[b]["saving"]} for b in PRIMARY}, PRIMARY),
-                         "heldout_saving": macro(ev, PRIMARY),
-                         "heldout_saving_six": macro(ev, d.benchmarks)}
-        per_fold.append(rec)
-        folds.append({b: {kk: rec[b][kk] for kk in ("eligible", "selection_saving", "heldout_saving")} for b in BASELINES})
+def outer_fold(d: DevData, k: int, stats: dict, candidates=CANDIDATES) -> dict:
+    """One outer fold of the nested D2, fully isolated from fold k (reviewer fix, 2026-10-26).
+
+    Candidates: selection-stage statistics for the selection rows (fold != k) come from INNER cross-fitting over the
+    remaining fold labels, using only selection rows; the held-out fold's statistics come from models fitted on all
+    selection rows. Baselines and readouts have no fitted model; their (tau_b, m_b) and grids use selection rows only.
+    Nothing computed for selection reads a fold-k label, feature or statistic."""
+    sel_mask, held = d.fold != k, d.fold == k
+    S_target = d.stability()
+    methods, fp = {b: stats[b] for b in BASELINES}, {}
+    for c in candidates:
+        v = c.split("-", 1)[1]
+        S = crossfit(d, v, S_target, FROZEN_C[v], within=sel_mask)               # inner cross-fit, selection rows only
+        models = fit_loopwise(d, np.flatnonzero(sel_mask & d.ok), v, S_target, FROZEN_C[v])
+        hr = np.flatnonzero(held & d.ok)
+        S[hr] = predict_loopwise(models, d, hr, v)
+        methods[c], fp[c] = S, model_fingerprint(models)
+    rec = {}
+    for name, S in methods.items():
+        sel = select_all(d, S, sel_mask, fixed_only=(name == "B_pb"))
+        ev = evaluate(d, S, sel, held)
+        rec[name] = {"selected": {b: {"tau": s["tau"], "m": int(s["m"]), "saving": float(s["saving"]),
+                                      "loss": float(s["loss"])} for b, s in sel.items()},
+                     "heldout": ev,
+                     "eligible": all(sel[b]["loss"] <= g1.LOSS_LIMIT + g1.TOL for b in PRIMARY),
+                     "selection_saving": macro({b: {"saving": sel[b]["saving"]} for b in PRIMARY}, PRIMARY),
+                     "heldout_saving": macro(ev, PRIMARY),
+                     "heldout_saving_six": macro(ev, d.benchmarks)}
+        if name in fp:
+            rec[name]["outer_model_sha256"] = fp[name]
+            rec[name]["selection_stat_sha256"] = hashlib.sha256(
+                np.ascontiguousarray(np.nan_to_num(methods[name][sel_mask], nan=-9e9)).tobytes()).hexdigest()
+    return rec
+
+
+def d2(d: DevData, stats: dict) -> dict:
+    """Nested D2 (plan 7, A2.4): every method selected on four folds and evaluated on the fifth, rotated; candidates
+    re-fitted inside each outer fold (outer_fold). Gross saving (OP1): a screening estimate, not net improvement."""
+    per_fold = [outer_fold(d, k, stats) for k in range(g2.N_FOLDS)]
+    for k, rec in enumerate(per_fold):   # paired: every method evaluated on exactly the same held-out rows
+        ns = {name: {b: v["n"] for b, v in r["heldout"].items()} for name, r in rec.items()}
+        if len({json.dumps(v, sort_keys=True) for v in ns.values()}) != 1:
+            raise AssertionError(f"fold {k}: methods evaluated on different held-out rows")
+    folds = [{b: {kk: rec[b][kk] for kk in ("eligible", "selection_saving", "heldout_saving")} for b in BASELINES}
+             for rec in per_fold]
     comp = R.nested_comparator(folds)
-    out = {"comparator_per_fold": comp["chosen"], "comparator_heldout_saving": comp["heldout_saving"], "candidates": {}}
-    for c in cand_stats:
+    out = {"saving": "gross (rho = 0), screening only (OP1)", "comparator_per_fold": comp["chosen"],
+           "comparator_heldout_saving": comp["heldout_saving"], "candidates": {}}
+    for c in CANDIDATES:
         diffs = [per_fold[k][c]["heldout_saving"] - per_fold[k][comp["chosen"][k]]["heldout_saving"] for k in range(g2.N_FOLDS)]
         vs_bpb = [per_fold[k][c]["heldout_saving"] - per_fold[k]["B_pb"]["heldout_saving"] for k in range(g2.N_FOLDS)]
         best_held = [max(per_fold[k][b]["heldout_saving"] for b in BASELINES) for k in range(g2.N_FOLDS)]
@@ -444,22 +500,38 @@ def d2(d: DevData, stats: dict, cand_stats: dict) -> dict:
     return out
 
 
-def d2_validation_exposed(dev: DevData, val: DevData, stats_dev: dict, stats_val: dict, cand_dev: dict, cand_val: dict) -> dict:
-    """Reported only (plan 7): methods selected on all development data, evaluated on the exposed Phase 1 validation."""
+def validation_selection(dev: DevData, stats_dev: dict) -> dict:
+    """Everything chosen for the exposed validation estimate, from development data only: candidate statistics by
+    cross-fitting over all development data, (tau_b, m_b) per method, and the comparator. No validation row is read."""
     allrows = np.ones(dev.N, dtype=bool)
+    S_target = dev.stability()
+    cand = {c: crossfit(dev, c.split("-", 1)[1], S_target, FROZEN_C[c.split("-", 1)[1]]) for c in CANDIDATES}
+    sels = {}
+    for name in BASELINES + CANDIDATES:
+        Sd = cand[name] if name in cand else stats_dev[name]
+        sels[name] = select_all(dev, Sd, allrows, fixed_only=(name == "B_pb"))
+    sel_saving = {n: macro({b: {"saving": sels[n][b]["saving"]} for b in PRIMARY}, PRIMARY) for n in sels}
+    comp = sorted(BASELINES, key=lambda b: (-sel_saving[b], b))[0]
+    return {"selections": sels, "selection_saving": sel_saving, "comparator": comp}
+
+
+def d2_validation_exposed(dev: DevData, val: DevData, stats_dev: dict, stats_val: dict) -> dict:
+    """Reported only (plan 7): selected and fitted on development data (validation_selection), then evaluated once on the
+    exposed Phase 1 validation."""
+    vs = validation_selection(dev, stats_dev)
+    S_target = dev.stability()
+    cand_val = {c: fit_all_predict(dev, val, c.split("-", 1)[1], S_target, FROZEN_C[c.split("-", 1)[1]]) for c in CANDIDATES}
     vrows = np.ones(val.N, dtype=bool)
     res = {}
-    for name in BASELINES + tuple(cand_dev):
-        Sd = cand_dev[name] if name in cand_dev else stats_dev[name]
+    for name in BASELINES + CANDIDATES:
         Sv = cand_val[name] if name in cand_val else stats_val[name]
-        sel = select_all(dev, Sd, allrows, fixed_only=(name == "B_pb"))
-        sel = {b: s for b, s in sel.items() if b in val.benchmarks}
+        sel = {b: s for b, s in vs["selections"][name].items() if b in val.benchmarks}
         ev = evaluate(val, Sv, sel, vrows)
-        res[name] = {"selection_saving": macro({b: {"saving": sel[b]["saving"]} for b in PRIMARY}, PRIMARY),
-                     "validation_saving": macro(ev, PRIMARY), "validation": ev}
-    comp = sorted(BASELINES, key=lambda b: (-res[b]["selection_saving"], b))[0]
+        res[name] = {"selection_saving": vs["selection_saving"][name], "validation_saving": macro(ev, PRIMARY),
+                     "validation": ev}
+    comp = vs["comparator"]
     return {"comparator": comp, "methods": res,
-            "improvement_vs_comparator": {c: res[c]["validation_saving"] - res[comp]["validation_saving"] for c in cand_dev}}
+            "improvement_vs_comparator": {c: res[c]["validation_saving"] - res[comp]["validation_saving"] for c in CANDIDATES}}
 
 
 # ------------------------------------------------------------------------------------------------------------ D3
@@ -483,29 +555,52 @@ def _oof_binary(d: DevData, rows_t: list, y_t: list, variant: str) -> list:
     return out
 
 
-def d3(d: DevData) -> dict:
-    cells, out = [], {"cells": []}
+def d3(d: DevData, method: str = None) -> dict:
+    """D3 cells (OP6). Decision method D3_DECISION_METHOD (OP5): 'indirect' = Gate 2's estimand, score P(WC) - P(CW) from
+    two per-loop probes fitted on all ok rows with Gate 2's recorded C (GATE2_DIRECTION_C), out of fold; 'direct' =
+    WC-vs-CW classifier on the changing transitions only, C by inner CV (reported as information)."""
+    method = method or D3_DECISION_METHOD
+    out = {"decision_method": method, "cells": []}
+    scores = {}
     for kind, lab in (("adjacent", d.T), ("to_final", d.Tfin)):
         rows_t = [np.flatnonzero(d.ok & np.isin(lab[:, t], ("WC", "CW"))) for t in range(3)]
         y_t = [(lab[r, t] == "WC").astype(float) for t, r in enumerate(rows_t)]
-        preds = {v: _oof_binary(d, rows_t, y_t, v) for v in ("h", "x")}
+        for v in ("h", "x"):
+            wc = (lab == "WC").astype(float)
+            cw = (lab == "CW").astype(float)
+            p_wc = crossfit(d, v, wc, GATE2_DIRECTION_C[("WC", v)])
+            p_cw = crossfit(d, v, cw, GATE2_DIRECTION_C[("CW", v)])
+            scores[("indirect", kind, v)] = [(p_wc - p_cw)[r, t] for t, r in enumerate(rows_t)]
+            scores[("direct", kind, v)] = _oof_binary(d, rows_t, y_t, v)
         for t in range(3):
             for b in d.benchmarks:
                 sel = d.bench[rows_t[t]] == b
                 y = y_t[t][sel]
                 n_wc, n_cw = int((y == 1).sum()), int((y == 0).sum())
-                au = {v: (g2._auroc(y, preds[v][t][sel]) if np.isfinite(preds[v][t][sel]).all() else None) for v in ("h", "x")}
-                cell = {"kind": kind, "benchmark": b, "loop": t + 1, "n_wc": n_wc, "n_cw": n_cw,
-                        "auroc_h": au["h"], "auroc_x": au["x"],
-                        "counted": b in PRIMARY and n_wc + n_cw >= D3_MIN_TRANSITIONS and n_wc > 0 and n_cw > 0
-                        and au["h"] is not None and au["x"] is not None}
-                cell["h_better"] = bool(cell["counted"] and au["h"] > au["x"])
+                cell = {"kind": kind, "benchmark": b, "loop": t + 1, "n_wc": n_wc, "n_cw": n_cw}
+                for m in ("indirect", "direct"):
+                    for v in ("h", "x"):
+                        sc = scores[(m, kind, v)][t][sel]
+                        cell[f"auroc_{v}_{m}"] = g2._auroc(y, sc) if len(y) and np.isfinite(sc).all() else None
+                cell["auroc_h"], cell["auroc_x"] = cell[f"auroc_h_{method}"], cell[f"auroc_x_{method}"]
+                enough = n_wc + n_cw >= D3_MIN_TRANSITIONS and n_wc > 0 and n_cw > 0
+                scorable = cell["auroc_h"] is not None and cell["auroc_x"] is not None
+                cell["status"] = ("empty" if n_wc + n_cw == 0 else "too_few" if not enough
+                                  else "unscorable" if not scorable else "counted")
+                cell["counted"] = b in PRIMARY and cell["status"] == "counted"
+                cell["h_better"] = bool(cell["counted"] and cell["auroc_h"] > cell["auroc_x"])
                 out["cells"].append(cell)
     counted = [c for c in out["cells"] if c["counted"]]
-    nb = sum(c["h_better"] for c in counted)
-    out.update({"n_counted": len(counted), "n_h_better": nb, "keep_hx": keep_hx(out["cells"])})
-    six = [c for c in out["cells"] if c["n_wc"] + c["n_cw"] >= D3_MIN_TRANSITIONS and c["n_wc"] and c["n_cw"]
-           and c["auroc_h"] is not None and c["auroc_x"] is not None]
+    prim = [c for c in out["cells"] if c["benchmark"] in PRIMARY]
+    out.update({"n_counted": len(counted), "n_h_better": sum(c["h_better"] for c in counted),
+                "keep_hx": keep_hx(out["cells"]),
+                "primary_cell_status_counts": {s: sum(c["status"] == s for c in prim)
+                                               for s in ("counted", "too_few", "empty", "unscorable")}})
+    other = "direct" if method == "indirect" else "indirect"
+    oc = [c for c in counted if c[f"auroc_h_{other}"] is not None and c[f"auroc_x_{other}"] is not None]
+    out["other_method_info"] = {"method": other, "n_counted": len(oc),
+                                "n_h_better": sum(c[f"auroc_h_{other}"] > c[f"auroc_x_{other}"] for c in oc)}
+    six = [c for c in out["cells"] if c["status"] == "counted"]
     out["six_benchmark_info"] = {"n_counted": len(six), "n_h_better": sum(c["auroc_h"] > c["auroc_x"] for c in six)}
     return out
 
@@ -530,11 +625,6 @@ def d4(d: DevData) -> dict:
 
 
 # ------------------------------------------------------------------------------------------------------- the run
-def candidate_stats_crossfit(d: DevData) -> dict:
-    S = d.stability()
-    return {f"pi1-{v}": crossfit(d, v, S, FROZEN_C[v]) for v in ("x", "hx")}
-
-
 def run_g3a(dev: DevData, val: DevData | None = None) -> dict:
     """All of G3a on in-memory data. Returns the report dict (no file is written here)."""
     if (dev.source == "p1_validation").any() or (dev.source == "test").any():
@@ -543,16 +633,13 @@ def run_g3a(dev: DevData, val: DevData | None = None) -> dict:
     if missing:
         raise ValueError(f"primary benchmarks missing from the development data: {missing}")
     stats = {name: baseline_stat(dev, name) for name in BASELINES}
-    cands = candidate_stats_crossfit(dev)
     rep = {"open_points": OPEN_POINTS, "n": {b: int((dev.bench == b).sum()) for b in dev.benchmarks},
            "n_by_source": {s: int((dev.source == s).sum()) for s in np.unique(dev.source)},
            "failed": int((~dev.ok).sum()), "thresholds": {"D1": D1_MIN, "D2": D2_MIN, "D3_min_transitions": D3_MIN_TRANSITIONS},
-           "D1": d1(dev, stats), "D2": d2(dev, stats, cands), "D3": d3(dev), "D4": d4(dev)}
+           "D1": d1(dev, stats), "D2": d2(dev, stats), "D3": d3(dev), "D4": d4(dev)}
     if val is not None:
         sv = {name: baseline_stat(val, name) for name in BASELINES}
-        Sd = dev.stability()
-        cv = {f"pi1-{v}": fit_all_predict(dev, val, v, Sd, FROZEN_C[v]) for v in ("x", "hx")}
-        rep["D2_validation_exposed"] = d2_validation_exposed(dev, val, stats, sv, cands, cv)
+        rep["D2_validation_exposed"] = d2_validation_exposed(dev, val, stats, sv)
     stop = [k for k in ("D1", "D2") if rep[k]["stop"]]
     rep["decision"] = ("STOP (" + ", ".join(stop) + ")") if stop else "CONTINUE (subject to reviewer GO/STOP)"
     rep["keep_hx_variants"] = rep["D3"]["keep_hx"]

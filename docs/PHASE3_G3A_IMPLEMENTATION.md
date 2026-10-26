@@ -5,7 +5,7 @@ writing D1-D4 and testing them on synthetic fixtures only. Running on real devel
 this implementation. Training, model selection and TEST stay on HOLD.
 
 Files: `src/lookahead/phase3_g3a.py` (logic and loader), `scripts/phase3_g3a.py` (guarded entry point),
-`tests/test_phase3_g3a.py` (45 tests), `scripts/run_phase3_g3a_windows.ps1` (laptop runner; to be used only after
+`tests/test_phase3_g3a.py` (51 tests), `scripts/run_phase3_g3a_windows.ps1` (laptop runner; to be used only after
 sign-off).
 
 ## Crosswalk: frozen specification → code → test
@@ -22,41 +22,47 @@ sign-off).
 | **D1** (ii) accuracy-budget oracle, the exact algorithm, may keep wrong early answers, ties by doc_id; (i) stable-final for reference (plan 7) | `accuracy_budget_oracle`, `stable_final_oracle` | **Brute-force optimality on 25 random instances**; the worked example including the tie-break; equality with Gate 1's `stable_oracle` |
 | D1 stop: ceiling (ii) − B_pb < 0.05, B_pb on all development data (plan 7, A1.7) | `d1`, `d1_stop`; exactly 0.05 continues | `test_d1_stop_boundary`, `test_d1_report_…` |
 | D1 non-binding Δ_oracle-readout (A2.4) | `d1()["nonbinding_oracle_minus_best_baseline"]` | `test_d1_report_and_nonbinding_quantity` |
-| **D2** candidates π1-x and π1-hx: family-1 per-loop L2 logistic on the stability target S_t, with Gate 2's **frozen** C (x 1.0, hx 0.001; checked against `results/gate2/frozen_selection.json`). 5-fold cross-fitted, then (τ_b, m_b) chosen on four folds' out-of-fold statistics and evaluated on the fifth, rotated (plan 6, plan 7) | `candidate_stats_crossfit`, `crossfit`, `d2`. Fitting uses all six benchmarks; selection is per benchmark (A1.2) | dry run |
+| **D2** candidates π1-x and π1-hx: family-1 per-loop L2 logistic on the stability target S_t, with Gate 2's **frozen** C (x 1.0, hx 0.001; checked against `results/gate2/frozen_selection.json`). (τ_b, m_b) are chosen on four folds' out-of-fold statistics and evaluated on the fifth, rotated (plan 6, plan 7). **Fully nested (rev 2):** inside each outer fold k, the selection-stage statistics come from an inner cross-fit over the four selection folds only, and fold k's statistics from models fitted on all four | `outer_fold` (with `crossfit(within=…)`), `d2`. Fitting uses all six benchmarks; selection is per benchmark (A1.2) | `test_outer_fold_selection_is_untouched_by_anything_in_the_held_out_fold` (k = 0, 3), `test_the_old_whole_data_crossfit_would_have_leaked`, `test_d2_methods_are_paired_on_identical_held_out_rows` |
 | D2 comparator: baselines B_pb, native-pb and the seven readouts, each selected on the selection folds. Eligible if qualified there; strongest by selection-fold macro saving, ties by name; only its held-out saving is used; improvement = mean over folds of the paired difference. Also reported: vs B_pb, and the conservative "best on held-out" (A2.4) | `d2` uses the **frozen** `nested_comparator` | `test_d2_comparator_is_chosen_on_selection_folds_…` |
 | D2 stop < 0.02 (plan 7, A2.4) | `d2_stop` (OP2 below) | `test_d2_stop_boundary_…` |
-| D2 validation as an exposed second estimate (plan 7) | `d2_validation_exposed`: everything selected and fitted on all development data, evaluated on Phase 1 validation. Reported only | dry run |
-| **D3** WC vs CW, adjacent and to-final, h_t vs x, within benchmark and loop, out of fold; keep hx iff h > x in ≥ half of the cells with ≥ 30 transitions (three primary benchmarks) (plan 7, A1.7) | `d3`, `keep_hx` (OP5, OP6) | `test_d3_keep_rule_boundary` |
+| D2 validation as an exposed second estimate (plan 7) | `validation_selection` takes no validation argument: models, (τ_b, m_b) and comparator are all chosen on development data. `d2_validation_exposed` then evaluates once on Phase 1 validation. Reported only | `test_validation_estimate_selection_never_reads_validation` |
+| **D3** WC vs CW, adjacent and to-final, h_t vs x, within benchmark and loop, out of fold; keep hx iff h > x in ≥ half of the cells with ≥ 30 transitions (three primary benchmarks) (plan 7, A1.7) | `d3`, `keep_hx`. Decision method `indirect`: Gate 2's estimand P(WC) − P(CW), with Gate 2's recorded C (checked against `validation_report.json`). `direct` is reported as information. Every cell's status is reported (OP5, OP6) | `test_d3_keep_rule_boundary`, `test_d3_reports_both_methods_and_cell_status` |
 | **D4** predictability of c_t, c_4 and Δ_t, informative only (plan 7) | `d4` (OP7) | dry run |
 | Determinism; no overwrite; frozen inputs pinned; provenance | Fixed seeds, as in Gate 2. The script refuses to overwrite and checks plan v1.1, A1, the readout module, the DEV+ check report (passed) and the Gate 2 frozen C. The report records code hashes, the git commit and every data-file sha256 | `test_end_to_end_synthetic_dry_run` (repeat run identical); script `--synthetic` refusal checked |
 
-## Open points: implementation choices the frozen documents do not settle (OPEN_POINTS in the code)
-Each is stated here and written into the report. **The reviewer should confirm or change each one before any real run.** None
-can change after it.
-1. **OP1, net vs gross saving at G3a.** A2.4 says "macro net saving", but ρ_b is measured only at G3b (plan 5a). So G3a uses
-   gross saving (ρ = 0) for every policy and baseline.
-2. **OP2, D2 with two candidates.** Stop iff **both** π1-x and π1-hx improve by less than 0.02 on the A2 comparator. Phase 3
-   continues if either reaches 0.02. Taking the better of two is mildly optimistic; the alternative would be to pre-name one
-   candidate.
-3. **OP3, grid pool.** The quantiles pool the statistic over the ok questions of all six benchmarks in the selection rows.
-   In D2 that means the selection folds only.
-4. **OP4, D1's non-binding baseline.** It is chosen on all development data, because D1 has no held-out fold.
-5. **OP5, D3 model.** A direct WC (1) vs CW (0) classifier on each loop's changing transitions.
-   - Per-loop L2 logistic on h_t or on x_t.
-   - C is chosen by inner CV over the Gate 2 C grid on the training folds.
-   - Out of fold over `lh-fold-v1`, fitted on all six benchmarks; AUROC within (benchmark, loop).
-   - This replaces Gate 2's indirect "P(WC) − P(CW)" from two separate probes.
-6. **OP6, D3 cells.** A cell is (kind, benchmark, loop), with kind ∈ {adjacent, to-final}, over the three primary
-   benchmarks.
-   - A cell counts if it has ≥ 30 WC+CW transitions and both classes.
-   - With no counted cell, the hx variants are **not** kept.
-7. **OP7, D4 model.** It uses the frozen Gate 2 C (x 1.0, hx 0.001) instead of inner CV, to bound the compute. Informative
-   only.
-8. **OP8, failed questions in the oracles.** They exit at loop 4 and count wrong, as under every policy. None are expected:
-   every DEV+ and Phase 1 question has status ok.
+## Open points: reviewer resolutions (G3a implementation review, 2026-10-26), locked before any real run
+| point | resolution |
+|---|---|
+| OP1 gross vs net | **Accepted provisionally.** G3a uses gross saving (ρ = 0). D2 is printed and reported as a "gross-saving screen", not as evidence of net improvement |
+| OP2 two D2 candidates | **Accepted provisionally, locked.** STOP iff both π1-x and π1-hx have improvement < 0.02, so either may pass |
+| OP3 grid pool | **Accepted.** It matches the frozen `phase3_readouts.grid`, which pools over the supplied ok rows and the defined loops |
+| OP4 D1 baseline | **Accepted** as descriptive and non-binding |
+| OP5 D3 model | **Needs sign-off.** The reviewer noted that the direct classifier changes the estimand. Now proposed: the decision uses the **indirect** Gate 2 estimand, P(WC) − P(CW) from two per-loop probes fitted on all ok rows with Gate 2's recorded per-loop C. To-final probes reuse the same C. The direct classifier is reported beside it as information |
+| OP6 D3 cells | **Accepted provisionally.** Every cell's status (counted, too_few, empty or unscorable) and the counts over the primary cells are reported |
+| OP7 D4 regularization | **Accepted** (informative only) |
+| OP8 failed questions | **Accepted** |
+
+## Revision 2: the reviewer's required fixes
+1. **D2 outer-fold isolation (critical).** Rev 1 cross-fitted the candidate statistics once over all five folds. A
+   selection-fold statistic could therefore come from a model trained on the outer held-out fold. Now `outer_fold(k)` does
+   three things:
+   - it inner-cross-fits the candidates over the four selection folds only;
+   - it fits the outer models on all four selection folds, and only to score fold k;
+   - it selects every method's (τ_b, m_b), grid and comparator on selection rows only.
+   This is the strict reading of the frozen wording ("chosen on four folds' out-of-fold statistics"). Rev 1 followed the
+   loose reading.
+2. **Contamination test.** It replaces every label, feature, hidden state and option score in held-out fold k with random
+   values. Every selected (τ_b, m_b), selection saving, eligibility flag, comparator, outer-model sha256 and
+   selection-statistic sha256 must stay identical. It is checked for k = 0 and k = 3, and also checks that the held-out
+   evaluation itself does change. A second test shows that the rev 1 whole-data cross-fit would have failed it.
+3. **Paired comparisons.** `d2` asserts that every method is evaluated on identical held-out rows in every fold, and a test
+   checks this.
+4. **OP1-OP8** are documented above and in the code (`OPEN_POINTS`, written into the report).
+5. **Validation estimate.** It is checked separately for leakage: selection is a function that does not receive validation
+   data, and a test perturbs validation and finds every selection unchanged.
 
 ## Synthetic validation (no real outcome evaluated)
-- 45 tests pass.
+- 51 G3a tests pass, plus the 13 frozen readout tests.
 - `python scripts/phase3_g3a.py --synthetic OUT.json` runs the whole script path on synthetic data and writes a report of
   the real format. The numbers it prints are synthetic and mean nothing.
 - The frozen-input check passes against the committed files.
@@ -64,8 +70,8 @@ can change after it.
 ## Expected cost on the laptop
 CPU only:
 - The readout statistics: 7 × ~26k questions.
-- D2 cross-fitting: 5 folds × 3 loops × 2 variants.
-- D3: small subsets with inner CV.
+- D2, fully nested: per outer fold, 4 inner fits plus 1 outer fit, × 3 loops × 2 variants, so about 75 hx fits.
+- D3 indirect: 2 kinds × 2 targets × 2 variants × 5 folds × 3 loops (60 h fits); direct: small subsets with inner CV.
 - D4: 30 hx fits at C = 0.001.
 
-Estimated 20-60 minutes, and about 1 GB of RAM for the hidden states.
+Estimated 40-120 minutes, and about 1-2 GB of RAM.

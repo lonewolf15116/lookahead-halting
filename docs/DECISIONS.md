@@ -244,3 +244,9 @@
   - It reuses the frozen A2 readout module unchanged (hash-checked) and Gate 2's verified reader and logistic fit.
   - Eight implementation choices the frozen documents leave open (OP1-OP8) are listed for confirmation before any real run.
   - Synthetic dry run only; no real outcome evaluated.
+- 2026-10-26 Reviewer "G3a implementation review — preliminary verdict": HOLD on the real run, because of D2 outer-fold leakage. Revision 2:
+  - D2 is now fully nested: inner cross-fit on the four selection folds; outer models score the held-out fold only.
+  - A contamination test randomizes everything in the held-out fold; selections, comparator, model and statistic hashes stay identical. A second test shows the rev 1 whole-data cross-fit would have failed it.
+  - Pairing is asserted; the validation estimate's selection never receives validation data (tested).
+  - OP1-OP8 are locked with the reviewer's resolutions. OP5 is still to be signed off: D3 decides with Gate 2's indirect estimand, P(WC) - P(CW) with Gate 2's recorded C (checked against validation_report.json), and reports the direct classifier as information.
+  - 51 G3a tests and 13 readout tests pass. Not run on real data.
