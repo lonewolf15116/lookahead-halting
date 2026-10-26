@@ -227,3 +227,7 @@
   - Correction to the previous entry: float32 is deterministic across both D-a2 runs (PIQA 1.1945e-4 both times); it differs from D-a, whose float32 pass followed a bf16 pass on the same model.
   - Cross-precision: the float32 packed path is further from float64 (max 1.38e-4) than the float32 context-only path (max 2.3e-5).
   - The D-a FAIL stands; awaiting the reviewer's decision on the documented PIQA deviation and the full extraction.
+- 2026-10-26 Reviewer "D-a2 numerical PASS verified": **GO for the full Phase 3 extraction** (extraction only; training and sealed TEST evaluation stay on HOLD). A1 and A2 are unchanged.
+  - The documented PIQA D-a deviation is accepted and the D-a2 blocker released. The D-a FAIL remains recorded as valid.
+  - Conditions met: (1) the procedural deviation (the 2eea88d fix run before confirmation) is recorded in the D-a2 result entry; (2) the committed report equals the reviewed attachment. The sha256 d84c0fad… is the same for the laptop original, the committed copy at 8ee65ed and the attachment sent.
+  - Still open, not blocking: the cause of the float32 difference between the D-a and D-a2 setups. The bf16 packed-path sensitivity of rankings and halting decisions is to be measured by D-b, non-binding, after D1-D4.
