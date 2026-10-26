@@ -323,3 +323,9 @@
   - The frozen TEST id list itself is checked for duplicate ids. In the test, the duplicated list is also caught earlier by its manifest hash.
   - The reviewer advised NOT deleting the local frozen.json and pi1x_models.npz: on the laptop they are to be moved aside and hash-compared, not deleted.
   - 26 TEST-script tests; all five suites (128 tests) pass. New bundle sha256 c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568 (24 files). Not run.
+
+## 2026-10-26 — C1 TEST rev 4: independent hash check, scope of the approval hash, pre-run package snapshot (TEST still SEALED)
+- An independent recomputation from the zip of commit b217523 gives bundle sha256 c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568 (24 files), matching the approval hash.
+- Wording correction: the approval hash covers scripts/c1_test_run.py and the 23 src/lookahead/*.py modules (24 files). It does NOT cover the PowerShell runner (which only runs pip install -e ., the tests and the script), the tests, or external libraries. There is no dynamic code loading (the only importlib use is a version lookup in confirm.py).
+- Package snapshot before the run (pip freeze, UTF-8), sha256 436fa628c30553162650cce8c25613463d9bc55bfef6960f41672009389e1a76: numpy 2.5.4, pandas 3.0.6, pyarrow 26.0.0, scikit-learn 1.9.1, scipy 1.18.1, torch 2.11.0+cu128. A "post" file taken at the same time is premature and is NOT evidence; it is overwritten after the run. Because the runner calls pip install -e . first, comparing pre and post shows whether the recorded package list changed. It cannot show transient changes during execution.
+- Status: HOLD; awaiting the reviewer's explicit GO. No code change; the approval hash is unchanged.
