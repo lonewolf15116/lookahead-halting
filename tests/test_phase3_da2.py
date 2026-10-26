@@ -359,3 +359,13 @@ def test_close_restores_parameters_left_converted_and_still_verifies_bits():
     s = F.Float64Streaming(m)
     m.weight.data = m.weight.data.to(torch.float64)  # simulate a restoration that never happened
     assert s.close() and s.restored_at_close == 1 and m.weight.dtype == torch.bfloat16
+
+
+@pytest.mark.parametrize("device", ["cpu", _CUDA])
+def test_reference_checks_run_on_the_model_device(device):
+    """Regression (laptop run 2026-10-26): rotary_check mixed the CPU-resident original_inv_freq with a CUDA tensor."""
+    m = _tiny_ouro().to(device)
+    F.Float64Streaming(m)
+    F.patch_float64(m)
+    assert F.rmsnorm_check(m.model.norm) <= 1e-14
+    assert F.rotary_check(m.model.rotary_emb)["ok"]

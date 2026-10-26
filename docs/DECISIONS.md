@@ -216,3 +216,9 @@
   - 23 tests pass in the cloud. The real-model run waits for the laptop CUDA test run.
 - 2026-10-26 Reviewer "D-a2 Safeguard Review" (098c136): GO for laptop CUDA validation, then the `stream-gpu` diagnostic if the CUDA tests pass. The D-a FAIL stands; the D-a2 report is written separately. The full extraction, D1-D4, training and TEST stay on HOLD.
   - Runner hardening to enforce "no unexpected skips": in stream-gpu mode it sets LH_REQUIRE_CUDA=1, so a missing GPU fails the 3 CUDA tests instead of skipping them (verified: 3 fail without a GPU). No other change.
+- 2026-10-26 D-a2 stream-gpu, first laptop run (fba9991): all 26 tests passed with no skips. The float32 stage completed:
+  - PIQA max 1.194e-4 (D-a 1.173e-4); per loop L1 9.3e-6, L2 3.1e-5, L3 1.2e-4, L4 3.7e-5.
+  - Social IQa max 2.10e-5 (D-a 3.10e-5).
+  - The float32 GPU maxima therefore do NOT reproduce D-a exactly from run to run. The PIQA maximum peaks at loop 3, not loop 4.
+  - The run then crashed in `rotary_check` before any float64 computation: `original_inv_freq` is a plain attribute that stays on the CPU, and it was compared with a CUDA tensor. The CPU-only cloud tests could not catch this. No report was written.
+  - Fix: compute the reference on the stored tensor's device (one line), plus a regression test that also runs on CUDA. Nothing else changed; criterion, rows and selection unchanged.

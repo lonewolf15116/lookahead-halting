@@ -104,8 +104,8 @@ def rmsnorm_check(norm) -> float:
 
 def rotary_check(rot) -> dict:
     """The float64 inverse frequencies must equal the module's stored buffer to float32 precision (same function)."""
-    inv = inv_freq64(rot.config, rot.inv_freq.device)
     stored = rot.original_inv_freq if hasattr(rot, "original_inv_freq") else rot.inv_freq
+    inv = inv_freq64(rot.config, stored.device)  # original_inv_freq is a plain attribute and may stay on the CPU
     rel = float(((stored.to(F64) - inv).abs() / inv.abs()).max())
     return {"rope_type": getattr(rot, "rope_type", "default"), "attention_scaling": float(rot.attention_scaling),
             "inv_freq_rel_diff_vs_stored": rel, "ok": rel <= 1e-6 and getattr(rot, "rope_type", "default") == "default"}
