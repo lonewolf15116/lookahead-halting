@@ -341,7 +341,7 @@ Accuracy and exit-loop outcomes obtained this way would be exact for a truncated
 
 The check therefore does not establish bitwise reproducibility. It also does not establish agreement on the test set, or any latency or runtime saving. We also did not measure whether halting decisions change under other numerical paths (Section 7.5). The loop runner repeats the layer stack on a single packed sequence, the input to loop \(t\) is the normalised output of loop \(t-1\), attention at loop \(t\) uses keys and values computed from that loop's own input (the runner keeps no cache across loops), and the gate CDF at loop \(t\) is a function of the gate logits at loops up to \(t\). The statistics used by the policies at loop \(t\) (option scores, \(p_t\), entropies, probe features, the divergence from \(p_{t-1}\), hidden-state differences) are functions of loops up to \(t\). The stability label \(S_t\) looks at later loops, but only as a training label on development data; it is never an input at decision time.
 
-Compute savings are of a different kind. They are simulated from exit-loop counts, \(1 - e/4\), and the probe overhead \(\rho\) was measured separately at freeze time, in isolation, on development questions (Table 1). They are therefore an estimate of the savings a truncated implementation could realise, under the assumption that a skipped loop costs what a measured loop costs. They are not observed end-to-end savings, and no wall-clock time of a halting policy was measured.
+Compute savings are of a different kind. They are simulated from exit-loop counts, \(1 - e/4\), and the probe overhead \(\rho\) was measured separately at freeze time, in isolation, on development questions (Table 1). They are therefore an estimate of the savings a truncated implementation could realise, under the assumption that a skipped loop costs what a measured loop costs. The reported policy savings are retrospective estimates rather than observed end-to-end savings. Separately, D-t collected descriptive batch-size-1 timings on 600 development questions; these timings are not a held-out latency evaluation and support no general runtime-speedup claim.
 
 \section{Experimental design and pre-registration}
 
@@ -756,7 +756,7 @@ We have no causal analysis. The following are hypotheses for future work {[}P{]}
 \item
   \textbf{Retrospective evaluation and simulated savings.} Policies were applied to stored full-depth traces. Exactness under truncation was checked
   by an executed truncated run on 600 development questions (D-t; all 1,800 policy-question decisions agreed), not on the test set, and the per-loop statistics were not bitwise reproducible across GPU runs (Section 3.6). Savings are loop counts plus an overhead measured separately at freeze time.
-  No end-to-end time was measured. A loop is assumed to cost the same whether or not later loops follow, and the native gate is assigned zero
+  Apart from the descriptive D-t timings on development data, no held-out end-to-end latency evaluation of the halting policies was performed. A loop is assumed to cost the same whether or not later loops follow, and the native gate is assigned zero
   controller cost.
 \item
   \textbf{Numerical path.} The planned check of whether halting decisions agree across bf16 numerical paths (Phase 3 check D-b) never ran, because
