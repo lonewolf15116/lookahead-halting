@@ -329,3 +329,13 @@
 - Wording correction: the approval hash covers scripts/c1_test_run.py and the 23 src/lookahead/*.py modules (24 files). It does NOT cover the PowerShell runner (which only runs pip install -e ., the tests and the script), the tests, or external libraries. There is no dynamic code loading (the only importlib use is a version lookup in confirm.py).
 - Package snapshot before the run (pip freeze, UTF-8), sha256 436fa628c30553162650cce8c25613463d9bc55bfef6960f41672009389e1a76: numpy 2.5.4, pandas 3.0.6, pyarrow 26.0.0, scikit-learn 1.9.1, scipy 1.18.1, torch 2.11.0+cu128. A "post" file taken at the same time is premature and is NOT evidence; it is overwritten after the run. Because the runner calls pip install -e . first, comparing pre and post shows whether the recorded package list changed. It cannot show transient changes during execution.
 - Status: HOLD; awaiting the reviewer's explicit GO. No code change; the approval hash is unchanged.
+
+## 2026-10-26 — C1 TEST executed once: PASS (docs/C1_REPORT.md)
+- Reviewer GO received. The local frozen files were moved to results/c1_local_backup, the repo was pulled to 196a882, and the frozen hashes matched (65728e16…, 72f15508…).
+- The run: marker b22e2d16… (18:18:05Z), report 02ba4b26…. Primary: Δ gross +0.0529 [+0.0488, +0.0571], PASS. Net: +0.0376 [+0.0334, +0.0419] (estimated).
+- Qualifications recorded with the result:
+  - The TEST upper bounds exceed 1 pp: π1-x on CSQA 1.10 and HellaSwag 1.60, native-pb on HellaSwag 1.33.
+  - r-kl ties π1-x: +0.001 [−0.004, 0.007].
+  - Under the point-only rule, π1-x − native-pb = −0.022, replicating G3a.
+  - Out of distribution, π1-x loses 3.26 pp on SIQA (upper bound 4.72) and 0.71 pp on PIQA (upper bound 1.52).
+- A second runner invocation by mistake was refused at preflight because the marker exists. TEST was not re-read. The second transcript overwrote the console log; the first run's output survives in the conversation.
