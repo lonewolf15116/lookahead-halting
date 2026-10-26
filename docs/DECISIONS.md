@@ -298,3 +298,12 @@
   - Self-audit: docs/C1_FREEZE_AUDIT.md.
   - Facts recorded: in-sample dev π1-x 0.246, native-pb 0.193, r-kl 0.243 (secondary); expected half-width 0.0043; ρ_total 0.014-0.050; B_pb weak under the risk rule; OOD pooled level; the point rule favours native-pb.
   - Gap: no git commit recorded in frozen.json (code hashes cover it). TEST is unopened; the guarded TEST script is next, for review.
+- 2026-10-26 Reviewer "C1 frozen-artifact audit": frozen artifacts ACCEPTED (hashes, 3×9 finite coefficients, selections satisfy the rule; in-sample dev Δ +0.0527 is not a TEST result; the expected half-width 0.0043 is only a planning estimate). Authorized: preparing the guarded TEST script for separate review; TEST not to be executed until then.
+  - Written: src/lookahead/c1_test.py, scripts/c1_test_run.py, run_c1_test_windows.ps1, tests/test_c1_test.py (11 tests; 113 across the five suites).
+  - Preflight checks the protocol, frozen.json, the model file, every freeze-time code hash and the approved TEST code bundle before anything else.
+  - The TEST_OPENED marker is created exclusively before any TEST read and is never removed; reruns are refused.
+  - TEST is read only inside a scoped unsealing of the reviewed G3a loader (confirmation paths still refused), with the frozen TEST id list and manifest counts.
+  - Frozen selections are applied unchanged (tested; the module contains no selection or fitting call).
+  - Paired, benchmark-stratified bootstrap: 10,000 resamples, seed 2026. Budget veto first; exhaustive verdict.
+  - Secondaries: net, point rule, every baseline plus the re-selecting strongest, OOD per benchmark, violations.
+  - TEST code bundle sha256: 8085a678aa27ec710020eed683626d2038af076a4ae732eb3cf2b603b4b1a70d. The preflight passes against the real artifacts. Not run.

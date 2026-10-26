@@ -1,0 +1,120 @@
+"""C1 ONE-TIME TEST RUN (docs/C1_PROTOCOL.md C1.7 step 3). Run ONLY after the reviewer approves this script.
+
+    python scripts/c1_test_run.py --approved-code-sha <sha256 of the reviewed TEST code bundle>
+
+Order, enforced:
+  1. Checks, before anything else (any failure exits with code 2 and touches nothing):
+     protocol docs/C1_PROTOCOL.md, results/c1/frozen.json and results/c1/pi1x_models.npz equal their frozen sha256; every
+     code file recorded in frozen.json at freeze is unchanged; the TEST code bundle (src/lookahead/c1_test.py +
+     scripts/c1_test_run.py) equals --approved-code-sha; results/c1/TEST_OPENED.json and results/c1/test_report.json do
+     not exist.
+  2. results/c1/TEST_OPENED.json is created with EXCLUSIVE create (it can never be overwritten) BEFORE any TEST file is
+     opened. From then on TEST counts as opened, even if the run fails; the marker is never deleted by this script.
+  3. TEST is read once (c1_test.load_test inside c1_test.unsealed), the frozen policies are applied, and
+     results/c1/test_report.json is written with exclusive create.
+"""
+import argparse
+import datetime
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+
+from lookahead import c1_test as T
+from lookahead import gate1 as g1
+from lookahead.config import REPO_ROOT
+
+PINNED = {
+    "docs/C1_PROTOCOL.md": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050",
+    "results/c1/frozen.json": "65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f",
+    "results/c1/pi1x_models.npz": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad",
+}
+BUNDLE = ("src/lookahead/c1_test.py", "scripts/c1_test_run.py")
+MARKER = "results/c1/TEST_OPENED.json"
+REPORT = "results/c1/test_report.json"
+
+
+def _sha_norm(p: Path) -> str:
+    return g1.sha256_bytes(p.read_bytes().replace(b"\r\n", b"\n"))
+
+
+def bundle_sha(root: Path) -> str:
+    """sha256 of the TEST code bundle (line endings normalised), in BUNDLE order with a separator."""
+    import hashlib
+
+    h = hashlib.sha256()
+    for f in BUNDLE:
+        h.update(f.encode() + b"\0" + (root / f).read_bytes().replace(b"\r\n", b"\n") + b"\0")
+    return h.hexdigest()
+
+
+def preflight(root: Path, approved_code_sha: str) -> dict:
+    """Every check that must pass before TEST is touched. Raises SystemExit (nothing is written)."""
+    for rel, exp in PINNED.items():
+        p = root / rel
+        if not p.exists():
+            raise SystemExit(f"missing frozen artifact {rel}")
+        if exp not in (g1.sha256_file(p), _sha_norm(p)):
+            raise SystemExit(f"{rel} is not the frozen file")
+    frozen = json.loads((root / "results/c1/frozen.json").read_text(encoding="utf-8"))
+    for rel, recorded in frozen["provenance"]["code"].items():
+        if _sha_norm(root / rel) != recorded:
+            raise SystemExit(f"{rel} changed since the freeze")
+    if bundle_sha(root) != approved_code_sha:
+        raise SystemExit("the TEST code bundle is not the approved one (--approved-code-sha)")
+    for rel in (MARKER, REPORT):
+        if (root / rel).exists():
+            raise SystemExit(f"refusing: {rel} exists; the C1 TEST run is one-time")
+    return frozen
+
+
+def git_commit(root: Path) -> str:
+    try:
+        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
+    except Exception as e:
+        return f"unavailable ({type(e).__name__})"
+
+
+def main(argv=None, *, root: Path | None = None, loader=None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--approved-code-sha", required=True)
+    args = ap.parse_args(argv)
+    root = Path(root or REPO_ROOT)
+    try:
+        frozen = preflight(root, args.approved_code_sha)
+    except SystemExit as e:
+        print(f"PREFLIGHT FAILED (TEST untouched): {e}", file=sys.stderr)
+        return 2
+    marker = {"opened_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "pinned": PINNED,
+              "test_code_bundle_sha256": args.approved_code_sha, "git_commit": git_commit(root),
+              "note": "TEST counts as opened from this moment; this file is never removed"}
+    (root / MARKER).parent.mkdir(parents=True, exist_ok=True)
+    with open(root / MARKER, "x", encoding="utf-8", newline="\n") as f:          # exclusive create, before any TEST read
+        f.write(json.dumps(marker, indent=1, sort_keys=True) + "\n")
+    with np.load(root / "results/c1/pi1x_models.npz") as npz:
+        models = T.load_models(npz)
+    with T.unsealed():
+        test = (loader or T.load_test)(root)
+    rep = T.evaluate_c1(frozen, models, test)
+    rep["provenance"] = {"marker": marker, "test_data_files": test.provenance,
+                         "finished_utc": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    with open(root / REPORT, "x", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(rep, indent=1, sort_keys=True, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o)) + "\n")
+    p = rep["primary"]
+    print(f"VERDICT: {rep['verdict']}")
+    print(f"primary: delta (gross, pi1-x - native-pb) = {p['delta_gross']:+.4f}, 95% CI [{p['ci95'][0]:+.4f}, {p['ci95'][1]:+.4f}]"
+          f"  (delta_min {rep['delta_min']}; L > 0.02: {p['L_above_delta_min']})")
+    for n, t in rep["budget_table"].items():
+        print(f"budget {n:10s} " + "  ".join(f"{b}: loss {v['loss_pp']:.2f} pp (UB {v['upper_bound_95_pp']:.2f}"
+                                             f"{' >1!' if v['upper_bound_over_1pp'] else ''})" for b, v in t.items()))
+    if "secondary_net" in rep:
+        s = rep["secondary_net"]
+        print(f"net (estimated deployment cost): delta {s['delta_net']:+.4f}, 95% CI [{s['ci95'][0]:+.4f}, {s['ci95'][1]:+.4f}]")
+    print(f"report: {root / REPORT}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
