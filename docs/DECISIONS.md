@@ -206,3 +206,7 @@
   - Option 2 built (`--mode stream-gpu`): bf16 weights on the GPU, cast to float64 per module call and restored bit-exactly (checked by sha256), with the existing float64 patches and dtype audit.
   - Test: bit-identical to a model held entirely in float64 on the real Ouro classes (tiny weights). On the laptop the test also runs on CUDA before the diagnostic.
   - Not run; awaiting review.
+- 2026-10-26 Reviewer "D-a2 — Implementation Review": CONDITIONAL GO.
+  - The tiny-model test and the implementation checks are approved; running on the real model needs readable code (repo private, so the source was sent as a file).
+  - Added in response: an op-level audit (TorchDispatchMode) of the whole hidden-state path, and a real-size check that layers 0, 12 and 23 and the final norm, streamed, are bit-identical to resident float64 copies.
+  - Tests: 21 pass here; 3 are CUDA-only and run on the laptop.

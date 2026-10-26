@@ -11,6 +11,7 @@ input is float64 (float32/bf16 behaviour is untouched). The rotary inverse frequ
 same config with the same formula as transformers' default RoPE initialiser; `rotary_check` confirms they equal the stored
 float32 buffer to float32 precision. `DtypeAudit` records every module output that is not float64 during a float64 pass.
 """
+import contextlib
 import sys
 
 import torch
@@ -136,8 +137,9 @@ class Float64Streaming:
     `patch_float64` (no forced-float32 steps) and `DtypeAudit` (no non-float64 module output). `close()` removes the hooks
     and checks that every parameter is back in its original dtype with bit-identical values."""
 
-    def __init__(self, model):
+    def __init__(self, model, audit=None):
         self.model = model
+        self.audit = audit  # an OpAudit, if any: weight casts are bookkeeping, not part of the computation
         self.owners = [m for m in model.modules() if any(True for _ in m.parameters(recurse=False))]
         covered = {id(p) for m in self.owners for p in m.parameters(recurse=False)}
         if covered != {id(p) for p in model.parameters()}:
@@ -158,16 +160,135 @@ class Float64Streaming:
             h.update(name.encode() + str(p.dtype).encode() + p.detach().cpu().contiguous().view(torch.uint8).numpy().tobytes())
         return h.hexdigest()
 
+    def _ctx(self):
+        return self.audit.paused() if self.audit is not None else contextlib.nullcontext()
+
     def _up(self, module, _inputs):
-        for p in module.parameters(recurse=False):
-            p.data = p.data.to(F64)
+        with self._ctx():
+            for p in module.parameters(recurse=False):
+                p.data = p.data.to(F64)
         self.n_casts += 1
 
     def _down(self, module, _inputs, _output):
-        for p in module.parameters(recurse=False):
-            p.data = p.data.to(self.dtypes[id(p)])
+        with self._ctx():
+            for p in module.parameters(recurse=False):
+                p.data = p.data.to(self.dtypes[id(p)])
 
     def close(self) -> bool:
         for h in self.handles:
             h.remove()
         return all(p.dtype == self.dtypes[id(p)] for p in self.model.parameters()) and self._digest() == self.digest
+
+
+# ---------------------------------------------------------------- reviewer concern 2: internal downcasts (op-level audit)
+
+from contextlib import contextmanager  # noqa: E402
+
+from torch.utils._python_dispatch import TorchDispatchMode  # noqa: E402
+
+
+class OpAudit(TorchDispatchMode):
+    """Records every ATen operation (below modules, inside them, inside SDPA's math path) whose floating output is not
+    float64, while inside an `active()` region and not `paused()`. Unlike DtypeAudit it sees internal steps: a module that
+    casts to float32 and back shows up as `_to_copy -> torch.float32`. The D-a2 script makes exactly the hidden-state
+    computation active (OuroLoopRunner.start and .step: embedding, masks, RoPE, every layer, final norm); the vocabulary
+    readout and exit gate, which the comparison does not use, stay outside, and the streamed weight casts are paused."""
+
+    def __init__(self):
+        super().__init__()
+        self.bad: dict = {}
+        self.n_ops = 0
+        self._paused = 0
+        self._active = 0
+
+    @contextmanager
+    def active(self):
+        self._active += 1
+        try:
+            yield
+        finally:
+            self._active -= 1
+
+    @contextmanager
+    def paused(self):
+        self._paused += 1
+        try:
+            yield
+        finally:
+            self._paused -= 1
+
+    def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+        out = func(*args, **(kwargs or {}))
+        if self._active and not self._paused:
+            self.n_ops += 1
+            for t in (out if isinstance(out, (tuple, list)) else (out,)):
+                if torch.is_tensor(t) and t.is_floating_point() and t.dtype != F64:
+                    key = f"{func} -> {t.dtype}"
+                    self.bad[key] = self.bad.get(key, 0) + 1
+        return out
+
+
+@contextmanager
+def active_methods(audit: OpAudit, cls, names):
+    """Run the named methods of `cls` inside the op audit's active region (originals restored afterwards)."""
+    orig = {n: getattr(cls, n) for n in names}
+
+    def wrap(f):
+        def g(*a, **k):
+            with audit.active():
+                return f(*a, **k)
+        return g
+
+    try:
+        for n, f in orig.items():
+            setattr(cls, n, wrap(f))
+        yield
+    finally:
+        for n, f in orig.items():
+            setattr(cls, n, f)
+
+
+# ---------------------------------------------------------------- reviewer concern 3: real-model, real-size check
+
+@contextmanager
+def _hooks_detached(module):
+    saved = [(m, dict(m._forward_pre_hooks), dict(m._forward_hooks)) for m in module.modules()]
+    try:
+        for m, _, _ in saved:
+            m._forward_pre_hooks.clear()
+            m._forward_hooks.clear()
+        yield
+    finally:
+        for m, pre, post in saved:
+            m._forward_pre_hooks.update(pre)
+            m._forward_hooks.update(post)
+
+
+def resident_float64_copy(module):
+    """A hook-free deep copy of `module` held entirely in float64 (for comparison with the streamed original)."""
+    import copy
+
+    with _hooks_detached(module):
+        res = copy.deepcopy(module)
+    return res.to(F64)
+
+
+@torch.no_grad()
+def real_layer_equivalence(runner, state, layer_indices=(0,)) -> dict:
+    """On the REAL model with REAL dimensions and kernels: each listed decoder layer and the final norm, streamed, must be
+    bit-identical to a resident float64 copy of the same module on the same float64 input. `state` is a float64 LoopState."""
+    out = {}
+    h = state.hidden
+    for i in layer_indices:
+        layer = runner.core.layers[i]
+        kw = dict(attention_mask=state.masks[layer.attention_type], position_ids=state.position_ids, past_key_value=None,
+                  use_cache=False, cache_position=state.cache_position, position_embeddings=state.position_embeddings,
+                  current_ut=state.loop)
+        a = layer(h, **kw)
+        b = resident_float64_copy(layer)(h, **kw)
+        out[f"layer{i}"] = {"identical": bool(torch.equal(a, b)), "maxabs": float((a - b).abs().max()), "dtype": str(a.dtype)}
+        h = a
+    n_s, n_r = runner.core.norm(h), resident_float64_copy(runner.core.norm)(h)
+    out["final_norm"] = {"identical": bool(torch.equal(n_s, n_r)), "maxabs": float((n_s - n_r).abs().max()), "dtype": str(n_s.dtype)}
+    out["ok"] = all(v["identical"] and v["dtype"] == str(F64) for v in out.values() if isinstance(v, dict))
+    return out

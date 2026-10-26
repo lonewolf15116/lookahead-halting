@@ -231,3 +231,75 @@ def test_streamed_float64_is_bit_identical_to_a_full_float64_model_and_restores_
     assert stream.close()  # every weight back to bf16 with identical bits
     assert all(p.dtype == torch.bfloat16 for p in st.parameters())
 
+
+
+# ---------------------------------------------------------------- reviewer implementation review: internal downcasts, real-size check
+
+class _Float32InsideRMSNorm(torch.nn.Module):  # Ouro's unpatched RMSNorm: float64 in, float64 out, float32 inside
+    def __init__(self, n):
+        super().__init__()
+        self.weight = torch.nn.Parameter(torch.ones(n, dtype=torch.float64))
+        self.variance_epsilon = 1e-6
+
+    def forward(self, hidden_states):
+        input_dtype = hidden_states.dtype
+        hidden_states = hidden_states.to(torch.float32)
+        variance = hidden_states.pow(2).mean(-1, keepdim=True)
+        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)
+        return self.weight * hidden_states.to(input_dtype)
+
+
+def test_op_audit_catches_an_internal_downcast_that_the_module_audit_misses():
+    n = _Float32InsideRMSNorm(8)
+    x = torch.randn(2, 8, dtype=torch.float64)
+    mod_audit = F.DtypeAudit(n)
+    with F.OpAudit() as ops, ops.active():
+        y = n(x)
+    mod_audit.close()
+    assert y.dtype == torch.float64 and mod_audit.bad == {}  # output-level audit is blind to it
+    assert any("float32" in k for k in ops.bad)  # op-level audit sees the float32 steps inside
+    with F.OpAudit() as ops2:  # outside an active region nothing is recorded
+        n(x)
+    assert ops2.bad == {} and ops2.n_ops == 0
+
+
+@pytest.mark.parametrize("device", ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(),
+                                                                                         reason="no GPU"))])
+def test_hidden_state_path_has_no_non_float64_op_when_patched_and_streamed(device):
+    from lookahead.ouro_adapter import OuroLoopRunner
+
+    m = _tiny_ouro().to(device)  # (sensitivity to internal downcasts is shown by the RMSNorm test above)
+    with F.OpAudit() as ops:
+        stream = F.Float64Streaming(m, ops)
+        F.patch_float64(m)
+        with F.active_methods(ops, OuroLoopRunner, ("start", "step")):
+            states = _all_states(m, device)
+    assert stream.close()
+    assert ops.n_ops > 0 and ops.bad == {}, ops.bad
+    assert all(s.dtype == torch.float64 for s in states)
+
+
+@pytest.mark.parametrize("device", ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(),
+                                                                                         reason="no GPU"))])
+def test_real_layer_equivalence_check_passes_for_streaming_and_detects_a_difference(device):
+    from lookahead.ouro_adapter import OuroLoopRunner
+
+    m = _tiny_ouro().to(device)
+    stream = F.Float64Streaming(m)
+    F.patch_float64(m)
+    r = OuroLoopRunner(m)
+    st = r.start(torch.tensor([[5, 17, 99, 3, 250, 11]], device=device))
+    res = F.real_layer_equivalence(r, st, (0, 1))
+    assert res["ok"] and res["layer0"]["identical"] and res["final_norm"]["identical"]
+    stream.close()
+
+    class Broken(F.Float64Streaming):  # a faulty streamer: float64 weights that are not the stored values
+        def _up(self, module, _inputs):
+            for p in module.parameters(recurse=False):
+                p.data = p.data.to(torch.float64) * (1 + 1e-12)
+
+    m2 = _tiny_ouro().to(device)
+    Broken(m2)
+    r2 = OuroLoopRunner(m2)
+    st2 = r2.start(torch.tensor([[5, 17, 99, 3, 250, 11]], device=device))
+    assert not F.real_layer_equivalence(r2, st2, (0,))["ok"]

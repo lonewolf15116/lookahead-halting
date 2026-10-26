@@ -205,25 +205,40 @@ def main(argv=None) -> int:
     else:
         model, _ = load_ouro(device="cuda")
         stream = F.Float64Streaming(model)
+    ops = F.OpAudit()
+    if stream is not None:
+        stream.audit = ops  # weight casts are bookkeeping: paused in the op audit
     patched = F.patch_float64(model)
     rot = model.model.rotary_emb
     ref_checks = {"patched": patched, "rmsnorm_rel_err": F.rmsnorm_check(model.model.norm), "rotary": F.rotary_check(rot)}
     ref_checks["ok"] = (bool(patched["rmsnorm"]) and bool(patched["rotary"]) and ref_checks["rmsnorm_rel_err"] <= 1e-14
                         and ref_checks["rotary"]["ok"])
     report["conditions_float64"] = conditions(torch, model)
+    from lookahead.ouro_adapter import OuroLoopRunner
+
+    if stream is not None:  # reviewer concern 3: real layers at real size, streamed vs resident float64, same input
+        try:
+            r0 = OuroLoopRunner(model)
+            st0 = r0.start(torch.tensor([sel[0].context_enc], device=next(model.parameters()).device))
+            n_layers = model.config.num_hidden_layers
+            ref_checks["real_layer_equivalence"] = F.real_layer_equivalence(r0, st0, (0, n_layers // 2, n_layers - 1))
+        except Exception as e:
+            ref_checks["real_layer_equivalence"] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
+        ref_checks["ok"] = ref_checks["ok"] and ref_checks["real_layer_equivalence"]["ok"]
     audit = F.DtypeAudit(model)
     f64_rows, cross, complete = [], [], True
     try:
-        for q in sel:
-            rows = D.compare(model, [q])
-            f64_rows += rows
-            st = _states(model, q, D, torch)
-            for t in range(LOOPS):
-                ref = st["ctx"][t]
-                cross.append({"doc_id": q.doc_id, "loop": t + 1,
-                              "f32_packed_vs_f64_ctx_maxabs": float((f32_states[q.doc_id]["packed"][t] - ref).abs().max()),
-                              "f32_ctx_vs_f64_ctx_maxabs": float((f32_states[q.doc_id]["ctx"][t] - ref).abs().max())})
-            print(f"float64  {q.doc_id}: packed vs ctx max {max(r['packed_vs_ctx_maxabs'] for r in rows):.3g}", flush=True)
+        with ops, F.active_methods(ops, OuroLoopRunner, ("start", "step")):  # op audit = the hidden-state computation
+            for q in sel:
+                rows = D.compare(model, [q])
+                f64_rows += rows
+                st = _states(model, q, D, torch)
+                for t in range(LOOPS):
+                    ref = st["ctx"][t]
+                    cross.append({"doc_id": q.doc_id, "loop": t + 1,
+                                  "f32_packed_vs_f64_ctx_maxabs": float((f32_states[q.doc_id]["packed"][t] - ref).abs().max()),
+                                  "f32_ctx_vs_f64_ctx_maxabs": float((f32_states[q.doc_id]["ctx"][t] - ref).abs().max())})
+                print(f"float64  {q.doc_id}: packed vs ctx max {max(r['packed_vs_ctx_maxabs'] for r in rows):.3g}", flush=True)
     except Exception as e:  # recorded; the interpretation becomes "unresolved"
         complete = False
         report["failures"].append(f"float64 run incomplete: {type(e).__name__}: {e}")
@@ -233,6 +248,9 @@ def main(argv=None) -> int:
             ref_checks["stream_weights_restored_bit_identical"] = stream.close()
             ref_checks["stream_module_casts"] = stream.n_casts
             ref_checks["ok"] = ref_checks["ok"] and ref_checks["stream_weights_restored_bit_identical"]
+    ref_checks["op_audit_non_float64_ops"] = ops.bad
+    ref_checks["op_audit_ops_checked"] = ops.n_ops
+    ref_checks["ok"] = ref_checks["ok"] and not ops.bad and ops.n_ops > 0
     ref_checks["dtype_audit_non_float64_outputs"] = audit.bad
     ref_checks["dtype_audit_calls"] = audit.n_calls
     ref_checks["ok"] = ref_checks["ok"] and not audit.bad

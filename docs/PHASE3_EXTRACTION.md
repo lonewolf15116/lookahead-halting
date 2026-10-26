@@ -340,3 +340,33 @@ overwrite it.
 - **Unchanged in this mode:** the criterion (≤ 1e-9), the D-a rows, the selection by float32 difference, the float32 GPU
   stage and the report format. The report records `float64_mode`.
 - **Run command, only after reviewer approval:** `run_phase3_da2_windows.ps1 -Mode stream-gpu`.
+
+### D-a2 implementation review (2026-10-26): CONDITIONAL GO, and the checks added in response
+- **Decision.** The reviewer accepts the design. They approve running the tiny-model equivalence test and the implementation
+  checks. Running on the real model needs readable code first: the repository is private, so the reviewer received the full
+  source as a file. Full extraction stays on HOLD.
+- **Concern 1: exact weight conversion does not guarantee identical arithmetic.** Agreed. The equivalence claim rests on the
+  bit-identity tests, not on the roundtrip argument.
+  - Tiny model: on the CPU here, and on CUDA in the laptop's pytest step before the run.
+  - Real model: concern 3 below.
+- **Concern 2: internal downcasts.** Added `OpAudit`, a `TorchDispatchMode`. It sees every ATen operation, including those
+  inside modules and inside SDPA's math path, and records each one whose floating output is not float64.
+  - Its active region is exactly the hidden-state computation: `OuroLoopRunner.start` and `.step` (embedding, masks, RoPE,
+    all 24 layers, final norm). The vocabulary readout and exit gate, which the comparison does not use, are outside it.
+    The streamed weight casts are paused.
+  - The result is "unresolved" if any op is recorded, or if no ops were checked.
+  - Test: on Ouro's own unpatched RMSNorm, the module-output audit sees nothing, because it is float64 in and float64 out.
+    The op audit records the float32 steps inside. With the patches, the tiny real-Ouro hidden-state path records no
+    non-float64 op, on the CPU and on CUDA.
+- **Concern 3: tiny-model equivalence is not full-model equivalence.** Added `real_layer_equivalence`, which runs in
+  `stream-gpu` mode before the diagnostic, on the real model at real size with real kernels.
+  - Layers 0, 12 and 23 and the final norm are each run streamed, and also as a resident float64 copy of the same module,
+    on the same float64 input: the first selected question's embedded context.
+  - They must be bit-identical, or the result is "unresolved".
+  - Test: it passes for streaming, and it fails for a deliberately faulty streamer whose float64 weights differ from the
+    stored values by 1e-12 relative.
+- **What still remains unverified, to be stated in the D-a2 report:**
+  - A whole-model resident float64 run on the real model has never been executed: it does not fit in memory.
+  - Equivalence on the real model is shown per module, on three of 24 layers plus the final norm, and with no
+    non-float64 op anywhere in the hidden-state path.
+  - A float64 match on 10 selected PIQA questions supports a numerical explanation for those questions only.
