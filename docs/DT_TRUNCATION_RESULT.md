@@ -66,3 +66,12 @@ Pre-declared reading:
 - If repeats differ under the defaults and agree under deterministic settings, the cause is GPU nondeterminism.
 - If repeats agree under the defaults, nondeterminism is ruled out, and the D-t differences need a different explanation, which would then be
   investigated before any wording is final.
+
+## D-t2 result (2026-10-27; reviewer GO; frozen procedure, commit cc3236c)
+
+- **Default mode:** deterministic algorithms off and `CUBLAS_WORKSPACE_CONFIG` unset. 16 of 20 HellaSwag questions showed bit differences across 5
+  full-depth repeats: up to 6.1×10⁻⁵ in option log-likelihoods, 3.8×10⁻⁸ in conf and 1.5×10⁻⁸ in ent. vent, gate and CDF were identical.
+- **Deterministic mode:** `torch.use_deterministic_algorithms(True)` with `CUBLAS_WORKSPACE_CONFIG=:4096:8` set before CUDA initialised. Enabled
+  without error, and 0 of 20 questions differed.
+- **Pre-declared reading:** "default differs, deterministic agrees: evidence supports GPU nondeterminism as a cause".
+- **Scope:** this establishes reproducibility only within the deterministic configuration that was tested. D-t's P-2 remains FAIL as recorded.
