@@ -260,3 +260,9 @@
   - D4: Δ_t is barely predictable.
   - Exposed validation agrees (−0.029 and −0.049 against native-pb).
   - Decision computed by the frozen code: STOP (D2). Nothing retried or changed. Write-up: docs/PHASE3_G3A_RESULT.md. Awaiting the reviewer's verdict. G3b and TEST stay on HOLD.
+- 2026-10-26 **Reviewer "Independent G3a review — Final verdict": STOP confirmed. Phase 3 ends at G3a/D2** under the frozen stop rule (plan section 10).
+  - The report is accepted as a faithful account of the frozen experiment. The report sha256 matched the write-up. Limitation stated by the reviewer: the input hashes could not be independently re-verified from the two artifacts alone.
+  - Not done, by decision: π3 and π4 are not trained in this phase; no threshold is changed retrospectively; the 8,517 TEST questions stay sealed.
+  - Accepted finding: "Under the tested features, models, and accuracy–compute protocol, substantial hindsight savings were available, but the learned halting probes did not outperform Ouro's benchmark-calibrated native exit gate."
+  - Required for the write-up: the D3 loop-3 duplication and the held-out accuracy-budget violations (47 of 50 adaptive method-folds above 1 pp on at least one primary benchmark) are reported prominently, not as minor notes.
+  - Open questions for future, separately preregistered work: why the native gate is so competitive; whether future correctness gains can be predicted more reliably at acceptable overhead.
