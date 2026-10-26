@@ -33,7 +33,7 @@ The comparison is informative **about selection procedures**. It is **not inform
 - **The screened-rule side ([C]) is a valid comparison of rule outputs, at unmatched loss** [derived].
   - On TEST, π1-x's selected points used more of the budget: macro loss 0.39 pp against 0.08 pp for native-pb.
   - Part of the +0.053 saving advantage is therefore budget spent, not a better trade-off. Whether π1-x saves more at equal loss is not known.
-  - Only one of the 12 TEST operating points is dominated outright: on OpenBookQA under the screened rule, π1-x has both more saving and less loss than native-pb (0.157 at 0.17 pp, against 0.136 at 0.20 pp).
+  - Among the 12 displayed TEST operating points (the four selected points per benchmark), only one pair shows outright dominance. This says nothing about the full set of possible operating points (reviewer caveat, 2026-10-27): on OpenBookQA under the screened rule, π1-x has both more saving and less loss than native-pb (0.157 at 0.17 pp, against 0.136 at 0.20 pp).
   - No native-pb point dominates any π1-x point.
 - **The rule dependence itself is systematic on development data, not a one-off of TEST** [E].
   - In E1, the within-rule difference π1-x − native-pb rose from the point-only rule to the screened rule in all 5 held-out folds, by +0.051 to +0.127.
@@ -188,7 +188,7 @@ The output of the script run on 2026-10-27 over `frozen.json`, `e1_report.json` 
   - point-only: OpenBookQA −0.098, CommonsenseQA −0.002, HellaSwag +0.035, macro −0.0217;
   - screened: OpenBookQA +0.021, CommonsenseQA +0.121, HellaSwag +0.017, macro 0.053.
 - **TEST macro loss:** point-only π1-x 1.10, native-pb 1.147; screened π1-x 0.39, native-pb 0.077.
-- **Pareto dominance:** only OpenBookQA screened, π1-x over native-pb.
+- **Pareto dominance, among the displayed selected points only:** only OpenBookQA screened, π1-x over native-pb.
 - **Development, screened rule (loss, upper bound, saving):**
   - π1-x: OpenBookQA 0.311 / 0.755 / 0.154; CommonsenseQA 0.428 / 0.942 / 0.292; HellaSwag 0.494 / 0.861 / 0.292.
   - native-pb: OpenBookQA 0.444 / 0.977 / 0.142; CommonsenseQA 0.171 / 0.856 / 0.165; HellaSwag 0.383 / 0.766 / 0.273.
