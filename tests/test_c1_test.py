@@ -12,6 +12,7 @@ import pytest
 
 from lookahead import c1 as C1
 from lookahead import c1_test as T
+from lookahead import gate1 as g1
 from lookahead import phase3_build as P
 from lookahead import phase3_g3a as G
 from lookahead import phase3_readouts as R
@@ -108,31 +109,75 @@ def test_models_load_with_nine_finite_coefficients_per_loop(real_frozen):
 
 
 # ------------------------------------------------------------------------------------------------ unsealing scope
-def test_unsealed_is_scoped_and_still_refuses_confirmation_paths():
+def test_unsealed_admits_only_the_canonical_test_directory(tmp_path):
+    base = tmp_path / "data" / T.TEST_DIR
+    (base / "openbookqa").mkdir(parents=True)
+    (tmp_path / "data" / "extracted_phase3_dev").mkdir(parents=True)
     with pytest.raises(PermissionError):
-        G._guard("data/extracted_phase3_test/openbookqa")
-    with T.unsealed():
-        G._guard("data/extracted_phase3_test/openbookqa")
-        with pytest.raises(PermissionError):
-            G._guard("data/extracted_confirm/arc_easy")
+        G._guard(base / "openbookqa")                                       # sealed outside the context
+    with T.unsealed(tmp_path):
+        G._guard(base)
+        G._guard(base / "openbookqa" / "part-00000.done.json")
+        for bad in (tmp_path / "data" / "extracted_phase3_dev" / "openbookqa",            # another extraction
+                    tmp_path / "data" / "extracted" / "arc_easy",                         # Phase 1
+                    tmp_path / "data" / "extracted_confirm" / "arc_easy",                 # Gate 2 confirmation
+                    base / ".." / "extracted_phase3_dev" / "x",                           # traversal out
+                    base / ".." / ".." / "results",                                       # traversal further out
+                    tmp_path / "elsewhere" / T.TEST_DIR / "openbookqa",                   # same name, wrong place
+                    "data/extracted_phase3_test/openbookqa"):                             # relative: not under root
+            with pytest.raises(PermissionError):
+                G._guard(bad)
     with pytest.raises(PermissionError):
-        G._guard("data/extracted_phase3_test/openbookqa")                 # restored afterwards
+        G._guard(base / "openbookqa")                                       # restored afterwards
     with pytest.raises(RuntimeError):
-        with T.unsealed():
+        with T.unsealed(tmp_path):
             raise RuntimeError("boom")
     with pytest.raises(PermissionError):
-        G._guard("data/extracted_phase3_test/x")                          # restored even after an exception
+        G._guard(base / "x")                                                # restored even after an exception
+
+
+def test_unsealed_refuses_a_symlink_that_escapes(tmp_path):
+    base = tmp_path / "data" / T.TEST_DIR
+    base.mkdir(parents=True)
+    outside = tmp_path / "data" / "extracted_phase3_dev"
+    outside.mkdir(parents=True)
+    try:
+        (base / "link").symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks not available")
+    with T.unsealed(tmp_path):
+        with pytest.raises(PermissionError):
+            G._guard(base / "link" / "openbookqa")
 
 
 # ------------------------------------------------------------------------------------------------ the guarded script
 @pytest.fixture()
 def root(tmp_path):
     fz = json.loads((REPO_ROOT / "results/c1/frozen.json").read_text(encoding="utf-8"))
-    files = set(RUN.PINNED) | set(fz["provenance"]["code"]) | set(RUN.BUNDLE)
+    files = set(RUN.PINNED) | set(fz["provenance"]["code"]) | set(RUN.BUNDLE) | {P.IDS["test"], P.IDS["dev"]}
     for rel in files:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(REPO_ROOT / rel, tmp_path / rel)
+    _fake_test_extraction(tmp_path)
     return tmp_path
+
+
+def _fake_test_extraction(root):
+    """Metadata-valid placeholder parts (real TEST ids and manifest counts; the part files are random bytes)."""
+    lines = (root / P.IDS["test"]).read_text(encoding="utf-8").splitlines()[1:]
+    by_b = {}
+    for ln in lines:
+        b, _, doc, _ = ln.split(",")
+        by_b.setdefault(b, []).append(doc)
+    for b, ids in by_b.items():
+        d = root / "data" / T.TEST_DIR / b
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "part-00000.parquet").write_bytes(b"not a real parquet " + b.encode())
+        (d / "part-00000.hidden.npy").write_bytes(b"not a real array " + b.encode())
+        done = {"parquet_sha256": g1.sha256_file(d / "part-00000.parquet"),
+                "hidden_sha256": g1.sha256_file(d / "part-00000.hidden.npy"),
+                "doc_ids": ids, "statuses": ["ok"] * len(ids), "n": len(ids)}
+        (d / "part-00000.done.json").write_text(json.dumps(done), encoding="utf-8")
 
 
 def test_preflight_refuses_a_changed_artifact_and_touches_nothing(root):
@@ -160,7 +205,9 @@ def test_marker_exists_before_any_test_read_and_reruns_are_refused(root):
     def loader(r):
         seen["marker_before_read"] = (r / RUN.MARKER).exists()
         seen["inside_unsealed"] = True
-        G._guard("data/extracted_phase3_test/openbookqa")                 # allowed only inside unsealed()
+        G._guard(r / "data" / T.TEST_DIR / "openbookqa")                # allowed only inside unsealed(root)
+        with pytest.raises(PermissionError):
+            G._guard(r / "data" / "extracted_phase3_dev" / "openbookqa")   # and nothing else
         return _test_data(seed=41)
 
     assert RUN.main(["--approved-code-sha", sha], root=root, loader=loader) == 0
@@ -183,6 +230,10 @@ def test_a_failed_run_keeps_the_marker(root):
     with pytest.raises(RuntimeError):
         RUN.main(["--approved-code-sha", sha], root=root, loader=boom)
     assert (root / RUN.MARKER).exists() and not (root / RUN.REPORT).exists()
+    fail = json.loads((root / RUN.FAILED).read_text(encoding="utf-8"))
+    assert fail["stage"] == "load TEST" and fail["exception_type"] == "RuntimeError"
+    assert "disk error" not in json.dumps(fail)                              # no message, no values
+    assert not (root / (RUN.FAILED + ".tmp")).exists()
     assert RUN.main(["--approved-code-sha", sha], root=root, loader=lambda r: None) == 2
 
 
@@ -190,3 +241,45 @@ def test_test_code_never_selects_or_fits():
     src = open(T.__file__, encoding="utf-8").read()
     for forbidden in ("select_all(", "select_risk(", "fit_e1(", "crossfit", "fit_logistic"):
         assert forbidden not in src
+
+
+# ------------------------------------------------------------------------------------------------ metadata preflight
+@pytest.mark.parametrize("damage", ["missing_part", "count", "foreign_id", "checksum", "status", "manifest"])
+def test_metadata_preflight_refuses_before_the_marker(root, damage):
+    sha = RUN.bundle_sha(root)
+    d = root / "data" / T.TEST_DIR / "hellaswag"
+    done = json.loads((d / "part-00000.done.json").read_text(encoding="utf-8"))
+    if damage == "missing_part":
+        (d / "part-00000.done.json").unlink()
+    elif damage == "count":
+        done["doc_ids"], done["n"], done["statuses"] = done["doc_ids"][:-1], done["n"] - 1, done["statuses"][:-1]
+    elif damage == "foreign_id":
+        done["doc_ids"][0] = "p3:hellaswag/train@r999999999"
+    elif damage == "checksum":
+        (d / "part-00000.parquet").write_bytes(b"changed")
+    elif damage == "status":
+        done["statuses"][0] = "failed"
+    elif damage == "manifest":
+        m = root / "data/manifests/phase3_questions.json"
+        m.write_text(m.read_text(encoding="utf-8") + " ", encoding="utf-8")
+    if damage in ("count", "foreign_id", "status"):
+        (d / "part-00000.done.json").write_text(json.dumps(done), encoding="utf-8")
+    calls = []
+    assert RUN.main(["--approved-code-sha", sha], root=root, loader=lambda r: calls.append(1)) == 2
+    assert not calls and not (root / RUN.MARKER).exists()
+
+
+def test_metadata_preflight_passes_on_the_fixture_and_reads_no_outcome(root, monkeypatch):
+    import pyarrow.parquet as pq
+
+    monkeypatch.setattr(pq, "read_table", lambda *a, **k: (_ for _ in ()).throw(AssertionError("parquet read in preflight")))
+    monkeypatch.setattr(np, "load", lambda *a, **k: (_ for _ in ()).throw(AssertionError("array read in preflight")))
+    meta = T.metadata_preflight(root)
+    assert meta == {"openbookqa": {"n": 3000, "parts": 1}, "commonsense_qa": {"n": 1000, "parts": 1},
+                    "hellaswag": {"n": 750, "parts": 1}, "piqa": {"n": 1837, "parts": 1}, "social_iqa": {"n": 1930, "parts": 1}}
+
+
+def test_strongest_baseline_is_labelled_test_selected(real_frozen):
+    fz, models = real_frozen
+    rep = T.evaluate_c1(fz, models, _test_data(seed=42), n_boot=100)
+    assert "TEST-selected" in rep["secondary_all_baselines"]["label"]

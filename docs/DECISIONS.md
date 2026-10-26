@@ -307,3 +307,9 @@
   - Paired, benchmark-stratified bootstrap: 10,000 resamples, seed 2026. Budget veto first; exhaustive verdict.
   - Secondaries: net, point rule, every baseline plus the re-selecting strongest, OOD per benchmark, violations.
   - TEST code bundle sha256: 8085a678aa27ec710020eed683626d2038af076a4ae732eb3cf2b603b4b1a70d. The preflight passes against the real artifacts. Not run.
+- 2026-10-26 Reviewer "C1 one-time TEST script — source-code review" (63999c1): HOLD. The statistics, marker, rerun protection and frozen-policy application were accepted. Changes applied:
+  - (1) unsealed(root) admits only paths that, after resolving symlinks and '..', lie inside <root>/data/extracted_phase3_test. It still refuses confirmation data. Tests cover other extractions, Phase 1, confirmation, traversal, a same-name directory elsewhere, relative paths and an escaping symlink.
+  - (2) Metadata-only preflight before the marker: the manifest and the TEST extraction check are pinned; id lists checked against the manifest; per-part done.json counts, ids and statuses; raw-file checksums without parsing (a test asserts no parquet or array read). Six damage cases are refused with no marker.
+  - (3) TEST_FAILED.json after the marker records the stage, exception type, timestamp and traceback locations only (no message or values), atomically and exclusively. The marker is kept and there is no retry.
+  - Strongest-baseline secondary labelled as a TEST-selected comparator.
+  - 20 TEST-script tests; all five suites pass. New bundle sha256 d75df053e756bf1972c566b9808f7f10ef0dc9739e78a45e86ddc707ded55055. Not run.

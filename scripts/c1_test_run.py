@@ -4,13 +4,18 @@
 
 Order, enforced:
   1. Checks, before anything else (any failure exits with code 2 and touches nothing):
-     protocol docs/C1_PROTOCOL.md, results/c1/frozen.json and results/c1/pi1x_models.npz equal their frozen sha256; every
-     code file recorded in frozen.json at freeze is unchanged; the TEST code bundle (src/lookahead/c1_test.py +
-     scripts/c1_test_run.py) equals --approved-code-sha; results/c1/TEST_OPENED.json and results/c1/test_report.json do
-     not exist.
+     protocol docs/C1_PROTOCOL.md, results/c1/frozen.json, results/c1/pi1x_models.npz, the phase3 manifest and the
+     committed TEST extraction check equal their pinned sha256; every code file recorded in frozen.json at freeze is
+     unchanged; the TEST code bundle (src/lookahead/c1_test.py + scripts/c1_test_run.py) equals --approved-code-sha;
+     results/c1/TEST_OPENED.json, test_report.json and TEST_FAILED.json do not exist; and a METADATA-ONLY check of the
+     TEST extraction (c1_test.metadata_preflight: id lists vs manifest, per-part done.json counts/ids/statuses, raw-file
+     checksums; no outcome is read) passes.
   2. results/c1/TEST_OPENED.json is created with EXCLUSIVE create (it can never be overwritten) BEFORE any TEST file is
-     opened. From then on TEST counts as opened, even if the run fails; the marker is never deleted by this script.
-  3. TEST is read once (c1_test.load_test inside c1_test.unsealed), the frozen policies are applied, and
+     opened. From then on TEST counts as opened, even if the run fails; the marker is never deleted by this script. If
+     anything fails after it, results/c1/TEST_FAILED.json records the stage and exception type (no message, no values)
+     and the run is never retried.
+  3. TEST is read once (c1_test.load_test inside c1_test.unsealed(root), which admits only resolved paths inside
+     data/extracted_phase3_test), the frozen policies are applied, and
      results/c1/test_report.json is written with exclusive create.
 """
 import argparse
@@ -30,10 +35,13 @@ PINNED = {
     "docs/C1_PROTOCOL.md": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050",
     "results/c1/frozen.json": "65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f",
     "results/c1/pi1x_models.npz": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad",
+    "data/manifests/phase3_questions.json": "b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec",
+    "results/phase3/extraction_check_phase3_test.json": "c8d9c20206209ae2fafae46c8cb5c420657f10698170ade205e9e646ca9318b2",
 }
 BUNDLE = ("src/lookahead/c1_test.py", "scripts/c1_test_run.py")
 MARKER = "results/c1/TEST_OPENED.json"
 REPORT = "results/c1/test_report.json"
+FAILED = "results/c1/TEST_FAILED.json"
 
 
 def _sha_norm(p: Path) -> str:
@@ -64,9 +72,10 @@ def preflight(root: Path, approved_code_sha: str) -> dict:
             raise SystemExit(f"{rel} changed since the freeze")
     if bundle_sha(root) != approved_code_sha:
         raise SystemExit("the TEST code bundle is not the approved one (--approved-code-sha)")
-    for rel in (MARKER, REPORT):
+    for rel in (MARKER, REPORT, FAILED):
         if (root / rel).exists():
             raise SystemExit(f"refusing: {rel} exists; the C1 TEST run is one-time")
+    frozen["_test_metadata"] = T.metadata_preflight(root)        # metadata only; no TEST outcome is read
     return frozen
 
 
@@ -75,6 +84,29 @@ def git_commit(root: Path) -> str:
         return subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
     except Exception as e:
         return f"unavailable ({type(e).__name__})"
+
+
+def write_failure(root: Path, stage: str, exc: BaseException) -> None:
+    """Durable failure status after the marker (reviewer, TEST script review): stage, exception type, timestamp and the
+    code locations of the traceback. Deliberately NO exception message and no values, so that nothing from TEST leaks into
+    it. Written atomically (temporary file, then exclusive link to the final name); it never replaces an existing file. The
+    marker stays, and no retry is possible."""
+    import os
+    import traceback
+
+    rec = {"failed_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "stage": stage,
+           "exception_type": type(exc).__name__,
+           "traceback_locations": [f"{Path(fr.filename).name}:{fr.lineno} in {fr.name}" for fr in traceback.extract_tb(exc.__traceback__)],
+           "note": "TEST counts as opened; the C1 run is one-time and is NOT retried. Report this file to the reviewer."}
+    tmp = root / (FAILED + ".tmp")
+    tmp.write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    try:
+        os.link(tmp, root / FAILED)          # atomic and exclusive: fails if FAILED already exists
+    except OSError:
+        if not (root / FAILED).exists():
+            os.replace(tmp, root / FAILED)
+            return
+    tmp.unlink(missing_ok=True)
 
 
 def main(argv=None, *, root: Path | None = None, loader=None) -> int:
@@ -88,20 +120,30 @@ def main(argv=None, *, root: Path | None = None, loader=None) -> int:
         print(f"PREFLIGHT FAILED (TEST untouched): {e}", file=sys.stderr)
         return 2
     marker = {"opened_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "pinned": PINNED,
+              "test_metadata": frozen.get("_test_metadata"),
               "test_code_bundle_sha256": args.approved_code_sha, "git_commit": git_commit(root),
               "note": "TEST counts as opened from this moment; this file is never removed"}
     (root / MARKER).parent.mkdir(parents=True, exist_ok=True)
     with open(root / MARKER, "x", encoding="utf-8", newline="\n") as f:          # exclusive create, before any TEST read
         f.write(json.dumps(marker, indent=1, sort_keys=True) + "\n")
-    with np.load(root / "results/c1/pi1x_models.npz") as npz:
-        models = T.load_models(npz)
-    with T.unsealed():
-        test = (loader or T.load_test)(root)
-    rep = T.evaluate_c1(frozen, models, test)
-    rep["provenance"] = {"marker": marker, "test_data_files": test.provenance,
-                         "finished_utc": datetime.datetime.now(datetime.timezone.utc).isoformat()}
-    with open(root / REPORT, "x", encoding="utf-8", newline="\n") as f:
-        f.write(json.dumps(rep, indent=1, sort_keys=True, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o)) + "\n")
+    stage = "load models"
+    try:
+        with np.load(root / "results/c1/pi1x_models.npz") as npz:
+            models = T.load_models(npz)
+        stage = "load TEST"
+        with T.unsealed(root):
+            test = (loader or T.load_test)(root)
+        stage = "evaluate"
+        frozen.pop("_test_metadata", None)
+        rep = T.evaluate_c1(frozen, models, test)
+        rep["provenance"] = {"marker": marker, "test_metadata": marker.get("test_metadata"), "test_data_files": test.provenance,
+                             "finished_utc": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+        stage = "write report"
+        with open(root / REPORT, "x", encoding="utf-8", newline="\n") as f:
+            f.write(json.dumps(rep, indent=1, sort_keys=True, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o)) + "\n")
+    except BaseException as e:
+        write_failure(root, stage, e)
+        raise
     p = rep["primary"]
     print(f"VERDICT: {rep['verdict']}")
     print(f"primary: delta (gross, pi1-x - native-pb) = {p['delta_gross']:+.4f}, 95% CI [{p['ci95'][0]:+.4f}, {p['ci95'][1]:+.4f}]"

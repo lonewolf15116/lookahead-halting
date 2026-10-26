@@ -186,6 +186,8 @@ def evaluate_c1(frozen: dict, models: list, test: G.DevData, n_boot: int | None 
     winners = np.stack([-vs[n]["dist"] for n in others]).argmax(axis=0)
     rep["secondary_all_baselines"] = {
         "per_baseline": {n: {"delta": vs[n]["delta"], "ci95": vs[n]["ci95"]} for n in others},
+        "label": ("secondary; the strongest baseline is a TEST-selected comparator (chosen using TEST outcomes) and never "
+                  "affects the primary verdict"),
         "strongest_on_test_point": strongest, "delta_vs_strongest_point": vs[strongest]["delta"],
         "reselecting_bootstrap_ci95": [float(np.quantile(resel, 0.025)), float(np.quantile(resel, 0.975))],
         "selection_frequency": {others[i]: int((winners == i).sum()) for i in range(len(others))}}
@@ -210,16 +212,37 @@ def evaluate_c1(frozen: dict, models: list, test: G.DevData, n_boot: int | None 
 
 
 # ---------------------------------------------------------------------------------------------- TEST loading
+TEST_DIR = "extracted_phase3_test"
+
+
+def _within(p, base) -> bool:
+    from pathlib import Path
+
+    try:
+        Path(p).resolve().relative_to(Path(base).resolve())
+        return True
+    except ValueError:
+        return False
+
+
 @contextlib.contextmanager
-def unsealed():
-    """The ONE place the sealed TEST extraction may be opened: inside this context, the reviewed G3a loader's guard still
-    refuses Gate 2 confirmation paths but allows `phase3_test`. Used only by scripts/c1_test_run.py after the marker exists."""
+def unsealed(root):
+    """The ONE place the sealed TEST extraction may be opened. Inside this context the reviewed G3a loader's guard allows a
+    path ONLY if, after resolving symlinks and '..', it lies inside <root>/data/extracted_phase3_test; every other path,
+    including Gate 2 confirmation data, other extraction directories and traversal out of the TEST directory, is refused.
+    The original guard is restored on exit, also after an exception. Used only by scripts/c1_test_run.py after the marker
+    exists."""
+    from pathlib import Path
+
+    base = Path(root) / "data" / TEST_DIR
     orig = G._guard
 
     def guard(p):
         s = str(p).replace("\\", "/").lower()
         if "confirm" in s:
             raise PermissionError(f"refusing Gate 2 confirmation path: {p}")
+        if not _within(p, base):
+            raise PermissionError(f"outside the approved TEST extraction {base}: {p}")
         g2._assert_allowed_path(p)
 
     G._guard = guard
@@ -229,9 +252,52 @@ def unsealed():
         G._guard = orig
 
 
+def metadata_preflight(root) -> dict:
+    """Metadata-only checks of the TEST extraction BEFORE the marker (reviewer, TEST script review). Reads only the manifest,
+    the frozen id lists, the committed TEST extraction check report and each part's done.json (doc ids, statuses, counts,
+    file checksums); computes sha256 of the raw part files WITHOUT parsing them. No prediction, label, score or other TEST
+    measurement is read. Raises SystemExit on any problem."""
+    import json
+    from pathlib import Path
+
+    root = Path(root)
+    man = json.loads((root / P.MANIFEST).read_text(encoding="utf-8"))
+    if not P._sha_ok(root / P.IDS["test"], man["ids_sha256"]["test"]) or not P._sha_ok(root / P.IDS["dev"], man["ids_sha256"]["dev"]):
+        raise SystemExit("phase3 id lists do not match the manifest")
+    chk = json.loads((root / "results/phase3/extraction_check_phase3_test.json").read_text(encoding="utf-8"))
+    if not chk.get("passed"):
+        raise SystemExit("the committed TEST extraction check did not pass")
+    allow = G.read_id_list(root / P.IDS["test"])
+    base = root / "data" / TEST_DIR
+    out = {}
+    for b in PRIMARY + OOD:
+        bdir = base / b
+        dones = sorted(bdir.glob("part-*.done.json")) if bdir.is_dir() else []
+        if not dones:
+            raise SystemExit(f"{b}: no completed TEST parts under {bdir}")
+        ids, n = [], 0
+        for dp in dones:
+            d = json.loads(dp.read_text(encoding="utf-8"))
+            stem = str(dp)[: -len(".done.json")]
+            for suffix, key in ((".parquet", "parquet_sha256"), (".hidden.npy", "hidden_sha256")):
+                f = Path(stem + suffix)
+                if not f.exists() or g1.sha256_file(f) != d[key]:
+                    raise SystemExit(f"{f.name}: missing or checksum mismatch")
+            ids += d["doc_ids"]
+            n += d["n"]
+            if any(st != "ok" for st in d["statuses"]):
+                raise SystemExit(f"{dp.name}: a TEST question did not extract")
+        expn = man["sets"][f"test/{b}"]["n_rows"]
+        if n != expn or len(set(ids)) != len(ids) or not set(ids) <= allow:
+            raise SystemExit(f"{b}: {n} questions (manifest {expn}), duplicates or ids outside the TEST list")
+        out[b] = {"n": n, "parts": len(dones)}
+    return out
+
+
 def load_test(root) -> G.DevData:
     """Primary (split 'test') and OOD (split 'test_ood') TEST rows through G.load_source, restricted to the frozen TEST id
-    list (hash-checked against the manifest), with the manifest's counts. DEV+ ids are refused. Call inside `unsealed()`."""
+    list (hash-checked against the manifest), with the manifest's counts. DEV+ ids are refused. Call inside
+    `unsealed(root)`."""
     import json
     from pathlib import Path
 
@@ -241,8 +307,8 @@ def load_test(root) -> G.DevData:
         raise SystemExit("phase3 id lists do not match the manifest")
     allow, deny = G.read_id_list(root / P.IDS["test"]), G.read_id_list(root / P.IDS["dev"])
     exp = {b: man["sets"][f"test/{b}"]["n_rows"] for b in PRIMARY + OOD}
-    a = G.load_source(root, "extracted_phase3_test", "test", "test", PRIMARY, allow_ids=allow, deny_ids=deny,
+    a = G.load_source(root, TEST_DIR, "test", "test", PRIMARY, allow_ids=allow, deny_ids=deny,
                       expected_n={b: exp[b] for b in PRIMARY})
-    o = G.load_source(root, "extracted_phase3_test", "test_ood", "test_ood", OOD, allow_ids=allow, deny_ids=deny,
+    o = G.load_source(root, TEST_DIR, "test_ood", "test_ood", OOD, allow_ids=allow, deny_ids=deny,
                       expected_n={b: exp[b] for b in OOD})
     return G.concat([a, o])
