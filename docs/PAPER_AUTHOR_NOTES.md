@@ -63,3 +63,12 @@ Inconsistencies between documents and JSON files, and claims I could not verify.
 - Sections 7–8, note 3 (D-a2 wording): rewritten from DECISIONS. The PIQA check failed its tolerance; D-a2 classified the difference as numerical; the reviewer accepted it as an exception, not a retroactive pass.
 - Sections 1–2, note 4 (Ouro version) and the verbatim PDF checks: OPEN. arXiv is blocked from the cloud and from the Linux VM on the laptop, so the PDFs must be downloaded on Windows.
 - D-t (truncated-execution check): OPEN, implemented and awaiting reviewer GO.
+- 2026-10-27 Verbatim PDF check (PDFs downloaded on Windows into refs_local/ and extracted with pdftotext). Verified against the text:
+  - ACT ε = 0.01; PABEE patience t = 6; Geiping §6.1 "Zero-Shot Adaptive Compute at Test-Time", KL below 5 × 10⁻⁴.
+  - AdaPonderLM τ = 10⁻⁴ and λ = 0.1; SpecExit* thresholds 0.8 / 0.3 / 200.
+  - NEAT τ_sim = 0.6 and τ_mag = 0.2 (Table 5, arXiv 2602.02010); Ouro Stage II k = 50.0 with threshold 0.005 (τ in v1, γ in v6).
+  - Fast yet Safe: UCB, δ = 0.1, D_cal i.i.d.; CALM uses LTT (section 4.1); Two-Scale compares against the KL exit of Geiping et al.
+  - Popescu: "competitive but not uniformly Pareto-optimal"; "a trajectory–readout problem, not a gate-learning problem" (conclusion); B.5 51-point 0.5–99.5 percentile grid; B.6 readout definitions; B.8 threshold selection; Table 3 "best post-hoc readout, both validation-selected" with no criterion stated.
+  - Popescu Figures 19–20 (page 27) were viewed as rendered images. The curves interleave and cross on several benchmarks (for example MMLU and CommonsenseQA), so section 7.2 now says the operating-point dependence is visible in their data. Novelty is narrowed accordingly.
+  - Ouro is cited as v6. The "per token and per example" goal is in both versions (v1: "for each token and each example").
+- Still open: the TEXT of the Kubaty (PMLR) and LTT journal versions was not checked (arXiv LTT 2110.01052 was downloaded, not the AoAS version); D-t is awaiting GO.

@@ -453,9 +453,11 @@ conclude that adaptive depth is "a trajectory–readout problem, not a gate-lear
 and should be read as a pre-registered, sealed-test instance of it under one selection rule, not as a new finding that readouts can beat the
 gate. What we add is the following:
 - the preference depends on the selection rule (a point-only rule favours the native gate on our data). Popescu et al. report one
-  validation-selected operating point per method and do not state the selection criterion; they do not compare selection rules, accuracy-loss
-  budgets or statistical bounds. Their observation that the gate is not uniformly Pareto-optimal implies that some operating points favour
-  each method. What we add is a concrete demonstration that two pre-registered budget rules lead to opposite preferences on a sealed test set;
+  validation-selected operating point per method in their tables and do not state the selection criterion. They do not compare selection
+  rules, accuracy-loss budgets or statistical bounds. Their full accuracy-versus-loops curves on Ouro (their Figures 19–20) interleave and
+  cross on several benchmarks, so a dependence of the preferred method on the operating point is visible in their data, although they do not
+  discuss it. What we add is narrower: a demonstration that two pre-registered accuracy-budget rules lead to opposite preferences on a sealed
+  test set, and that the stricter rule's bounds do not all hold there;
 - the readout that matches the trained probe is a divergence between loops rather than a confidence readout;
 - a development-selected policy can fail its budget on an out-of-distribution benchmark.
 
@@ -584,4 +586,4 @@ Future work needs new held-out data:
 - [Yang2026] R. Yang et al. SpecExit: Accelerating Large Reasoning Model via Speculative Exit. ICML 2026, PMLR 306:144187–144210. arXiv:2509.24248.
 - [Zhang2025] A. Zhang et al. Reasoning Models Know When They're Right: Probing Hidden States for Self-Verification. Preprint, arXiv:2504.05419, 2025.
 - [Zhou2020] W. Zhou, C. Xu, T. Ge, J. McAuley, K. Xu, F. Wei. BERT Loses Patience: Fast and Robust Inference with Early Exit. NeurIPS 2020. arXiv:2006.04152.
-- [Zhu2025] R.-J. Zhu et al. Scaling Latent Reasoning via Looped Language Models. Preprint, arXiv:2510.25741, 2025 (version to be pinned).
+- [Zhu2025] R.-J. Zhu et al. Scaling Latent Reasoning via Looped Language Models. Preprint, arXiv:2510.25741v6 (first version 29 Oct 2025; v6 11 Oct 2026). Section 5.4.1 and the Stage II constants agree in substance between v1 and v6, though v1 names the improvement threshold τ and v6 names it γ.
