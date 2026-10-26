@@ -83,3 +83,88 @@ condition that it does not expose TEST correctness or predictions. On HOLD: full
        determinism.
    - Tests: the permitted pool removes 20 allocated rows and 5 never-used rows, with 0 violations. The independent
      prompt check also confirms that no never-used row's text appears in any context.
+
+## Stage-build review (2026-10-26): numerical-equivalence clarification
+The reviewer accepted the allocation, the manifest, the exemplar exclusions and the TEST report sealing, and put the full
+extraction on HOLD pending three questions. The answers below come from the verifier code (`scripts/verify_extraction.py`),
+the Phase 1 diagnosis (`scripts/diagnose_short_context.py`, `results/phase1/diagnose_short_context.json`) and the
+integrity fields of the two smoke reports. I read no outcome, prediction or correctness value to write them.
+
+### 1. What `vs_context_only_reported` measures, and its thresholds
+- It re-runs a sampled question as a **context-only** pass, without the option tokens, and compares the state, gate, cdf
+  and vocabulary statistics at the last context token with the stored values. The stored values come from the **packed**
+  pass, which runs the context and every option together under a custom mask.
+- **It has no acceptance threshold. That is deliberate:** it is reported only. On 2026-10-20 the reviewer accepted this as
+  a labelled post-diagnostic amendment (DECISIONS, 2026-10-20). The reason: in bf16 there is no canonical value to compare
+  against, because both passes are bf16 approximations of the same float32 computation.
+- **Two checks are gated:**
+  - `rerun_same_input`: the same packed input is run again. Gate, cdf and the vocabulary statistics must agree within 1e-4,
+    and the state within 1e-3. In both smoke reports the gate, cdf and state agree exactly (0) and the vocabulary
+    statistics within 1.1e-6. The extraction is deterministic.
+  - `float32_equivalence_recorded`: in float32 the packed and context-only passes must agree within 1e-4. The recorded
+    maximum is 2.1e-5. This is what shows that the mask and positions are correct.
+
+### 2. Why OpenBookQA, PIQA and Social IQa differ while HellaSwag and CommonsenseQA do not
+- **Cause: prompt length.** These three benchmarks are 0-shot with very short prompts. OpenBookQA prompts are 3-66 tokens,
+  and PIQA and Social IQa prompts are similarly short, a single goal or a single context and question. HellaSwag and
+  CommonsenseQA are 10-shot, with prompts of about 800 tokens.
+- **Why that matters.** The packed pass appends the option tokens, which changes the sequence length the GPU matmul kernels
+  see. At short lengths that changes which bf16 kernel is chosen. At long lengths the relative change is small and the same
+  kernels are used.
+- **The Phase 1 diagnosis showed this pattern:**
+  - In bf16, packed and context-only passes were exactly equal on modarith (85 tokens), ARC-E and CSQA. They differed only
+    on OpenBookQA: maximum 0.375, relative L2 up to 0.078, and exactly equal on 64% of questions.
+  - In float32 they agreed to 2.1e-5.
+  - A context-only pass through the packed pass's own mask code path was identical to the plain context-only pass, so the
+    mask path is not the cause.
+- **The smoke values sit inside that envelope.** The state maximum is at most 0.25 and the relative L2 at most 0.041.
+  The largest state coordinates are about 29, where the bf16 spacing is 0.125, so 0.25 is about two bf16 rounding steps.
+  The gate-logit differences are at most 0.44, giving cdf differences of at most 0.024.
+- **Small vocabulary-statistic differences on CSQA and HellaSwag**, with the state and gate exactly equal (vent at most
+  0.005), come from the same mechanism in the output-head matmul, whose row count also differs between the passes.
+- **Gap, stated plainly.** The float32 check is read from the Phase 1 diagnostic file, which covers OpenBookQA, modarith,
+  ARC-E and CSQA. **It does not include PIQA or Social IQa**, so for those two benchmarks the kernel explanation is inferred
+  from prompt length and not yet tested. Proposal D-a below closes this.
+
+### 3. The `opt_ll` differences: can they change rankings or the A2 readouts, and is the tolerance adequate?
+- **The field name is misleading.** `rerun_same_input.opt_ll` is not a same-input re-run. It compares the stored packed
+  option log-likelihoods with `score_per_option`, a separate forward pass per option with different shapes. Its gate,
+  `option_ll_vs_per_option_le_1nat`, was set in Phase 1 as a **gross-bug detector**: a wrong mask or position would
+  produce errors of many nats.
+- **Recorded sizes:**
+  - Pilot P5: maximum 0.45 nats, p99 0.15-0.22.
+  - Full Phase 1: maximum 0.70 nats (HellaSwag).
+  - These smoke runs: maximum 0.92 nats, also HellaSwag (DEV).
+- **HellaSwag is the largest because** its continuations are long and per-token bf16 noise adds up. HellaSwag uses
+  `acc_norm`, which divides by the continuation's character length, so the effect on the ranking score is much smaller than
+  the raw sum suggests.
+- **Can it change rankings? Yes, for near-tied options.** The 1-nat gate does not bound this, so it is **not** a fidelity
+  bound. The only measured agreement is on ARC-C (pilot P6/P8): same top answer on 99.57-99.91% of questions per loop, and
+  flips agreeing on 99.49-99.74%. Agreement has not been measured on the Phase 3 benchmarks.
+- **Effect inside Phase 3: none on internal validity.**
+  - All seven A2 readouts, B_pb, native-pb and the π candidates are computed from the same stored values, so no comparison
+    is advantaged.
+  - The verdict is defined on the stored packed computation, the same one used in Phase 1 and Gate 2.
+  - The stored values are deterministic, as the same-input re-run shows.
+- **Effect on external validity, a limitation to report.**
+  - A deployment that scores options per option, or computes the state from a context-only pass, could halt differently on
+    near-ties.
+  - For r-hl2, r-hcos and the hx probes on the short-prompt benchmarks, path noise of up to 4% relative L2 may be comparable
+    to the change between loops at late loops. Neither quantity has been measured.
+- **Recommendation: change no tolerance.** That would be a change made after seeing results, and the gate does its job of
+  catching bugs. Instead, measure decision-level agreement as a reported diagnostic.
+- **An unmet commitment.** On 2026-10-20 the reviewer said Phase 3 would include a sensitivity analysis of halting
+  decisions near the thresholds, and that commitment is not in PHASE3_PLAN. Proposal D-b fulfils it.
+
+### Proposals (need reviewer approval; neither changes A1, A2, any tolerance or any threshold)
+- **D-a, before the full extraction (about 5 GPU-minutes):** extend `diagnose_short_context.py` to PIQA and Social IQa.
+  - It uses rows from their **train** splits. These are in neither the TEST nor the DEV+ allocation, so no sealed question
+    is touched. The prompt format and 0-shot setting are the same.
+  - It runs the same bf16 and float32 packed-vs-context-only comparison.
+  - Pass condition, fixed now: float32 maximum ≤ 1e-4, the existing FP32_TOL.
+- **D-b, after the full extraction and before D1-D4, DEV+ only, reported and not gated:**
+  - For every DEV+ question, compute the per-option scores and a context-only state.
+  - Report the share of (question, loop) pairs where the top answer differs.
+  - For each A2 readout and each B_pb and native-pb setting, report the share of halt decisions on the threshold grid that
+    differ between the stored path and the alternative path.
+  - TEST is not used.
