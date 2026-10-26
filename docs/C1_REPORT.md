@@ -93,7 +93,8 @@ freeze-time GPU measurements. This is an accounting estimate under the C1.3 boun
 - The second `Start-Transcript` overwrote the transcript file, so `results/c1_local_backup/c1_test_console.txt` holds only the refused second
   attempt. The console output of the successful run survives as the user's paste in the conversation. The run itself is fully recorded in
   `test_report.json` and the marker.
-- Package snapshot before the run: sha256 `436fa628…`. The snapshot after the run is still to be taken; the existing post file predates the run and is not evidence.
+- Package snapshots: before the run `436fa628…`, after the run `9a205c9c…`. They differ on one line only: the editable install of this repo, which records commit fed36b0 before the pull and 196a882 after it (the approved commit the run used). All third-party package versions are identical. This does not rule out a transient change during execution.
+- The result files were committed from the laptop as the originals (commit d22ca6b), with the hashes stated above.
 - All protocol-required analyses are reported above. None of the frozen decisions was changed after TEST was opened.
 
 ## Status of the research claim

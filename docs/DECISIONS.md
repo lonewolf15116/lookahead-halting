@@ -339,3 +339,4 @@
   - Under the point-only rule, π1-x − native-pb = −0.022, replicating G3a.
   - Out of distribution, π1-x loses 3.26 pp on SIQA (upper bound 4.72) and 0.71 pp on PIQA (upper bound 1.52).
 - A second runner invocation by mistake was refused at preflight because the marker exists. TEST was not re-read. The second transcript overwrote the console log; the first run's output survives in the conversation.
+- Post-run package snapshot 9a205c9c…: it differs from the pre-run snapshot 436fa628… only in the editable lookahead line (fed36b0 → 196a882, i.e. the pull to the approved commit); all third-party versions are identical. test_report.json and TEST_OPENED.json were committed from the laptop (d22ca6b).
