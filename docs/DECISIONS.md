@@ -294,3 +294,7 @@
 - 2026-10-26 Reviewer "C1 review — commit 8f0eee2": APPROVED for the development-only freeze. The protocol is accepted with sha256 4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050; tag c1-protocol on 8f0eee2. The reviewer withdrew the tie-break concern (the original early break was correct; the explicit helper is kept).
   - Qualification for the C1 report, recorded here so the frozen protocol text is not edited: net saving is an estimated deployment cost under the defined accounting boundary (native gate has no intermediate scoring overhead; the halting loop's answer scoring is shared). It is not an independently measured end-to-end latency improvement.
   - Next: freeze on the laptop. The reviewer then audits the selected thresholds, measured ρ, model hashes and expected precision before authorizing the one-time TEST run.
+- 2026-10-26 **C1 freeze run** (laptop at fed36b0; code byte-identical to tag c1-protocol 8f0eee2; 102 tests; protocol sha verified). frozen.json 65728e16…, pi1x_models.npz 72f15508… committed unchanged.
+  - Self-audit: docs/C1_FREEZE_AUDIT.md.
+  - Facts recorded: in-sample dev π1-x 0.246, native-pb 0.193, r-kl 0.243 (secondary); expected half-width 0.0043; ρ_total 0.014-0.050; B_pb weak under the risk rule; OOD pooled level; the point rule favours native-pb.
+  - Gap: no git commit recorded in frozen.json (code hashes cover it). TEST is unopened; the guarded TEST script is next, for review.
