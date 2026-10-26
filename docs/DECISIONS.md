@@ -253,3 +253,10 @@
 - 2026-10-26 Reviewer "G3a Revision 2 — Reviewer assessment": CONDITIONAL APPROVAL. Accepted: nested D2, contamination tests, OP1-OP8, and OP5 (indirect method; the to-final reuse of adjacent C is disclosed as an extrapolation).
   - Rev 3 applies the two requested checks: the exposed-validation comparator now uses the same eligibility rule and the same frozen code as D2; held-out pairing is asserted on question-id fingerprints, not counts.
   - 53 G3a and 13 readout tests pass. The real run awaits the reviewer's GO.
+- 2026-10-26 **G3a run** (laptop, 49295ea clean, 66 tests passing, 5.0 min; report sha256 49ee7ace3337ec82…):
+  - D1 0.4536, pass.
+  - **D2 STOP:** π1-x −0.0236 and π1-hx −0.0490 against the A2 comparator, which was native-pb (held-out 0.370) in all 5 folds. Against B_pb alone, +0.097 and +0.071.
+  - D3: h > x in 10 of 18 cells, hx kept (8 of 15 after removing the duplicate loop-3 cells).
+  - D4: Δ_t is barely predictable.
+  - Exposed validation agrees (−0.029 and −0.049 against native-pb).
+  - Decision computed by the frozen code: STOP (D2). Nothing retried or changed. Write-up: docs/PHASE3_G3A_RESULT.md. Awaiting the reviewer's verdict. G3b and TEST stay on HOLD.
