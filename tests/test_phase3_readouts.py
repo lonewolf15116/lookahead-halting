@@ -130,3 +130,42 @@ def test_nested_comparator_chooses_on_selection_folds_not_on_held_out():
 def test_readout_list_is_closed_and_matches_the_amendment():
     assert R.READOUTS == ("r-conf", "r-margin", "r-ent", "r-kl", "r-dlogit", "r-hl2", "r-hcos")
     assert R.CONVERGENCE == {"r-kl", "r-dlogit", "r-hl2", "r-hcos"}
+
+
+# ---------------------------------------------------------------- reviewer implementation checks (A2 freeze)
+
+def test_inf_threshold_nests_every_fixed_depth_at_every_cap():
+    """Check 1: tau = +inf with cap m reproduces fixed depth m for every ok question, for every readout's statistic shape
+    (including undefined loop-1 values), so the grid nests every per-benchmark fixed-depth vector, B_pb included."""
+    rng = np.random.default_rng(0)
+    S = rng.normal(size=(50, 3))
+    S[:, 0] = np.nan  # convergence-readout shape
+    ok = np.ones(50, dtype=bool)
+    correct = rng.integers(0, 2, size=(50, 4))
+    for m in (1, 2, 3, 4):
+        e = R.exit_loops(S, ok, math.inf, m)
+        assert (e == m).all()
+        assert R.outcome(correct, ok, e) == R.outcome(correct, ok, np.full(50, m))
+    g = R.grid([S], [ok])
+    assert math.isinf(g[-1])
+    # the selected point is never worse than the best qualifying fixed depth (fallback nests B_pb)
+    sel = R.select(S, ok, correct, g)
+    fixed = [R.outcome(correct, ok, np.full(50, m)) for m in (1, 2, 3, 4)]
+    best_fixed = max(s for s, l in fixed if l <= 1.0 + 1e-12)
+    assert sel["saving"] >= best_fixed - 1e-12
+
+
+def test_selection_always_returns_a_qualifying_point_so_every_baseline_is_eligible_at_selection():
+    """Check 2: eligibility = qualified under the per-benchmark <= 1 pp rule on the selection (development) data. Because the
+    grid contains tau = +inf and fixed depth 4 has zero loss, every readout and B_pb always qualify there: eligibility is
+    decided on development folds only. A baseline that exceeds 1 pp on a held-out or TEST benchmark is NOT removed (plan 5a,
+    A2.5); held-out loss never enters the eligibility flag, which `nested_comparator` takes from selection folds only."""
+    rng = np.random.default_rng(1)
+    for _ in range(20):
+        S = rng.normal(size=(40, 3))
+        correct = rng.integers(0, 2, size=(40, 4))
+        sel = R.select(S, np.ones(40, dtype=bool), correct, R.grid([S], [np.ones(40, dtype=bool)]))
+        assert sel["loss"] <= 1.0 + 1e-12
+    folds = [{"B_pb": {"eligible": True, "selection_saving": 0.30, "heldout_saving": 0.10},
+              "r-hl2": {"eligible": True, "selection_saving": 0.50, "heldout_saving": 0.05}}]  # r-hl2 bad on held-out
+    assert R.nested_comparator(folds)["chosen"] == ["r-hl2"]  # still the comparator: held-out loss/saving never removes it

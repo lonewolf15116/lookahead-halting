@@ -1,4 +1,31 @@
-# Phase 3 amendment A2: published post-hoc readouts as baselines (DRAFT rev 2 for review; nothing frozen)
+# Phase 3 amendment A2: published post-hoc readouts as baselines (FROZEN, tag `phase3-a2`)
+
+**Status: frozen.** Reviewer decision "Phase 3 Amendment A2 — Revision 2 Review" (2026-10-26): APPROVED, GO for freeze. This
+approval does not establish that the implementation is correct or that the Phase 3 hypothesis succeeds. Phase 3 has produced
+no experimental outcome. Full extraction stays on HOLD until the Stage-build report has been reviewed, and D1-D4 and
+training stay on HOLD until extraction is verified. Later changes need a further documented amendment.
+
+**Interpretation the reviewer asked to keep explicit.** The D2 comparator is the strongest baseline selected using the
+training (selection) folds. It is not necessarily the strongest baseline on the held-out fold.
+
+**Implementation checks retained at freeze** (tests added in `tests/test_phase3_readouts.py`, 13 passing):
+1. **Grid nesting.** τ = +∞ with cap m reproduces fixed depth m for every ok question and every cap m ∈ {1,2,3,4},
+   including statistics that are undefined at loop 1. The selected point is never worse than the best qualifying fixed
+   depth, so every readout nests every per-benchmark fixed-depth vector, B_pb included.
+2. **Eligibility.** Eligibility means "qualified under the per-benchmark ≤ 1 pp rule on the selection (development) data".
+   Because τ = +∞ is in the grid and fixed depth 4 has zero loss, **every readout and B_pb always qualify at selection**. So
+   eligibility can never exclude a baseline: the comparator is effectively the best of all baselines on the selection data.
+   A baseline that exceeds 1 pp on a held-out fold or a TEST benchmark is not removed: it still sets the bar, as in plan
+   section 5a and A2.5. A test checks that held-out values never enter the eligibility flag or the comparator choice.
+
+**Frozen artifacts (sha256):**
+| file | sha256 |
+|---|---|
+| src/lookahead/phase3_readouts.py | 1b3a88a3519df5fd913340c828b88d158db59f7c18df1111fd3b5fdd0e372389 |
+| tests/test_phase3_readouts.py | a7358555488982bfcf2c4a40908008f13ada5eb4a2165e9696d99925f66a6fe5 |
+| docs/PHASE3_LITERATURE.md (motivation) | 087f9ebe17f4072e90108677530d65cd44bcb9835dfd8e4964e53e0c4bb358c6 |
+| docs/PHASE3_AMENDMENT_A1.md (amended, unchanged) | 6b7e73284f40e8fe93854dfe6097bb4017b3a63b3ab9c3e5d0665908965231bf |
+| docs/PHASE3_PLAN.md v1.1 (amended, unchanged) | e599f07c688f040467494a42d7efcaa36e13f437502da860ec8952944053b28f |
 
 This amends `docs/PHASE3_PLAN.md` v1.1 and `docs/PHASE3_AMENDMENT_A1.md` (tag phase3-a1). Neither file is edited.
 
@@ -145,8 +172,7 @@ never a deployable competitor.
 - Readouts are baselines only. A readout can never be the selected policy. H3-h still compares the selected policy with its
   twin.
 
-## A2.9 For the reviewer before freezing
-1. The seven-readout list, including the added logit change, and the corrected KL direction and margin.
-2. The D2 nested comparator (A2.4) and the reported estimands (A2.5).
-3. Freezing: on approval, this file is renamed `docs/PHASE3_AMENDMENT_A2.md` and tagged `phase3-a2`, with the readouts
-   module and its test hashes recorded.
+## A2.9 Reviewer decision
+Approved for freeze (Revision 2 Review, 2026-10-26). Every item was accepted: the seven readouts, the corrected KL direction
+and margin, logit change, the loop-1 and cap behaviour, the nested D2 selection including native-pb, D1 binding against
+B_pb, the distinguished bootstrap estimands, and the pooled OOD readout baselines.
