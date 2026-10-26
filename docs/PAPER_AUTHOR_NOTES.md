@@ -55,3 +55,11 @@ Inconsistencies between documents and JSON files, and claims I could not verify.
 2. The numbers in Section 7.3 (0.359 vs 0.337; drops of −0.173 and −0.098) come from Table 5 of Sections 5–6.
 3. Section 7.6 attributes the D-a2 result to "numerical causes" and gives a float64 difference of 1.67×10⁻¹³. Check the exact wording against `docs/DECISIONS.md` / the D-a2 report before submission.
 4. Sections 1 and 2 are not yet drafted. The abstract should be written last, keeping the [C]/[S]/[P] distinctions in its sentences.
+
+## Resolution log (2026-10-27)
+- Sections 3–6, note 5 (two "D-a" labels): resolved. The paper now spells out the C1 reviewer decisions and keeps "D-a" only for the Phase 3 diagnostic.
+- Sections 3–6, note 14 (commit facts): verified. TEST_OPENED.json has git_commit 196a882…, and the bundle hash c0902af3… was recomputed from a clean export of b217523.
+- Sections 3–6, note 15 (out-of-fold selection vs refitted TEST probe): verified in c1.freeze ("5-fold out-of-fold over all development data") and added to the causes listed in 5.3.
+- Sections 7–8, note 3 (D-a2 wording): rewritten from DECISIONS. The PIQA check failed its tolerance; D-a2 classified the difference as numerical; the reviewer accepted it as an exception, not a retroactive pass.
+- Sections 1–2, note 4 (Ouro version) and the verbatim PDF checks: OPEN. arXiv is blocked from the cloud and from the Linux VM on the laptop, so the PDFs must be downloaded on Windows.
+- D-t (truncated-execution check): OPEN, implemented and awaiting reviewer GO.

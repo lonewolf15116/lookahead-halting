@@ -31,3 +31,5 @@ data/questions_phase3_dev/
 data/questions_phase3_test/
 data/extracted_phase3_dev*/
 data/extracted_phase3_test*/
+
+refs_local/

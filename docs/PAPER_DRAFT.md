@@ -251,7 +251,7 @@ The studies were run in a fixed order, and each later one was written after the 
 
 1. **G3a.** The pre-registered development gate of Phase 3 (plan v1.1) compared π1-x and a hidden-state variant with the strongest baseline under the point-only rule, using nested cross-validation on development data. It stopped at rule D2, because neither candidate improved on native-pb by the required 0.02. The decision was computed by the frozen code and confirmed by the reviewer.
 2. **E1 [E].** An exploratory analysis on development data asked why the native gate won. Its main finding was that the ordering depended on the selection rule: under the point-only rule π1-x trailed native-pb (−0.024), whereas under the bootstrap-screened rule applied identically to both it led (+0.053, positive in all five folds).
-3. **C1 protocol.** E1 motivated a new, separately pre-registered study, C1, whose single confirmatory test is on the sealed TEST set. The protocol was reviewed (conditional approval, decisions D-a to D-e), then frozen (sha256 4f38b8b7…, tag `c1-protocol`).
+3. **C1 protocol.** E1 motivated a new, separately pre-registered study, C1, whose single confirmatory test is on the sealed TEST set. The protocol was reviewed (conditional approval with five specified decisions: development data only, δ = 0.02, gross saving primary with net saving a mandatory secondary, 10,000 resamples with seed 2026, native-pb as the sole primary comparator), then frozen (sha256 4f38b8b7…, tag `c1-protocol`).
 4. **Freeze on development data.** One script fitted π1-x, ran the selections for both policies, the fixed-depth reference and the pooled out-of-distribution selection, measured $\rho$, and wrote `frozen.json` (65728e16…) and the model file (72f15508…).
 5. **One-time guarded TEST run.** The run applied the frozen selections once to the sealed TEST set.
 
@@ -284,7 +284,7 @@ In words: the comparison is between π1-x and native-pb, each selected on develo
 
 ### 4.4 Deviations and disclosures
 
-- **Phase 3 numerical diagnostic D-a (PIQA).** (The label "D-a" here is the Phase 3 diagnostic, not the C1 reviewer decision of the same name.) Before the full extraction, a float32 check compared the packed pass with a context-only pass on 100 never-used PIQA training rows and 100 Social IQa rows, against a tolerance of 1e-4. Social IQa passed (maximum difference 3.1e-5). PIQA failed (1.17e-4). The tolerance was not changed and the failure stands as recorded. A follow-up, D-a2, repeated the comparison in float64 on the CPU reference path for the 10 PIQA questions with the largest float32 difference, with a pre-fixed criterion of at most 1e-9; the maximum difference was 1.67e-13, and the result was classified numerical. The reviewer accepted a documented PIQA deviation and released the extraction. A procedural deviation within D-a2 (a one-line fix was run before reviewer confirmation) is recorded in the decision log.
+- **Phase 3 numerical diagnostic D-a (PIQA).** Before the full extraction, a float32 check compared the packed pass with a context-only pass on 100 never-used PIQA training rows and 100 Social IQa rows, against a tolerance of 1e-4. Social IQa passed (maximum difference 3.1e-5). PIQA failed (1.17e-4). The tolerance was not changed and the failure stands as recorded. A follow-up, D-a2, repeated the comparison in float64 on the CPU reference path for the 10 PIQA questions with the largest float32 difference, with a pre-fixed criterion of at most 1e-9; the maximum difference was 1.67e-13, and the result was classified numerical. The reviewer accepted a documented PIQA deviation and released the extraction. A procedural deviation within D-a2 (a one-line fix was run before reviewer confirmation) is recorded in the decision log.
 - **Console transcript.** After the successful TEST run, the runner was started a second time by mistake and was refused at preflight, before the marker step. Its console transcript overwrote the transcript file of the successful run, so the file holds only the refused attempt. The console output of the successful run survives as a paste in the working conversation. The run itself is fully recorded in `test_report.json` and the marker.
 - **Smaller disclosures.** One test, the symlink-escape test for unsealing, was skipped on the Windows machine that ran the TEST script (it passes on Linux). The package snapshots before and after the run differ in one line, the editable install of this repository (the commit before and after the pull of the approved commit); all third-party versions are identical. `frozen.json` records code hashes but not a git commit.
 - **Not run.** The Phase 3 check D-b, on the sensitivity of halting decisions to the bf16 numerical path, has no recorded result (see the note in section 3.6).
@@ -340,7 +340,7 @@ The selection rule required each selected candidate's bootstrap upper bound to b
 At selection time the bounds of the frozen candidates were between 0.75 and 0.98 pp for the two adaptive methods. HellaSwag, with $n = 750$, exceeds 1 pp for every method including fixed depth, so the small sample is part of the cause, as the protocol anticipated (section 4.3). The exceedance for π1-x on CommonsenseQA is specific to π1-x [S]. Several causes are plausible and we cannot separate them [P]:
 - sampling variability on the test set, which is large for HellaSwag;
 - selection effects of a heuristic screen whose bound is asymptotic, uncorrected for the number of candidates, and computed on the data that chose the candidate (Section 3.4);
-- variability that the development-time bound does not see: the probe was fitted once on all development data, and the bound conditions on that fit;
+- variability that the development-time bound does not see. Selection used π1-x's out-of-fold development scores, but the policy applied on TEST used the probe refitted once on all development data. The two score distributions are therefore not identical, and the bound conditions on neither the refit nor its variability;
 - differences between development and test data.
 
 No analysis here isolates the cause, and we do not attribute the exceedances to selection bias alone. The practical reading is that the point budget was met on TEST and the demonstrated, upper-bound budget was not met everywhere. The PASS verdict rests on the point budget, as pre-registered.
@@ -527,8 +527,9 @@ We have no causal analysis. The following are hypotheses for future work [P]:
 - **Internal.**
   - r-kl was singled out using TEST outcomes. Its comparison with π1-x was pre-specified, but its prominence is not.
   - The in-sample freeze numbers and the cross-fitted E1 estimate disagree about r-kl.
-  - The Phase 3 diagnostic on PIQA found a float32 difference between packed and context-only scoring, attributed to numerical causes (D-a2,
-    float64 maximum difference 1.67×10⁻¹³), and was accepted as a documented deviation.
+  - The Phase 3 float32 check on PIQA (D-a) failed its pre-set tolerance for the difference between packed and context-only scoring. A
+    follow-up with a float64 reference (D-a2; maximum float64 difference 1.67×10⁻¹³) classified the difference as numerical. The reviewer
+    accepted this as a documented exception, not a retroactive pass.
   - The console transcript of the TEST run was overwritten. The run's outputs are fully recorded in the report and the marker.
 - **Construct.**
   - Gross saving counts loops, not FLOPs. Net saving uses ρ timed in isolation and is an accounting estimate.
