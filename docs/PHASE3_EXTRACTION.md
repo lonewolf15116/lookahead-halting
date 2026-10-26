@@ -258,3 +258,56 @@ benchmark, with 0 exemplars.
        and stops if not.
   4. **Output.** `results/phase3/diagnose_short_context_ood_a2.json`. The D-a report is never overwritten. No scores,
      labels or outcomes are computed.
+
+### Reviewer decision (D-a Failure Review, 2026-10-26) and D-a2 implementation
+D-a2 is conditionally approved. The full extraction, D1-D4, training and all sealed TEST analysis stay on HOLD.
+- The PIQA D-a FAIL stands. Commit 6efe327 and the D-a report stay unchanged.
+- D-a2 is a diagnostic follow-up. It does not replace D-a. A "numerical" result leads to a reviewed, documented exception,
+  never to D-a being retroactively marked PASS.
+- The 1e-4 threshold is not raised, and float64 results do not replace the float32 test.
+- Interpretation: float64 ≤ 1e-9 is strong evidence the excess is numerical, provided the reference is valid. Above 1e-9
+  means HOLD and investigate. An incomplete run, or a reference that is not equivalent, means HOLD.
+- **Reviewer's qualification:** a float64 match on 10 selected questions supports a numerical explanation for those
+  questions only. It does not prove equivalence for every PIQA input. Growth across loops alone does not prove that
+  rounding is the only cause.
+
+**Implementation:** `scripts/diagnose_short_context_ood_a2.py`, `src/lookahead/f64_reference.py`, runner
+`scripts/run_phase3_da2_windows.ps1`. It writes `results/phase3/diagnose_short_context_ood_a2.json` and refuses to
+overwrite it.
+- **Inputs.** The D-a report is read with its sha256 pinned (7783daa8…). The rows are the D-a rows: the selection
+  fingerprints and question-set hashes must equal the D-a report's, or the run is "unresolved".
+- **Conditions recorded as actually in effect, not as defaults:**
+  - GPU, torch, CUDA, cuDNN, transformers and lm_eval versions.
+  - The TF32 flags and the float32 matmul precision.
+  - The attention implementation, the enabled SDPA backends and the deterministic-algorithm flag.
+  - The CPU, the number of threads, and which module provides RMSNorm's forward.
+- **Localisation.** Float32 on the GPU, all 100 PIQA and 100 Social IQa rows. It records the packed-vs-context difference
+  per question and per loop, and whether D-a's float32 maximum is reproduced exactly.
+- **Float64 reference.** On the CPU, for the 10 PIQA questions with the largest float32 difference.
+  - Questions are ranked by that numerical difference, with ties broken by doc id. Accuracy, correctness and policy play
+    no part.
+- **Why a plain float64 run would not be a valid reference.** Ouro's modeling code forces float32 in three places whatever
+  the model dtype:
+  - RMSNorm casts to float32.
+  - RoPE takes `inv_freq` from a float32 buffer and computes cos and sin under "Force float32".
+  - The eager attention computes its softmax in float32.
+- **The substitution.** For float64 inputs only, each of these is replaced by the same formula evaluated in float64. Float32
+  and bf16 behaviour is untouched, and a test checks that. RoPE's inverse frequencies are recomputed with transformers'
+  default-RoPE formula from the same config.
+- **Run-time checks.** If any of these fails, the result is "unresolved":
+  - The patched RMSNorm against the float64 formula: relative error ≤ 1e-14.
+  - The float64 RoPE frequencies against the stored float32 buffer: relative difference ≤ 1e-6, and the RoPE type must be
+    default.
+  - A dtype audit with forward hooks on every module: any floating output that is not float64 is recorded.
+- **What is the same in both runs.** The weights (bf16 values, exactly representable in float64), the tokens, masks,
+  positions and code path (`D.compare`, as in D-a).
+- **Also reported.** Each float32 path's distance from the float64 context-only state, which shows how far each path is
+  from the reference.
+- **RAM.** The run needs at least 16 GB free. If less is free, it stops before computing anything and writes no report, so
+  it can be re-run.
+- **Tests:** `tests/test_phase3_da2.py`, 9 tests.
+  - The patches are genuine float64 on stand-ins that copy Ouro's code, and are unchanged for other dtypes.
+  - The dtype audit catches a float32 output.
+  - The selection, per-loop and interpretation rules hold, and the D-a report is pinned and is never the output.
+  - **End to end on the real Ouro classes** with tiny random weights: the patches apply, the dtype audit records only
+    float64, and the packed state equals the context-only state to 1e-12 at all 4 loops.
