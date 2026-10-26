@@ -231,3 +231,11 @@
   - The documented PIQA D-a deviation is accepted and the D-a2 blocker released. The D-a FAIL remains recorded as valid.
   - Conditions met: (1) the procedural deviation (the 2eea88d fix run before confirmation) is recorded in the D-a2 result entry; (2) the committed report equals the reviewed attachment. The sha256 d84c0fad… is the same for the laptop original, the committed copy at 8ee65ed and the attachment sent.
   - Still open, not blocking: the cause of the float32 difference between the D-a and D-a2 setups. The bf16 packed-path sensitivity of rankings and halting decisions is to be measured by D-b, non-binding, after D1-D4.
+- 2026-10-26 Full Phase 3 extraction (code a44df91; 53 build, allocation and inventory tests passed). DEV+ took 0.15 h and TEST 0.45 h. **ALL CHECKS PASSED.**
+  - DEV+: CSQA 435, HellaSwag 248, OBQA 1,952. TEST: CSQA 1,000, HellaSwag 750, OBQA 3,000, PIQA 1,837, SIQA 1,930. Every question has status ok (11,152 in all).
+  - Same-input re-runs reproduce the state and gate exactly (0) everywhere. Target recomputation is within 6e-14.
+  - Option scores vs per-option scoring: at most 0.92 nats (DEV HellaSwag), within the 1-nat gross-bug check.
+  - bf16 context-only state gap, reported only, appears on the 0-shot sets: OBQA, PIQA and SIQA, relative L2 0.030-0.036. It is 0 on CSQA and HellaSwag.
+  - The TEST report contains integrity fields only; a search for accuracy, correctness and prediction fields finds none. Reports: extraction_check_phase3_dev.json (ff6e2e34…) and extraction_check_phase3_test.json (c8d9c202…).
+  - **Caveat on one line of the console output.** "float32 packed vs context-only recorded and within 0.0001: True" reads only the Phase 1 diagnostic file (OBQA, modarith, ARC-E, CSQA). It says nothing about PIQA or SIQA. Their float32 evidence is D-a: SIQA PASS, PIQA FAIL at 1.17e-4, accepted as a documented deviation after D-a2 came out "numerical".
+  - Next: D1-D4 code (G3a), which needs reviewer sign-off before it runs. Training and TEST analysis stay on HOLD. D-b runs after D1-D4.
