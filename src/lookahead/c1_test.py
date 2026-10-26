@@ -255,7 +255,7 @@ def unsealed(root):
 def metadata_preflight(root) -> dict:
     """Metadata-only checks of the TEST extraction BEFORE the marker (reviewer, TEST script review). Reads only the manifest,
     the frozen id lists, the committed TEST extraction check report and each part's done.json (doc ids, statuses, counts,
-    file checksums); computes sha256 of the raw part files WITHOUT parsing them. No prediction, label, score or other TEST
+    file checksums; each benchmark's id set must EQUAL its frozen TEST list); computes sha256 of the raw part files WITHOUT parsing them. No prediction, label, score or other TEST
     measurement is read. Raises SystemExit on any problem."""
     import json
     from pathlib import Path
@@ -267,7 +267,14 @@ def metadata_preflight(root) -> dict:
     chk = json.loads((root / "results/phase3/extraction_check_phase3_test.json").read_text(encoding="utf-8"))
     if not chk.get("passed"):
         raise SystemExit("the committed TEST extraction check did not pass")
-    allow = G.read_id_list(root / P.IDS["test"])
+    expected = {}
+    lines = (root / P.IDS["test"]).read_text(encoding="utf-8").splitlines()
+    if lines[0] != "benchmark,stratum,doc_id,split":
+        raise SystemExit("unexpected TEST id-list header")
+    for ln in lines[1:]:
+        if ln:
+            b, _, doc, _ = ln.split(",")
+            expected.setdefault(b, set()).add(doc)
     base = root / "data" / TEST_DIR
     out = {}
     for b in PRIMARY + OOD:
@@ -288,8 +295,10 @@ def metadata_preflight(root) -> dict:
             if any(st != "ok" for st in d["statuses"]):
                 raise SystemExit(f"{dp.name}: a TEST question did not extract")
         expn = man["sets"][f"test/{b}"]["n_rows"]
-        if n != expn or len(set(ids)) != len(ids) or not set(ids) <= allow:
-            raise SystemExit(f"{b}: {n} questions (manifest {expn}), duplicates or ids outside the TEST list")
+        if n != expn or len(ids) != expn or len(set(ids)) != len(ids):
+            raise SystemExit(f"{b}: {n} questions (manifest {expn}) or duplicate ids")
+        if set(ids) != expected.get(b, set()):                         # EXACT per-benchmark id set (reviewer)
+            raise SystemExit(f"{b}: the TEST question ids differ from the frozen TEST list for this benchmark")
         out[b] = {"n": n, "parts": len(dones)}
     return out
 

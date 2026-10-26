@@ -86,27 +86,44 @@ def git_commit(root: Path) -> str:
         return f"unavailable ({type(e).__name__})"
 
 
-def write_failure(root: Path, stage: str, exc: BaseException) -> None:
-    """Durable failure status after the marker (reviewer, TEST script review): stage, exception type, timestamp and the
-    code locations of the traceback. Deliberately NO exception message and no values, so that nothing from TEST leaks into
-    it. Written atomically (temporary file, then exclusive link to the final name); it never replaces an existing file. The
-    marker stays, and no retry is possible."""
+def write_failure(root: Path, stage: str, exc: BaseException) -> Path:
+    """Durable failure status after the marker (reviewer, TEST script reviews): stage, exception type, timestamp and the
+    code locations of the traceback; deliberately NO exception message and no values, so nothing from TEST leaks into it.
+
+    Published by EXCLUSIVE create only (open mode 'x'): an existing record is never overwritten, not even in a race. If
+    TEST_FAILED.json already exists, the record goes to TEST_FAILED.<UTC timestamp>.<n>.json, again by exclusive create.
+    The content is flushed and fsync'ed before the file is closed. The marker stays; no retry is possible. Returns the
+    path written."""
     import os
     import traceback
 
-    rec = {"failed_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "stage": stage,
-           "exception_type": type(exc).__name__,
+    now = datetime.datetime.now(datetime.timezone.utc)
+    rec = {"failed_utc": now.isoformat(), "stage": stage, "exception_type": type(exc).__name__,
            "traceback_locations": [f"{Path(fr.filename).name}:{fr.lineno} in {fr.name}" for fr in traceback.extract_tb(exc.__traceback__)],
            "note": "TEST counts as opened; the C1 run is one-time and is NOT retried. Report this file to the reviewer."}
-    tmp = root / (FAILED + ".tmp")
-    tmp.write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    try:
-        os.link(tmp, root / FAILED)          # atomic and exclusive: fails if FAILED already exists
-    except OSError:
-        if not (root / FAILED).exists():
-            os.replace(tmp, root / FAILED)
-            return
-    tmp.unlink(missing_ok=True)
+    data = json.dumps(rec, indent=1, sort_keys=True) + "\n"
+    first = root / FAILED
+    stamp = now.strftime("%Y%m%dT%H%M%S%fZ")
+    candidates = [first] + [first.with_name(f"TEST_FAILED.{stamp}.{i}.json") for i in range(100)]
+    for path in candidates:
+        try:
+            f = open(path, "x", encoding="utf-8", newline="\n")        # exclusive create: never replaces anything
+        except FileExistsError:
+            continue
+        with f:
+            f.write(data)
+            f.flush()
+            os.fsync(f.fileno())
+        try:                                                           # best effort: persist the directory entry (POSIX)
+            dfd = os.open(path.parent, os.O_RDONLY)
+            try:
+                os.fsync(dfd)
+            finally:
+                os.close(dfd)
+        except (OSError, AttributeError):
+            pass
+        return path
+    raise RuntimeError("could not create a failure record without overwriting")
 
 
 def main(argv=None, *, root: Path | None = None, loader=None) -> int:

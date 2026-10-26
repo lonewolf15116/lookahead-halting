@@ -233,7 +233,7 @@ def test_a_failed_run_keeps_the_marker(root):
     fail = json.loads((root / RUN.FAILED).read_text(encoding="utf-8"))
     assert fail["stage"] == "load TEST" and fail["exception_type"] == "RuntimeError"
     assert "disk error" not in json.dumps(fail)                              # no message, no values
-    assert not (root / (RUN.FAILED + ".tmp")).exists()
+    assert not list((root / "results/c1").glob("*.tmp"))
     assert RUN.main(["--approved-code-sha", sha], root=root, loader=lambda r: None) == 2
 
 
@@ -244,7 +244,7 @@ def test_test_code_never_selects_or_fits():
 
 
 # ------------------------------------------------------------------------------------------------ metadata preflight
-@pytest.mark.parametrize("damage", ["missing_part", "count", "foreign_id", "checksum", "status", "manifest"])
+@pytest.mark.parametrize("damage", ["missing_part", "count", "foreign_id", "checksum", "status", "manifest", "swapped_id"])
 def test_metadata_preflight_refuses_before_the_marker(root, damage):
     sha = RUN.bundle_sha(root)
     d = root / "data" / T.TEST_DIR / "hellaswag"
@@ -259,10 +259,15 @@ def test_metadata_preflight_refuses_before_the_marker(root, damage):
         (d / "part-00000.parquet").write_bytes(b"changed")
     elif damage == "status":
         done["statuses"][0] = "failed"
+    elif damage == "swapped_id":                   # a real TEST id of ANOTHER benchmark: counts and TEST-list membership hold
+        o = root / "data" / T.TEST_DIR / "openbookqa" / "part-00000.done.json"
+        od = json.loads(o.read_text(encoding="utf-8"))
+        done["doc_ids"][0], od["doc_ids"][0] = od["doc_ids"][0], done["doc_ids"][0]
+        o.write_text(json.dumps(od), encoding="utf-8")
     elif damage == "manifest":
         m = root / "data/manifests/phase3_questions.json"
         m.write_text(m.read_text(encoding="utf-8") + " ", encoding="utf-8")
-    if damage in ("count", "foreign_id", "status"):
+    if damage in ("count", "foreign_id", "status", "swapped_id"):
         (d / "part-00000.done.json").write_text(json.dumps(done), encoding="utf-8")
     calls = []
     assert RUN.main(["--approved-code-sha", sha], root=root, loader=lambda r: calls.append(1)) == 2
@@ -283,3 +288,31 @@ def test_strongest_baseline_is_labelled_test_selected(real_frozen):
     fz, models = real_frozen
     rep = T.evaluate_c1(fz, models, _test_data(seed=42), n_boot=100)
     assert "TEST-selected" in rep["secondary_all_baselines"]["label"]
+
+
+def test_failure_record_never_overwrites_and_is_fsynced(tmp_path, monkeypatch):
+    import os
+
+    (tmp_path / "results" / "c1").mkdir(parents=True)
+    first = tmp_path / RUN.FAILED
+    first.write_text("EXISTING RECORD", encoding="utf-8")
+    synced = []
+    real_fsync = os.fsync
+    monkeypatch.setattr(os, "fsync", lambda fd: synced.append(fd) or real_fsync(fd))
+    try:
+        raise ValueError("secret value 0.123")
+    except ValueError as e:
+        p1 = RUN.write_failure(tmp_path, "evaluate", e)
+        p2 = RUN.write_failure(tmp_path, "evaluate", e)
+    assert first.read_text(encoding="utf-8") == "EXISTING RECORD"            # untouched
+    assert p1 != first and p2 not in (first, p1) and p1.exists() and p2.exists()
+    rec = json.loads(p1.read_text(encoding="utf-8"))
+    assert rec["stage"] == "evaluate" and rec["exception_type"] == "ValueError" and "0.123" not in json.dumps(rec)
+    assert len(synced) >= 2                                                  # each record fsync'ed before close
+    assert not list((tmp_path / "results" / "c1").glob("*.tmp"))
+
+
+def test_failure_record_uses_exclusive_create_only():
+    src = open(RUN.__file__, encoding="utf-8").read()
+    body = src[src.index("def write_failure"):src.index("def main(")]
+    assert "os.replace" not in body and "os.link" not in body and '"x"' in body

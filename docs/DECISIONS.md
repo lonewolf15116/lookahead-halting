@@ -313,3 +313,7 @@
   - (3) TEST_FAILED.json after the marker records the stage, exception type, timestamp and traceback locations only (no message or values), atomically and exclusively. The marker is kept and there is no retry.
   - Strongest-baseline secondary labelled as a TEST-selected comparator.
   - 20 TEST-script tests; all five suites pass. New bundle sha256 d75df053e756bf1972c566b9808f7f10ef0dc9739e78a45e86ddc707ded55055. Not run.
+- 2026-10-26 Reviewer "C1 TEST script revision 2 — reviewer verdict" (7f98b33): HOLD on one correction; canonical unsealing, metadata preflight and the label were accepted. Applied:
+  - write_failure publishes only by exclusive create (open 'x'), with flush, fsync and a best-effort directory fsync. There is no os.link or os.replace fallback. An existing TEST_FAILED.json is never touched; a later record goes to a uniquely named file, also by exclusive create. Regression tests cover an existing record left byte-identical, fsync called, no message leak, and the source free of replace/link.
+  - Metadata preflight now requires each benchmark's TEST id set to EQUAL its frozen per-benchmark list (test: ids swapped between benchmarks are refused).
+  - 23 TEST-script tests; all five suites pass. New bundle sha256 6d214db240373108b108670ed6cdf0e4b3934e01fc50d485c33531d88014629e. Not run.
