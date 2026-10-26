@@ -239,3 +239,8 @@
   - The TEST report contains integrity fields only; a search for accuracy, correctness and prediction fields finds none. Reports: extraction_check_phase3_dev.json (ff6e2e34…) and extraction_check_phase3_test.json (c8d9c202…).
   - **Caveat on one line of the console output.** "float32 packed vs context-only recorded and within 0.0001: True" reads only the Phase 1 diagnostic file (OBQA, modarith, ARC-E, CSQA). It says nothing about PIQA or SIQA. Their float32 evidence is D-a: SIQA PASS, PIQA FAIL at 1.17e-4, accepted as a documented deviation after D-a2 came out "numerical".
   - Next: D1-D4 code (G3a), which needs reviewer sign-off before it runs. Training and TEST analysis stay on HOLD. D-b runs after D1-D4.
+- 2026-10-26 Reviewer "Phase 3 extraction — Independent reviewer assessment": extraction integrity PASS; sealed TEST report structure PASS; **GO to write D1-D4 code**; running it on real data is on HOLD until the implementation is signed off; training and TEST stay on HOLD.
+  - Written: src/lookahead/phase3_g3a.py, scripts/phase3_g3a.py, tests/test_phase3_g3a.py (45 pass), crosswalk docs/PHASE3_G3A_IMPLEMENTATION.md.
+  - It reuses the frozen A2 readout module unchanged (hash-checked) and Gate 2's verified reader and logistic fit.
+  - Eight implementation choices the frozen documents leave open (OP1-OP8) are listed for confirmation before any real run.
+  - Synthetic dry run only; no real outcome evaluated.
