@@ -44,13 +44,23 @@ meaningful improvement δ, while meeting the accuracy budget on every primary be
   - π1-x needs the vocabulary entropy (vent) at every loop, a full-vocabulary softmax at one position, so its ρ > 0.
   - The native gate's cdf is produced by the model anyway (ρ = 0).
   - **D-c: gross saving is primary; net saving is a mandatory secondary.**
-  - **ρ includes the probe's whole incremental cost**, measured on the GPU before freezing with a representative
-    implementation. Per loop, that is:
-    - the option scoring needed for conf and ent;
-    - the full-vocabulary log-softmax needed for vent;
-    - assembling the features, scaling them, and running the per-loop logistic.
-    It is divided by the measured time of one loop. Batch size 1, same GPU and code path as extraction, about 200 DEV+
-    questions per primary benchmark.
+  - **ρ is the probe's incremental cost, split at the deployment boundary** (revised after the reviewer's C1
+    implementation review). It is measured on the GPU before freezing with extraction's own code path (PackedScorer,
+    batch size 1, about 200 DEV+ questions per primary benchmark), and divided by the measured time of one loop:
+    - **Shared, in neither ρ.** Ouro's exit head and its cdf: this is native-pb's whole controller (ρ = 0), and π1-x reuses
+      it.
+    - **ρ_score: option scoring**, exactly as extraction does it (lm_head at the scored positions, log-softmax, sum per
+      option).
+      - Its first row is also the vocabulary distribution at the last context token, so vent needs no further readout;
+        extraction stores the same `vocab_logp = logp[0]`.
+      - At the loop where a controller **halts**, this scoring *is* the answer's scoring, which every controller needs. So
+        it is charged only at the other evaluated loops.
+    - **ρ_rest: the rest**, charged at every evaluation: vent, transferring the option scores to the host, the 9 features
+      (computed exactly as extraction's `option_record`, with acc_norm dividing by `len(choice_text)`), standardisation and
+      the per-loop logistic.
+    - **Net saving per question** (`c1.net_saving`) = 1 − (e + ρ_score·n_score + ρ_rest·n_eval)/4.
+      - Halting by score at loop t: n_eval = t and n_score = t − 1.
+      - Reaching the cap m: n_eval = n_score = m − 1.
   - **If the net advantage disappears**, a gross-saving PASS is still reported under the frozen rule. The practical
     conclusion must then say that once its overhead is counted, the probe's advantage is not realized.
 
@@ -144,3 +154,17 @@ meaningful improvement δ, while meeting the accuracy budget on every primary be
   (C1.5).
 - **Freeze checks applied.** Compliance uncertainty is reported prominently (C1.4). ρ is measured with the full feature
   extraction and inference cost, and if the net advantage disappears that limitation goes into the conclusion (C1.3).
+
+## C1 implementation review (2026-10-26): changes requested and applied
+1. **Pooled OOD tie-break.** The loss tie-break must consider only candidates tied for the maximum qualifying saving.
+   - The original code already did this implicitly: candidates are tried in descending saving order and the loop stops
+     below the first qualifier's saving, so only the top tie block is collected. Its brute-force test also filtered by top
+     saving first.
+   - The restriction is now **explicit**, in `c1.tie_break`. A regression test fails under the logic the reviewer
+     described, where the minimum loss is taken over all qualifiers.
+2. **ρ boundary.** It is now split into ρ_score and ρ_rest as in C1.3. Two double-counts were removed:
+   - the extra vocabulary readout: extraction reuses row 0 of the scoring readout;
+   - the option scoring at the halting loop, which answering needs anyway.
+   Tests check that the features equal extraction's `option_record`, including the `len(choice_text)` lengths, and that
+   vent's distribution equals the one extraction stores. They also check the net-saving accounting.
+

@@ -136,7 +136,9 @@ def test_rho_measurement_runs_on_a_tiny_real_ouro_model():
     models = [({"mean": np.zeros(9), "sd": np.ones(9)}, g1_lin()) for _ in range(3)]
     out = measure_rho(model, {"openbookqa": qs}, models, n_per_bench=6)
     v = out["openbookqa"]
-    assert v["n_questions"] == 6 and math.isfinite(v["rho"]) and v["rho"] > 0 and v["loop_ms"] > 0
+    assert v["n_questions"] == 6 and v["loop_ms"] > 0
+    assert all(math.isfinite(v[k]) and v[k] > 0 for k in ("rho_score", "rho_rest"))
+    assert v["rho_total"] == pytest.approx(v["rho_score"] + v["rho_rest"])
 
 
 def g1_lin():
@@ -154,3 +156,92 @@ def test_freeze_script_synthetic_path_writes_and_refuses_to_overwrite(tmp_path):
     assert fz["pi1x"]["model_file_sha256"] == g1.sha256_file(tmp_path / "c1" / "pi1x_models.npz")
     r2 = subprocess.run(cmd, capture_output=True, text=True, env=env, cwd=REPO_ROOT)
     assert r2.returncode == 2 and "refusing" in r2.stderr
+
+
+# ------------------------------------------------------------------------------ reviewer C1 implementation review fixes
+
+def _reviewer_hypothetical(qual):
+    """The flawed logic the reviewer described: minimum loss over ALL qualifiers, before restricting to top saving."""
+    lo = min(c["loss"] for c in qual)
+    tie = [c for c in qual if c["loss"] <= lo + g1.TOL]
+    tie.sort(key=lambda c: (0 if math.isinf(c["tau"]) else 1, -c["tau"] if math.isfinite(c["tau"]) else 0, c["m"]))
+    return tie[0]
+
+
+def test_tie_break_restricts_to_maximum_saving_before_loss():
+    qual = [{"tau": 0.5, "m": 3, "saving": 0.40, "loss": 0.9},     # the optimum
+            {"tau": 0.9, "m": 4, "saving": 0.10, "loss": 0.0},     # safest, lower saving
+            {"tau": math.inf, "m": 4, "saving": 0.0, "loss": 0.0}]
+    assert C1.tie_break(qual)["saving"] == 0.40
+    assert _reviewer_hypothetical(qual)["saving"] != 0.40          # the regression this test guards against
+    tied = [{"tau": 0.5, "m": 3, "saving": 0.40, "loss": 0.9}, {"tau": 0.7, "m": 3, "saving": 0.40, "loss": 0.2},
+            {"tau": math.inf, "m": 2, "saving": 0.40, "loss": 0.2}]
+    assert C1.tie_break(tied)["tau"] == math.inf                    # among top saving: smaller loss, then fixed depth
+    with pytest.raises(ValueError):
+        C1.tie_break([])
+
+
+def test_pooled_selection_uses_the_explicit_tie_break(monkeypatch, dev):
+    calls = []
+    real = C1.tie_break
+    monkeypatch.setattr(C1, "tie_break", lambda q: calls.append(q) or real(q))
+    boot = E.make_boot(dev, np.ones(dev.N, bool), C1.BOOT_FOLD_ID)
+    C1.select_risk_pooled(dev, G.baseline_stat(dev, "native-pb"), boot)
+    assert len(calls) == 1
+
+
+def test_net_saving_charges_option_scoring_except_at_the_halting_loop():
+    # q1 halts by score at loop 2: evaluations at 1, 2; scoring paid at 1 only (loop 2's scoring answers). q2 hits cap 3:
+    # evaluations at 1, 2; scoring paid at both; the answer's scoring at loop 3 is shared with every controller.
+    got = C1.net_saving([2, 3], [True, False], 3, rho_score=0.1, rho_rest=0.01)
+    cost = (2 + 0.1 * 1 + 0.01 * 2) + (3 + 0.1 * 2 + 0.01 * 2)
+    assert got == pytest.approx(1 - cost / 2 / 4)
+    assert C1.net_saving([2, 3], [True, False], 3, 0.0, 0.0) == pytest.approx(1 - 2.5 / 4)
+
+
+def test_probe_features_match_extraction_exactly():
+    """Option lengths and features: c1_rho._features == extract.option_record (acc_norm divides by len(choice_text))."""
+    from lookahead.c1_rho import _features
+    from lookahead.extract import option_record
+    from lookahead.questions import Question
+
+    for metric in ("acc_norm", "acc"):
+        q = Question("b", "b", "b/0", "ctx", [" x", " yy", " z"], ["a", "bbbb", "cc"], 1, metric,
+                     context_enc=[1, 2, 3], cont_encs=[[4], [5, 6, 7], [8, 9]])   # token lengths differ from char lengths
+        ll = np.array([-3.0, -5.5, -2.5])
+        rec = option_record(q, ll.tolist())
+        x = _features(ll, np.array([float(len(c)) for c in q.choice_text]), metric, 1.25, 0.3, 3, q.packed_len, 1)
+        assert x[0] == pytest.approx(rec["conf"]) and x[1] == pytest.approx(rec["ent"])
+        assert x[2] == np.float32(1.25) and x[3] == np.float32(0.3) and x[4] == 3
+        assert x[5] == pytest.approx(math.log(q.packed_len)) and list(x[6:]) == [0, 1, 0]
+
+
+def test_vent_reuses_the_scoring_rows_last_context_distribution_as_extraction_does():
+    import torch
+
+    from lookahead.config import load_config
+
+    local = REPO_ROOT / load_config("model")["local_dir"]
+    if not (local / "modeling_ouro.py").exists():
+        pytest.skip("Ouro modeling code not present")
+    from transformers import AutoConfig, AutoModelForCausalLM
+
+    from lookahead.packed import PackedScorer, build_packed
+
+    cfg = AutoConfig.from_pretrained(str(local), trust_remote_code=True)
+    for k, v in dict(hidden_size=64, intermediate_size=128, num_hidden_layers=2, num_attention_heads=4,
+                     num_key_value_heads=4, head_dim=16, vocab_size=500, max_window_layers=2).items():
+        setattr(cfg, k, v)
+    torch.manual_seed(0)
+    model = AutoModelForCausalLM.from_config(cfg, trust_remote_code=True).eval()
+    packed = build_packed([5, 17, 99, 3], [[7, 8], [42, 43, 44]])
+    assert packed.score_pos[0] == packed.n_context - 1
+    sc = PackedScorer(model)
+    pos = torch.tensor(packed.score_pos)
+    with torch.no_grad():
+        for out in sc.loops(packed, n_loops=1):
+            pass
+        state = sc.start(packed)
+        sc.runner.step(state)
+        logp = torch.log_softmax(sc.runner.readout(state.hidden, pos[None])[0], dim=-1)
+    assert torch.allclose(logp[0], out.vocab_logp)   # the same distribution extraction stores for vent

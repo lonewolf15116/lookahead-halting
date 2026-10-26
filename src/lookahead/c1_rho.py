@@ -1,13 +1,17 @@
-"""C1.3 net-saving overhead: rho_b = (pi1-x's incremental cost per evaluation) / (cost of one loop), measured on the GPU.
+"""C1.3 net-saving overhead for pi1-x, measured on the GPU, split at the deployment boundary (reviewer, C1 implementation
+review). Same code path as extraction (PackedScorer.loops, batch size 1), on DEV+ questions; per loop t = 1..3:
 
-Representative implementation, same code path as extraction (packed scoring, batch size 1). Per loop, on DEV+ questions:
-  loop cost  = OuroLoopRunner.step on the packed sequence (one recurrent loop).
-  probe cost = everything pi1-x needs at that loop and the native gate does not:
-               option scoring (lm_head at the scored positions, log-softmax, gather and sum per option -> conf, ent under the
-               benchmark's metric), the full-vocabulary log-softmax at the last context token (-> vent), assembling the 9
-               features, standardising them and the per-loop logistic.
-The native gate's cdf comes from Ouro's own exit head, which the model runs anyway: rho = 0 (plan 5a), so its cost is in
-neither term. Timed with torch.cuda.synchronize around each part; the first WARMUP questions are excluded.
+  loop      OuroLoopRunner.step on the packed sequence: the recurrent loop itself.
+  shared    NOT timed into either rho: Ouro's exit head -> cdf (native-pb's whole controller, rho = 0; pi1-x reuses it).
+  score     option scoring, exactly as extraction: lm_head at the scored positions, log-softmax, gather, index_add per
+            option. Its row 0 is ALSO the vocabulary log-distribution at the last context token (score_pos[0] is always
+            the last context position), so vent needs no further readout (extraction does the same: vocab_logp = logp[0]).
+            At the loop where a controller HALTS, this scoring is the answer's scoring, which every controller needs; it is
+            incremental only at the other evaluated loops (c1.net_saving).
+  rest      vent (entropy of logp[0]), host transfer of the option log-likelihoods, the 9 features exactly as
+            extraction's option_record (acc_norm divides by len(choice_text)), standardisation and the per-loop logistic.
+            Incremental at every evaluation.
+rho_score = score / loop, rho_rest = rest / loop. The first WARMUP questions are excluded.
 """
 import math
 
@@ -30,7 +34,7 @@ def _features(ll, choice_lens, metric, vent, cdf, n_options, n_tokens, t):
 
 def measure_rho(model, questions: dict, models: list, n_per_bench: int = 200) -> dict:
     """questions: {benchmark: [Question]} (DEV+). models: pi1-x's per-loop (scaler, LinearModel), loops 1-3.
-    Returns {benchmark: {rho, loop_ms, probe_ms, n_questions}}."""
+    Returns {benchmark: {rho_score, rho_rest, rho_total, loop_ms, score_ms, rest_ms, n_questions, device}}."""
     import time
 
     import torch
@@ -45,9 +49,11 @@ def measure_rho(model, questions: dict, models: list, n_per_bench: int = 200) ->
     out = {}
     with torch.no_grad():
         for bench, qs in questions.items():
-            loop_t, probe_t = [], []
+            loop_t, score_t, rest_t = [], [], []
             for qi, q in enumerate(qs[: n_per_bench + WARMUP]):
                 packed = build_packed(q.context_enc, q.cont_encs)
+                if packed.score_pos[0] != packed.n_context - 1:
+                    raise AssertionError("score row 0 must be the last context position (vent reuses it)")
                 state = scorer.start(packed)
                 pos = torch.tensor(packed.score_pos, device=dev)
                 tgt = torch.tensor(packed.score_tgt, device=dev)
@@ -64,19 +70,21 @@ def measure_rho(model, questions: dict, models: list, n_per_bench: int = 200) ->
                     cdf = float(gate.update(runner.gate_logit(state.hidden, last).float().cpu())[0])   # free (rho = 0)
                     sync()
                     c = time.perf_counter()
-                    logp = torch.log_softmax(runner.readout(state.hidden, pos[None])[0], dim=-1)
+                    logp = torch.log_softmax(runner.readout(state.hidden, pos[None])[0], dim=-1)          # score
                     ll = torch.zeros(packed.n_options, device=dev).index_add_(0, opt, logp.gather(1, tgt[:, None]).squeeze(1))
-                    vl = torch.log_softmax(runner.readout(state.hidden, last)[0], -1)
-                    vent = float(-(vl.exp() * vl).sum())
+                    sync()
+                    d = time.perf_counter()
+                    vent = float(-(logp[0].exp() * logp[0]).sum())                                       # rest
                     x = _features(ll.double().cpu().numpy(), lens, q.metric, vent, cdf, len(q.cont_encs), q.packed_len, t)
                     sc, m = models[t]
                     m.predict(((x[None] - sc["mean"]) / sc["sd"]).astype(np.float32))
                     sync()
-                    d = time.perf_counter()
+                    f = time.perf_counter()
                     if qi >= WARMUP:
                         loop_t.append(b - a)
-                        probe_t.append(d - c)
-            lm, pm = float(np.mean(loop_t)), float(np.mean(probe_t))
-            out[bench] = {"rho": pm / lm, "loop_ms": 1e3 * lm, "probe_ms": 1e3 * pm, "n_questions": len(loop_t) // 3,
-                          "device": str(dev)}
+                        score_t.append(d - c)
+                        rest_t.append(f - d)
+            lm, sm, rm = float(np.mean(loop_t)), float(np.mean(score_t)), float(np.mean(rest_t))
+            out[bench] = {"rho_score": sm / lm, "rho_rest": rm / lm, "rho_total": (sm + rm) / lm, "loop_ms": 1e3 * lm,
+                          "score_ms": 1e3 * sm, "rest_ms": 1e3 * rm, "n_questions": len(loop_t) // 3, "device": str(dev)}
     return out

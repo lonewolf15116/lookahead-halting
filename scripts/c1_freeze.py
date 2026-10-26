@@ -96,7 +96,8 @@ def main(argv=None) -> int:
           f"native-pb {frozen['selection_macro_saving_dev']['native-pb']:.4f}  (in-sample; not an estimate of TEST)")
     print(f"expected 95% half-width at TEST sizes: {frozen['expected_precision']['expected_half_width_95']:.4f}")
     if isinstance(frozen["rho"], dict):
-        print("rho: " + "  ".join(f"{b}: {v['rho']:.4f} ({v['probe_ms']:.2f} / {v['loop_ms']:.2f} ms)" for b, v in frozen["rho"].items()))
+        print("rho: " + "  ".join(f"{b}: score {v['rho_score']:.4f} + rest {v['rho_rest']:.4f} (loop {v['loop_ms']:.2f} ms)"
+                                  for b, v in frozen["rho"].items()))
     print(f"frozen: {out / 'frozen.json'}")
     return 0
 

@@ -41,6 +41,31 @@ def pi1x_statistic(dev: G.DevData):
     return oof, models
 
 
+def tie_break(qual: list) -> dict:
+    """Frozen tie-break over QUALIFYING candidates (dicts with tau, m, saving, loss): restrict to those tied for the
+    maximum saving (1e-12) FIRST, then smaller loss -> tau = inf -> larger tau -> smaller m. Explicit, so that it never
+    depends on how the caller enumerated `qual` (reviewer, C1 implementation review)."""
+    if not qual:
+        raise ValueError("no qualifying candidate")
+    top = max(c["saving"] for c in qual)
+    best = [c for c in qual if c["saving"] >= top - g1.TOL]
+    lo = min(c["loss"] for c in best)
+    tie = [c for c in best if c["loss"] <= lo + g1.TOL]
+    tie.sort(key=lambda c: (0 if math.isinf(c["tau"]) else 1, -c["tau"] if math.isfinite(c["tau"]) else 0, c["m"]))
+    return tie[0]
+
+
+def net_saving(e: np.ndarray, halted_by_score: np.ndarray, m: int, rho_score: float, rho_rest: float) -> float:
+    """C1.3 net saving for pi1-x (native-pb and fixed depth have rho = 0). Evaluations: loops 1..e if halted by score, else
+    loops 1..m-1. Every evaluation pays rho_rest (vent reduction, features, probe). Option scoring (rho_score) is paid at
+    every evaluation EXCEPT the halting one, whose scoring is the answer's scoring, which every controller needs anyway."""
+    e = np.asarray(e, dtype=float)
+    hb = np.asarray(halted_by_score, dtype=bool)
+    n_eval = np.where(hb, e, m - 1)
+    n_score = np.where(hb, e - 1, m - 1)
+    return float(1.0 - np.mean(e + rho_score * n_score + rho_rest * n_eval) / 4.0)
+
+
 def select_risk_pooled(d: G.DevData, S: np.ndarray, boot: dict, fixed_only: bool = False) -> dict:
     """Task-agnostic (A1.2, C1.6 item 4): ONE (tau, m) for all benchmarks. Qualifies iff, for EVERY benchmark of d, the point
     loss <= 1 pp and the bootstrap 95% upper bound <= 1 pp (same draws as select_risk). Maximises the macro saving over all
@@ -88,10 +113,7 @@ def select_risk_pooled(d: G.DevData, S: np.ndarray, boot: dict, fixed_only: bool
             if best is None:
                 best = c["saving"]
     assert qual, "no pooled candidate qualifies (fixed depth 4 must)"
-    lo = min(c["loss"] for c in qual)
-    tie = [c for c in qual if c["loss"] <= lo + g1.TOL]
-    tie.sort(key=lambda c: (0 if math.isinf(c["tau"]) else 1, -c["tau"] if math.isfinite(c["tau"]) else 0, c["m"]))
-    s = tie[0]
+    s = tie_break(qual)
     return {"tau": s["tau"], "m": int(s["m"]), "macro_saving": s["saving"], "macro_loss": s["loss"],
             "per_benchmark": {b: {"saving": v[0], "loss": v[1]} for b, v in s["per"].items()},
             "upper_bounds": s["upper_bounds"]}
