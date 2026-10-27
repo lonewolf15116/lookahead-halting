@@ -152,7 +152,7 @@ rows4 = {  # (method,bench): (m, saving, loss, ub, hist)
     ("B_pb", "commonsense_qa"): ("4", "0.000", "0.00", "0.00", "0 / 0 / 0 / 1,000"),
     ("pi1-x", "hellaswag"): ("3", "0.279", "0.40", "1.60", "0 / 88 / 662 / 0"),
     ("native-pb", "hellaswag"): ("3", "0.262", "0.13", "1.33", "0 / 36 / 714 / 0"),
-    ("B_pb", "hellaswag"): ("3", "0.250", "0.53", "1.60", "0 / 0 / 0 / 750"),
+    ("B_pb", "hellaswag"): ("3", "0.250", "0.53", "1.60", "0 / 0 / 750 / 0"),
 }
 for (meth, b), (m, s, l, u, h) in rows4.items():
     r = pb[meth][b]
@@ -308,7 +308,7 @@ C("5.3.selub.min", "Selection-time adaptive bounds between 0.75 …", "0.75", mi
 C("5.3.selub.max", "… and 0.98 pp", "0.98", max(selub), "stored", "frozen.primary", ctx="bounds of the frozen candidates were between", d=2)
 # E-selection margin claim in 7.3
 sec("7.3 In-sample bound margins")
-for b, (a_, n_) in zip(BENCH, [("0.44", "0.53"), ("0.51", "0.69"), ("0.37", "0.38")]):
+for b, (a_, n_) in zip(BENCH, [("0.44", "0.53"), ("0.51", "0.68"), ("0.37", "0.38")]):
     C(f"7.3.margin.pi1x.{b}", f"In-sample bound margin pi1-x {SHORT[b]} (upper bound − loss, selection data)", a_,
       F["primary"]["pi1-x"][b]["upper_bound"] - F["primary"]["pi1-x"][b]["loss"], "arithmetic", "frozen.primary", ctx="smaller bound margins", d=2)
     C(f"7.3.margin.native.{b}", f"In-sample bound margin native-pb {SHORT[b]}", n_,
@@ -464,7 +464,7 @@ B("X1.reading", "X1 governing reading FLIP-SUPPORTED", X["reading"]["reading"] =
 phi_n = lv["0.20"]["macro"]["native-pb"]["phi"]["point"]
 phi_p = lv["0.20"]["macro"]["pi1-x"]["phi"]["point"]
 C("X1.phi.pi1x.20", "phi pi1-x at saving 0.20 = 1.3 flips per 100", "1.3", phi_p * 100, "arithmetic", "x1_flips.macro", ctx="flips per 100", d=1, show="1.3")
-C("X1.phi.native.20", "phi native-pb at saving 0.20 = 3.4 flips per 100", "3.4", phi_n * 100, "arithmetic", "x1_flips.macro", ctx="flips per 100", d=1, show="3.4")
+C("X1.phi.native.20", "phi native-pb at saving 0.20 = 3.3 flips per 100", "3.3", phi_n * 100, "arithmetic", "x1_flips.macro", ctx="flips per 100", d=1, show="3.3")
 for l in ["0.15", "0.20", "0.25", "0.30"]:
     d_ = lv[l]["delta"]["phi"]
     B(f"X1.dphi.neg.{l}", f"Δφ CI entirely below 0 at {l}", d_["hi"] < 0, "stored", "x1_flips")
@@ -494,8 +494,8 @@ for l, vals in tab.items():
                            basis="stored", rule=f"round to {dd} dp", status="PASS" if (ok and rep.replace('+', '') in xr.replace('−', '-')) else "FAIL",
                            source="x1_flips.json", ctx=None, numeric_ok=ok, md_ok=None, tex_ok=None))
 rates = {"0.15": ("0.008", "0.013", "0.021", "0.034"), "0.20": None}
-# X1_RESULT.md absolute-rate sentence: φ is 0.008, 0.013, 0.023 and 0.034 for π1-x, against 0.021, 0.034, 0.040 and 0.051 for native-pb
-for l, rp, rn in zip(["0.15", "0.20", "0.25", "0.30"], ["0.008", "0.013", "0.023", "0.034"], ["0.021", "0.034", "0.040", "0.051"]):
+# X1_RESULT.md absolute-rate sentence: φ is 0.008, 0.013, 0.023 and 0.034 for π1-x, against 0.021, 0.033, 0.040 and 0.050 for native-pb (as corrected after Step 4; the original text read 0.034 and 0.051)
+for l, rp, rn in zip(["0.15", "0.20", "0.25", "0.30"], ["0.008", "0.013", "0.023", "0.034"], ["0.021", "0.033", "0.040", "0.050"]):
     for nm, rep, key in [("pi1-x", rp, "pi1-x"), ("native-pb", rn, "native-pb")]:
         v = lv[l]["macro"][key]["phi"]["point"]
         ok = abs(float(rep) - rnd(v, 3)) < 1e-9 or abs(float(rep) - float(f"{v:.3f}")) < 1e-9

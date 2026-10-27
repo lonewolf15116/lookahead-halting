@@ -112,3 +112,23 @@ One check of my own (`C.labels.x1_confirm`, added during the audit) initially fa
 ## 9. Conclusion
 
 The paper's claims are traceable to frozen artifacts and, where recomputable, correct. Before submission: fix D1–D5 (a rounding/transcription pass of ~6 edits), rebuild PDFs (D8), resolve D9–D10, run the Windows rerun (D11), and address the release items in §6. No re-analysis is needed.
+
+---
+
+# Addendum A — corrections applied (2026-10-27, after reviewer decision "CONDITIONAL PASS")
+
+Sections 1–9 above are the immutable original record. This addendum records what was changed afterwards. Post-correction machine reports are in `results/audit/post_correction/` (the originals in `results/audit/` are untouched). No frozen artifact, protocol or C1/TEST result was modified; C1 was not rerun.
+
+| ID | Reviewer decision | Action | Result |
+|---|---|---|---|
+| D1 | approve | **Retracted: audit error, not a manuscript error.** The expected string for Table 4 B_pb HellaSwag in `scripts/step4_numeric_audit.py` was mistyped (`0/0/0/750`); the manuscript (md and tex) already read `0 / 0 / 750 / 0`, matching `test_report.json`. The script was corrected; no manuscript edit. | PASS |
+| D2 | approve | §7.3 "3.4" → "3.3" flips per 100 (md, tex) | PASS (3.347) |
+| D3 | approve | §7.3 margin "0.69" → "0.68" (md, tex) | PASS (0.6849) |
+| D4 | qualify | Kept −0.002, now labelled "differences of the rounded Table 5 entries; the unrounded CommonsenseQA difference is −0.00275" (md, tex) | Still reported NQ by the checker, by design: the printed value is not the exact difference; the qualification is now in the text |
+| D5 | approve | `docs/X1_RESULT.md`: 0.034 → 0.033 and 0.051 → 0.050 for native-pb at 0.20 and 0.30. `x1_flips.json` untouched | PASS |
+
+For D2, D3 and D5 the expected printed values hard-coded in the audit script were updated to the corrected text. This is a change of what the text says, not of any tolerance or recomputed value.
+
+Post-correction results: numeric 394 checks, 393 PASS, 1 NQ (D4), 0 FAIL; provenance 98 checks, 97 PASS, 1 NQ (D6), 0 FAIL; consistency 41 checks, 36 PASS, 3 NQ, **2 FAIL**. The two consistency FAILs (`C.tex_pdf.anon.numbers`, `C.tex_pdf.preprint.numbers`) are expected and genuine: the LaTeX now says 0.68 and 0.00275 while both PDFs still print 0.69 (the PDFs are built on the laptop). They clear when the PDFs are rebuilt. Markdown ↔ LaTeX agreement passes.
+
+Still open: **E1 Windows rerun** (D11); **PDF rebuild** with final fonts (D8, also clears the two FAILs above); **D9** the placeholder e-mail needs the real address for the preprint version (the anonymous version must stay without one); **D10** TODO comments in `paper/*.tex`, to be removed together with the rebuild; release items in §6 pending separate decisions (TEST arrays are not to be published without checking redistribution rights and the evaluation boundary; LICENSE and anonymous mirror need decisions). D6 and D7 remain documented, as the reviewer directed.

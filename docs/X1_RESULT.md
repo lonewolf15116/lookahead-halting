@@ -37,7 +37,7 @@ Pre-declared wording: "On development data, at matched saving, π1-x produced fe
 
 Notes on the table:
 - Δ is π1-x − native-pb. The Δg and Δl intervals all exclude 0 at the core levels.
-- Absolute macro flip rates: φ is 0.008, 0.013, 0.023 and 0.034 for π1-x, against 0.021, 0.034, 0.040 and 0.051 for native-pb. The reduction is large in relative terms and small in absolute terms (1 to 2 percentage points of questions).
+- Absolute macro flip rates: φ is 0.008, 0.013, 0.023 and 0.034 for π1-x, against 0.021, 0.033, 0.040 and 0.050 for native-pb. The reduction is large in relative terms and small in absolute terms (1 to 2 percentage points of questions).
 
 ## Facts that qualify the reading. They do not change it; a reviewer needs them.
 
