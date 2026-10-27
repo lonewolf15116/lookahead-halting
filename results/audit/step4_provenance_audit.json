@@ -1,0 +1,635 @@
+{
+ "script": "scripts/step4_provenance_audit.py",
+ "n_checks": 98,
+ "n_pass": 97,
+ "n_needs_qualification": 1,
+ "n_fail": 0,
+ "full_sha256": {
+  "results/c1/frozen.json": {
+   "raw": "65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f",
+   "lf_normalised": "65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f"
+  },
+  "results/c1/pi1x_models.npz": {
+   "raw": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad",
+   "lf_normalised": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad"
+  },
+  "results/c1/test_report.json": {
+   "raw": "02ba4b265f03fc1e44a30bbfd36473c8a216d3d1141f7051782eb5c15e8379b4",
+   "lf_normalised": "02ba4b265f03fc1e44a30bbfd36473c8a216d3d1141f7051782eb5c15e8379b4"
+  },
+  "results/c1/TEST_OPENED.json": {
+   "raw": "b22e2d1624f131b04664222b1449eed3c98cb29011831b8e4768d243ea24b965",
+   "lf_normalised": "b22e2d1624f131b04664222b1449eed3c98cb29011831b8e4768d243ea24b965"
+  },
+  "docs/C1_PROTOCOL.md": {
+   "raw": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050",
+   "lf_normalised": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050"
+  },
+  "results/diagnostics/dt_truncation_report.json": {
+   "raw": "1601a7e7253aa107bfbae6e2d037419575b625b5e8b7a15d48dc7dd690baa318",
+   "lf_normalised": "1601a7e7253aa107bfbae6e2d037419575b625b5e8b7a15d48dc7dd690baa318"
+  },
+  "results/exploratory/x1_flips.json": {
+   "raw": "457617c7c8bd7c1878c5635644ec10a304d41557e83f78182b15bebbc56a6ded",
+   "lf_normalised": "457617c7c8bd7c1878c5635644ec10a304d41557e83f78182b15bebbc56a6ded"
+  },
+  "docs/X1_FLIP_PROTOCOL.md": {
+   "raw": "b327cedc71cd9732b5273570ff5e050419ca5bc8363575c0f20440ac6024a1c9",
+   "lf_normalised": "b327cedc71cd9732b5273570ff5e050419ca5bc8363575c0f20440ac6024a1c9"
+  },
+  "data/manifests/phase3_questions.json": {
+   "raw": "b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec",
+   "lf_normalised": "b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec"
+  }
+ },
+ "checks": [
+  {
+   "id": "H.prefix.results/c1/frozen.json",
+   "claim": "results/c1/frozen.json: sha256 begins 65728e16 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw 65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f; LF-normalised 65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f"
+  },
+  {
+   "id": "H.prefix.results/c1/pi1x_models.npz",
+   "claim": "results/c1/pi1x_models.npz: sha256 begins 72f15508 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw 72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad; LF-normalised 72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad"
+  },
+  {
+   "id": "H.prefix.results/c1/test_report.json",
+   "claim": "results/c1/test_report.json: sha256 begins 02ba4b26 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw 02ba4b265f03fc1e44a30bbfd36473c8a216d3d1141f7051782eb5c15e8379b4; LF-normalised 02ba4b265f03fc1e44a30bbfd36473c8a216d3d1141f7051782eb5c15e8379b4"
+  },
+  {
+   "id": "H.prefix.results/c1/TEST_OPENED.json",
+   "claim": "results/c1/TEST_OPENED.json: sha256 begins b22e2d16 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw b22e2d1624f131b04664222b1449eed3c98cb29011831b8e4768d243ea24b965; LF-normalised b22e2d1624f131b04664222b1449eed3c98cb29011831b8e4768d243ea24b965"
+  },
+  {
+   "id": "H.prefix.docs/C1_PROTOCOL.md",
+   "claim": "docs/C1_PROTOCOL.md: sha256 begins 4f38b8b7 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw 4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050; LF-normalised 4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050"
+  },
+  {
+   "id": "H.prefix.results/diagnostics/dt_truncation_report.json",
+   "claim": "results/diagnostics/dt_truncation_report.json: sha256 begins 1601a7e7 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw 1601a7e7253aa107bfbae6e2d037419575b625b5e8b7a15d48dc7dd690baa318; LF-normalised 1601a7e7253aa107bfbae6e2d037419575b625b5e8b7a15d48dc7dd690baa318"
+  },
+  {
+   "id": "H.prefix.results/exploratory/x1_flips.json",
+   "claim": "results/exploratory/x1_flips.json: sha256 begins 457617c7 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw 457617c7c8bd7c1878c5635644ec10a304d41557e83f78182b15bebbc56a6ded; LF-normalised 457617c7c8bd7c1878c5635644ec10a304d41557e83f78182b15bebbc56a6ded"
+  },
+  {
+   "id": "H.prefix.docs/X1_FLIP_PROTOCOL.md",
+   "claim": "docs/X1_FLIP_PROTOCOL.md: sha256 begins b327cedc (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw b327cedc71cd9732b5273570ff5e050419ca5bc8363575c0f20440ac6024a1c9; LF-normalised b327cedc71cd9732b5273570ff5e050419ca5bc8363575c0f20440ac6024a1c9"
+  },
+  {
+   "id": "H.prefix.data/manifests/phase3_questions.json",
+   "claim": "data/manifests/phase3_questions.json: sha256 begins b2df1930 (as quoted in the manuscript / reports)",
+   "status": "PASS",
+   "evidence": "raw b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec; LF-normalised b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec"
+  },
+  {
+   "id": "H.marker.data/manifests/phase3_questions.json",
+   "claim": "TEST_OPENED.pinned hash of data/manifests/phase3_questions.json equals the file today",
+   "status": "PASS",
+   "evidence": "b2df19303860c0d543d49a06454a1268addfee6fada8a7465c5dd71da3619cec"
+  },
+  {
+   "id": "H.marker.docs/C1_PROTOCOL.md",
+   "claim": "TEST_OPENED.pinned hash of docs/C1_PROTOCOL.md equals the file today",
+   "status": "PASS",
+   "evidence": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050"
+  },
+  {
+   "id": "H.marker.results/c1/frozen.json",
+   "claim": "TEST_OPENED.pinned hash of results/c1/frozen.json equals the file today",
+   "status": "PASS",
+   "evidence": "65728e16113e94114554fb28a951eee2b93af4b3fb5964bf32cf12845560b25f"
+  },
+  {
+   "id": "H.marker.results/c1/pi1x_models.npz",
+   "claim": "TEST_OPENED.pinned hash of results/c1/pi1x_models.npz equals the file today",
+   "status": "PASS",
+   "evidence": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad"
+  },
+  {
+   "id": "H.marker.results/phase3/extraction_check_phase3_test.json",
+   "claim": "TEST_OPENED.pinned hash of results/phase3/extraction_check_phase3_test.json equals the file today",
+   "status": "PASS",
+   "evidence": "c8d9c20206209ae2fafae46c8cb5c420657f10698170ade205e9e646ca9318b2"
+  },
+  {
+   "id": "H.model",
+   "claim": "frozen.json model_file_sha256 equals pi1x_models.npz",
+   "status": "PASS",
+   "evidence": "72f1550813e12f242128345b4b20097eca0c83ebe843b358f5649a8ed8938bad"
+  },
+  {
+   "id": "H.frozen.protocol",
+   "claim": "frozen.json records the protocol hash equal to the file",
+   "status": "PASS",
+   "evidence": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050"
+  },
+  {
+   "id": "H.report.marker",
+   "claim": "test_report.provenance.marker equals TEST_OPENED.json (bundle hash, opened time)",
+   "status": "PASS",
+   "evidence": "c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568"
+  },
+  {
+   "id": "H.decisions.results/c1/test_report.json",
+   "claim": "DECISIONS.md records the hash prefix of results/c1/test_report.json",
+   "status": "PASS",
+   "evidence": "02ba4b26"
+  },
+  {
+   "id": "H.decisions.results/c1/TEST_OPENED.json",
+   "claim": "DECISIONS.md records the hash prefix of results/c1/TEST_OPENED.json",
+   "status": "PASS",
+   "evidence": "b22e2d16"
+  },
+  {
+   "id": "H.decisions.freeze",
+   "claim": "DECISIONS.md records frozen.json and model prefixes",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "H.manuscript.65728e16",
+   "claim": "manuscript quotes the prefix 65728e16",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "H.manuscript.72f15508",
+   "claim": "manuscript quotes the prefix 72f15508",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "H.manuscript.4f38b8b7",
+   "claim": "manuscript quotes the prefix 4f38b8b7",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "H.manuscript.b2df1930",
+   "claim": "manuscript quotes the prefix b2df1930",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "H.manuscript.c0902af3",
+   "claim": "manuscript quotes the prefix c0902af3",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "G.tag",
+   "claim": "tag c1-protocol exists in the repository clone",
+   "status": "PASS",
+   "evidence": "['c1-protocol', 'gate1-final', 'phase3-a1', 'phase3-a2', 'phase3-plan-v1.1']"
+  },
+  {
+   "id": "G.tag.content",
+   "claim": "docs/C1_PROTOCOL.md at tag c1-protocol equals the file used by the freeze and the TEST run",
+   "status": "PASS",
+   "evidence": "4f38b8b71479bdf2236f3887eac4dd56026c2b20b7edac10ed581529d00a2050"
+  },
+  {
+   "id": "G.immutable.results/c1/frozen.json",
+   "claim": "results/c1/frozen.json: added by exactly one commit and never modified; content at that commit equals the working file",
+   "status": "PASS",
+   "evidence": "commits ['f49aa79']"
+  },
+  {
+   "id": "G.immutable.results/c1/pi1x_models.npz",
+   "claim": "results/c1/pi1x_models.npz: added by exactly one commit and never modified; content at that commit equals the working file",
+   "status": "PASS",
+   "evidence": "commits ['f49aa79']"
+  },
+  {
+   "id": "G.immutable.results/c1/test_report.json",
+   "claim": "results/c1/test_report.json: added by exactly one commit and never modified; content at that commit equals the working file",
+   "status": "PASS",
+   "evidence": "commits ['d22ca6b']"
+  },
+  {
+   "id": "G.immutable.results/c1/TEST_OPENED.json",
+   "claim": "results/c1/TEST_OPENED.json: added by exactly one commit and never modified; content at that commit equals the working file",
+   "status": "PASS",
+   "evidence": "commits ['d22ca6b']"
+  },
+  {
+   "id": "G.immutable.results/exploratory/x1_flips.json",
+   "claim": "results/exploratory/x1_flips.json: added by exactly one commit and never modified; content at that commit equals the working file",
+   "status": "PASS",
+   "evidence": "commits ['01c77c1']"
+  },
+  {
+   "id": "G.immutable.results/exploratory/e1_report.json",
+   "claim": "results/exploratory/e1_report.json: added by exactly one commit and never modified; content at that commit equals the working file",
+   "status": "PASS",
+   "evidence": "commits ['8d831e3']"
+  },
+  {
+   "id": "G.history.docs/X1_FLIP_PROTOCOL.md",
+   "claim": "docs/X1_FLIP_PROTOCOL.md history (rev 1 then rev 2 amendment; later edits listed)",
+   "status": "PASS",
+   "evidence": "['ef19f0a', '54942ad']"
+  },
+  {
+   "id": "G.commits.exist",
+   "claim": "all commits named in the reports exist in the clone",
+   "status": "PASS",
+   "evidence": "{\"protocol_tag\": \"1793032458\", \"freeze_artifacts\": \"1793033773\", \"test_script_rev4\": \"1793037297\", \"test_run_commit\": \"1793038357\", \"test_results\": \"1793039467\", \"x1_protocol_rev1\": \"1793057467\", \"x1_protocol_rev2\": \"1793063283\", \"x1_impl\": \"1793063926\", \"x1_output\": \"1793065245\", \"x1_closure\": \"1793065449\"}"
+  },
+  {
+   "id": "G.order.c1",
+   "claim": "commit order: protocol tag <= freeze artifacts <= TEST script <= run commit <= results",
+   "status": "PASS",
+   "evidence": "{\"protocol_tag\": \"1793032458\", \"freeze_artifacts\": \"1793033773\", \"test_script_rev4\": \"1793037297\", \"test_run_commit\": \"1793038357\", \"test_results\": \"1793039467\"}"
+  },
+  {
+   "id": "G.order.x1",
+   "claim": "commit order: X1 protocol rev 1 <= rev 2 <= implementation <= output <= closure",
+   "status": "PASS",
+   "evidence": "{\"x1_protocol_rev1\": \"1793057467\", \"x1_protocol_rev2\": \"1793063283\", \"x1_impl\": \"1793063926\", \"x1_output\": \"1793065245\", \"x1_closure\": \"1793065449\"}"
+  },
+  {
+   "id": "G.marker.commit",
+   "claim": "marker records the commit 196a882 (documentation-only change after the approved bundle commit)",
+   "status": "PASS",
+   "evidence": "196a88219bb98fcefb528c1f8368f08e1f6e30df"
+  },
+  {
+   "id": "G.run_commit.docsonly",
+   "claim": "files changed between the approved bundle commit b217523 and the run commit 196a882 are documentation only",
+   "status": "PASS",
+   "evidence": "['docs/DECISIONS.md']"
+  },
+  {
+   "id": "G.clock",
+   "claim": "C1 marker opened after the run commit existed (cloud commit time <= laptop marker time)",
+   "status": "PASS",
+   "evidence": "commit 2026-10-26T18:12:37+00:00; marker 2026-10-26T18:18:05.555829+00:00"
+  },
+  {
+   "id": "G.freeze.before.test",
+   "claim": "freeze finished before TEST was opened",
+   "status": "PASS",
+   "evidence": "freeze 2026-10-26T16:53:47.510813+00:00; TEST 2026-10-26T18:18:05.555829+00:00; committed 2026-10-26T16:56:13+00:00"
+  },
+  {
+   "id": "G.freeze.commit",
+   "claim": "frozen.json records code hashes but no git commit (disclosed in 4.4)",
+   "status": "PASS",
+   "evidence": "disclosed in manuscript 4.4 'frozen.json records code hashes but not a git commit'"
+  },
+  {
+   "id": "B.bundle.b217523",
+   "claim": "TEST code bundle recomputed from git objects at b217523 equals the approved hash c0902af3… and the recorded file list (24 files)",
+   "status": "PASS",
+   "evidence": "c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568"
+  },
+  {
+   "id": "B.bundle.196a882",
+   "claim": "TEST code bundle recomputed from git objects at 196a882 equals the approved hash c0902af3… and the recorded file list (24 files)",
+   "status": "PASS",
+   "evidence": "c0902af30aa5d909ad21e5775dcd2bf17a49230fa9f43c3934046bfd44c32568"
+  },
+  {
+   "id": "B.count",
+   "claim": "bundle has 24 files (as stated in 4.2)",
+   "status": "PASS",
+   "evidence": "24"
+  },
+  {
+   "id": "B.head",
+   "claim": "Bundle recomputed at HEAD (informational: later commits add modules such as x1_flips.py)",
+   "status": "PASS",
+   "evidence": "HEAD bundle 545ff25dc203 differs from the TEST bundle (expected: x1_flips.py added). Files not in the original list: ['src/lookahead/dt_truncation.py', 'src/lookahead/x1_flips.py']"
+  },
+  {
+   "id": "B.unchanged.since",
+   "claim": "No file of the TEST bundle has changed between the run commit and HEAD",
+   "status": "PASS",
+   "evidence": "[]"
+  },
+  {
+   "id": "B.code.frozen.json.scripts/c1_freeze.py",
+   "claim": "frozen.json: recorded hash of scripts/c1_freeze.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "39c5b58a5121"
+  },
+  {
+   "id": "B.code.frozen.json.src/lookahead/c1.py",
+   "claim": "frozen.json: recorded hash of src/lookahead/c1.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "379d08e9dbc3"
+  },
+  {
+   "id": "B.code.frozen.json.src/lookahead/c1_rho.py",
+   "claim": "frozen.json: recorded hash of src/lookahead/c1_rho.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "e76d2c9bf68b"
+  },
+  {
+   "id": "B.code.frozen.json.src/lookahead/e1.py",
+   "claim": "frozen.json: recorded hash of src/lookahead/e1.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "95fde267f14c"
+  },
+  {
+   "id": "B.code.frozen.json.src/lookahead/phase3_g3a.py",
+   "claim": "frozen.json: recorded hash of src/lookahead/phase3_g3a.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "fec5ace134d0"
+  },
+  {
+   "id": "B.code.frozen.json.src/lookahead/phase3_readouts.py",
+   "claim": "frozen.json: recorded hash of src/lookahead/phase3_readouts.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "1b3a88a3519d"
+  },
+  {
+   "id": "B.code.e1_report.json.scripts/e1_run.py",
+   "claim": "e1_report.json: recorded hash of scripts/e1_run.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "c5c1b599eb7e"
+  },
+  {
+   "id": "B.code.e1_report.json.src/lookahead/e1.py",
+   "claim": "e1_report.json: recorded hash of src/lookahead/e1.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "95fde267f14c"
+  },
+  {
+   "id": "B.code.e1_report.json.src/lookahead/phase3_g3a.py",
+   "claim": "e1_report.json: recorded hash of src/lookahead/phase3_g3a.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "fec5ace134d0"
+  },
+  {
+   "id": "B.code.e1_report.json.src/lookahead/phase3_readouts.py",
+   "claim": "e1_report.json: recorded hash of src/lookahead/phase3_readouts.py equals the file at the run commit 196a882",
+   "status": "PASS",
+   "evidence": "1b3a88a3519d"
+  },
+  {
+   "id": "R.budget",
+   "claim": "code: loss limit 1.0 pp and tolerance 1e-12 (C1.4)",
+   "status": "PASS",
+   "evidence": "LOSS_LIMIT=1.0 TOL=1e-12"
+  },
+  {
+   "id": "R.consts",
+   "claim": "code: delta 0.02, B 10,000, seed 2026, selection bootstrap id 99 (C1.2-C1.5)",
+   "status": "PASS",
+   "evidence": "0.02 10000 2026 99"
+  },
+  {
+   "id": "R.risk",
+   "claim": "code: screen bound is the 0.95 quantile; limit 1 pp (+1e-12)",
+   "status": "PASS",
+   "evidence": "RISK_QUANTILE=0.95 LIMIT=1.000000000001"
+  },
+  {
+   "id": "R.proto.Δ ≥ δ",
+   "claim": "protocol text contains 'Δ ≥ δ'",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "R.proto.B = 10,000",
+   "claim": "protocol text contains 'B = 10,000'",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "R.proto.default_rng(2026)",
+   "claim": "protocol text contains 'default_rng(2026)'",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "R.proto.δ = 0.02",
+   "claim": "protocol text contains 'δ = 0.02'",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "R.proto.1.00 pp",
+   "claim": "protocol text contains '1.00 pp'",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "R.proto.1e-12",
+   "claim": "protocol text contains '1e-12'",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "R.frozen.consts",
+   "claim": "frozen.json constants equal the protocol constants",
+   "status": "PASS",
+   "evidence": "{\"delta\": 0.02, \"n_boot_test\": 10000, \"test_seed\": 2026}"
+  },
+  {
+   "id": "R.verdict.table",
+   "claim": "c1_test.verdict reproduces the protocol's exhaustive table on 9 boundary cases",
+   "status": "PASS",
+   "evidence": "9/9"
+  },
+  {
+   "id": "R.verdict.actual",
+   "claim": "Applying the frozen verdict function to the stored TEST numbers gives PASS",
+   "status": "PASS",
+   "evidence": "PASS"
+  },
+  {
+   "id": "R.quote",
+   "claim": "every sentence quoted in manuscript 4.3 occurs verbatim in docs/C1_PROTOCOL.md (modulo markup)",
+   "status": "PASS",
+   "evidence": "22 sentences; unmatched: []"
+  },
+  {
+   "id": "D.counts",
+   "claim": "allocation: 2,635 DEV+ rows and 8,517 TEST rows",
+   "status": "PASS",
+   "evidence": "2635 / 8517"
+  },
+  {
+   "id": "D.disjoint.ids",
+   "claim": "DEV+ and TEST allocations share no (benchmark, source split, row)",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "D.native_id.collisions",
+   "claim": "HellaSwag native ids repeat in the source data: DEV+/TEST share 3 native ids and TEST repeats 3; rows and question texts are nevertheless disjoint (identifier collisions, documented in results/phase3/hellaswag_id_audit.json)",
+   "status": "PASS",
+   "evidence": "colliding ids [('hellaswag', 'train:42604'), ('hellaswag', 'train:584'), ('hellaswag', 'train:817')]"
+  },
+  {
+   "id": "D.disjoint.text",
+   "claim": "DEV+ and TEST allocations share no question text hash",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "D.unique",
+   "claim": "no duplicate rows or question texts within either allocation",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "D.hash.test",
+   "claim": "allocation_test_ids.csv hash equals allocation.json test_ids_sha256",
+   "status": "PASS",
+   "evidence": "298873a90b26"
+  },
+  {
+   "id": "D.hash.dev",
+   "claim": "allocation_dev_ids.csv hash equals allocation.json dev_ids_sha256",
+   "status": "PASS",
+   "evidence": "c1ed6e3851c6"
+  },
+  {
+   "id": "D.test.per_benchmark",
+   "claim": "TEST allocation per benchmark equals Table 2",
+   "status": "PASS",
+   "evidence": "{'openbookqa': 3000, 'commonsense_qa': 1000, 'hellaswag': 750, 'piqa': 1837, 'social_iqa': 1930}"
+  },
+  {
+   "id": "D.phase1.splits",
+   "claim": "Phase 1 splits manifest present (rows: 33353); disjointness of Phase 1 train/validation from TEST is enforced by the allocation's used-set fingerprint",
+   "status": "PASS",
+   "evidence": "ddd88b73930f"
+  },
+  {
+   "id": "D.salt",
+   "claim": "allocation salt recorded (lh-phase3-alloc-v1)",
+   "status": "PASS",
+   "evidence": "lh-phase3-alloc-v1"
+  },
+  {
+   "id": "M.revision",
+   "claim": "configs/model.yaml pins the revision resolved by the inspection (574fa66c…)",
+   "status": "PASS",
+   "evidence": "574fa66cb8bf5abdc979642d01cf2b79b16bfab1"
+  },
+  {
+   "id": "M.extraction.revision",
+   "claim": "extraction metadata and D-t report record the same model revision",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "M.modeling_hash",
+   "claim": "modeling_ouro.py sha256 c5c68fbb… is recorded in the D-t report",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "M.modeling_size",
+   "claim": "modeling_ouro.py size recorded by the inspection: 33,350 bytes",
+   "status": "PASS",
+   "evidence": "33350"
+  },
+  {
+   "id": "X.protocol.hash",
+   "claim": "X1 output records the protocol hash equal to rev 2 file hash b327cedc… (full hash)",
+   "status": "PASS",
+   "evidence": "b327cedc71cd9732b5273570ff5e050419ca5bc8363575c0f20440ac6024a1c9"
+  },
+  {
+   "id": "X.protocol.frozen_commit",
+   "claim": "docs/X1_FLIP_PROTOCOL.md at the freeze commit ef19f0a equals the hash the run recorded",
+   "status": "PASS",
+   "evidence": "b327cedc71cd"
+  },
+  {
+   "id": "X.code.scripts/x1_flip_check.py",
+   "claim": "X1 recorded hash of scripts/x1_flip_check.py equals the file at the implementation commit 5461ca7 and at HEAD",
+   "status": "PASS",
+   "evidence": "4651e215cf8b"
+  },
+  {
+   "id": "X.code.src/lookahead/e1.py",
+   "claim": "X1 recorded hash of src/lookahead/e1.py equals the file at the implementation commit 5461ca7 and at HEAD",
+   "status": "PASS",
+   "evidence": "95fde267f14c"
+  },
+  {
+   "id": "X.code.src/lookahead/phase3_g3a.py",
+   "claim": "X1 recorded hash of src/lookahead/phase3_g3a.py equals the file at the implementation commit 5461ca7 and at HEAD",
+   "status": "PASS",
+   "evidence": "fec5ace134d0"
+  },
+  {
+   "id": "X.code.src/lookahead/phase3_readouts.py",
+   "claim": "X1 recorded hash of src/lookahead/phase3_readouts.py equals the file at the implementation commit 5461ca7 and at HEAD",
+   "status": "PASS",
+   "evidence": "1b3a88a3519d"
+  },
+  {
+   "id": "X.code.src/lookahead/x1_flips.py",
+   "claim": "X1 recorded hash of src/lookahead/x1_flips.py equals the file at the implementation commit 5461ca7 and at HEAD",
+   "status": "PASS",
+   "evidence": "fd9774ca748e"
+  },
+  {
+   "id": "X.git_commit",
+   "claim": "X1 run provenance git commit / dirty flag",
+   "status": "NEEDS QUALIFICATION",
+   "evidence": "commit 5461ca75c2a73199e4cf4470b31d43020dc1e4c2; git_dirty_code=True (documented in X1_RESULT.md: one untracked old dry-run report, no code file differs)"
+  },
+  {
+   "id": "X.protocol.consts",
+   "claim": "protocol rev 2 text states B = 2,000, seed [31, 1], core levels 0.15-0.30 and the caps",
+   "status": "PASS",
+   "evidence": "{\"B 2,000\": true, \"seed [31, 1]\": true, \"levels\": true, \"caps 4/4/3\": true}"
+  },
+  {
+   "id": "X.output.consts",
+   "claim": "X1 output constants equal the protocol constants",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "X.fingerprints",
+   "claim": "X1 fold fingerprints (outer-model, selection-statistic, rank-map hashes) equal E1's, all fields",
+   "status": "PASS",
+   "evidence": "95/95"
+  },
+  {
+   "id": "X.dev.n",
+   "claim": "X1 development sizes equal E1's and the sum of the fold sizes",
+   "status": "PASS",
+   "evidence": "{'commonsense_qa': 1168, 'hellaswag': 6273, 'openbookqa': 2252}"
+  },
+  {
+   "id": "X.no_test",
+   "claim": "X1 provenance (including every data file path) never mentions the sealed TEST directory",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "X.no_test.e1_freeze",
+   "claim": "E1 and freeze provenance never mention the sealed TEST directory",
+   "status": "PASS",
+   "evidence": ""
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "note": "Summary of two development-data-only reruns on a different platform (laptop Linux VM). Transcribed from the per-run <name>_compare.json written by scripts/step4_rerun_dev.py; the full files stay on the laptop VM. Reproduce with the command in docs/STEP4_REPRODUCIBILITY_AUDIT.md.",
+ "environment_of_rerun": {"python": "3.10.12", "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35", "numpy": "2.2.6", "scipy": "1.15.3", "sklearn": "1.7.2", "pandas": "2.3.3", "pyarrow": "25.0.1"},
+ "original_environment": {"python": "3.12.10", "numpy": "2.5.4", "scipy": "1.18.1", "sklearn": "1.9.1", "pandas": "3.0.6", "pyarrow": "26.0.0"},
+ "x1": {"compared_against": "results/exploratory/x1_flips.json", "n_common_leaves": 10148, "n_bit_identical": 9228, "n_numeric_differ": 825, "max_abs_diff": 3.19e-06,
+        "n_non_numeric_mismatches": 95, "non_numeric_all_sha256_fingerprints": true, "only_in_recomputed": 0, "only_in_committed": 0,
+        "reading_unchanged": "FLIP-SUPPORTED (decision fields are among the bit-identical leaves; numeric differences are tau thresholds and tau-matched rates <= 3.2e-6)"},
+ "c1freeze": {"compared_against": "results/c1/frozen.json", "n_common_leaves": 328, "n_bit_identical": 318, "n_numeric_differ": 9, "max_abs_diff": 4.77e-07,
+        "n_non_numeric_mismatches": 1, "non_numeric_all_sha256_fingerprints": true, "only_in_recomputed": 0, "only_in_committed": 0,
+        "probe_weights_max_abs_diff": {"loop1_coef": 2.6e-06, "loop2_coef": 1.21e-05, "loop3_coef": 4.5e-06, "intercepts": 8.3e-07, "means_and_sds": 0.0}},
+ "e1": {"status": "PENDING - run on the original Windows environment (scripts/run_step4_rerun_windows.ps1); not run in the Linux VM"}
+}
