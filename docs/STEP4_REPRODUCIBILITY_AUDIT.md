@@ -177,3 +177,23 @@ Closed: D1 (retracted), D2, D3, D5, D8, D11. D4 qualified in the text. D6 and D7
 - The PDFs must be rebuilt once more after the e-mail and the AI statement are final; use `make paper` or the VM procedure above.
 
 Close-out recommendation: the numerical, protocol and reproducibility gates are met (0 FAIL; same-environment bitwise reproduction; PDF consistency clean). Step 4 can close once the e-mail and AI statement are settled and the PDFs are rebuilt, with the open release items explicitly accepted or scheduled.
+
+---
+
+# Addendum C — publication close-out (2026-10-27)
+
+Earlier sections and Addenda A and B are unchanged. Final reports: `results/audit/final/`.
+
+**Author decisions applied.** (1) The author-approved AI-assistance disclosure replaces the draft statement in `paper/body.tex` (both builds) and is added to `docs/PAPER_DRAFT.md`; the "DRAFT" label and its TODO comment are removed. (2) The preprint e-mail `mahesh15116@gmail.com`, supplied by the author, appears only in `paper/main_preprint.tex`; the anonymous build contains no name, affiliation or e-mail (checked in the rendered text). No TODO marker remains in `paper/*.tex`.
+
+**Rebuild.** Both PDFs were rebuilt from these exact sources (md5 of `body.tex` and `main_preprint.tex` identical on the build machine and in the repository), in the laptop VM's TeX Live as in B.2: Latin Modern plus DejaVu Sans (Figure 1) only, no undefined references or citations, 21 pages each; the preprint shows the e-mail once, the anonymous PDF does not; the disclosure appears in both.
+
+**Final counts**
+
+| Audit | Checks | PASS | NQ | FAIL |
+|---|---|---|---|---|
+| Numerical | 394 | 393 | 1 (D4, qualified in the text) | 0 |
+| Provenance | 98 | 97 | 1 (D6, dirty flag explained) | 0 |
+| Manuscript consistency | 41 | 41 | 0 | 0 |
+
+**Step 4 status.** All discrepancies are closed or documented (D1 retracted; D2, D3, D5, D8, D9, D10, D11 closed; D4, D6, D7 documented). Reproducibility evidence: Windows bitwise reproduction of C1 freeze, E1 and X1 on development data; Linux numerical agreement only. Not established: GPU feature-extraction reproducibility; independent recomputation of the sealed TEST intervals. Open release items, none of them executed: licence (MIT recommended, not authorised), anonymous code mirror (not authorised), TEST-array release (deferred pending rights and evaluation-integrity checks), release of development feature files (blocker for third-party reproduction; a data-availability statement must say they are not publicly regenerable until released), a release tag, and machine-specific paths in the older Windows runners.

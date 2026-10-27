@@ -575,6 +575,12 @@ Future work needs new held-out data:
 - Ouro-2.6B;
 - a truncated implementation with measured end-to-end time on held-out data.
 
+## Statement on AI assistance
+
+AI-assisted tools were used for code development, test generation, manuscript drafting and editing, and reproducibility auditing. AI-assisted methodological review was also used to identify potential weaknesses and refine the interpretation and presentation of results.
+
+The author designed the study, directed the experiments, reviewed the analyses, and made the scientific decisions documented in the project's decision log. The author takes responsibility for the methodology, results, interpretations, and final manuscript. AI-assisted review does not constitute independent human peer review.
+
 ## References
 
 - [Angelopoulos2024CRC] A. N. Angelopoulos, S. Bates, A. Fisch, L. Lei, T. Schuster. Conformal Risk Control. ICLR 2024. arXiv:2208.02814.

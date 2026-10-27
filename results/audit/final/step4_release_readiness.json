@@ -1,0 +1,124 @@
+{
+ "script": "scripts/step4_release_readiness.py",
+ "findings": [
+  {
+   "id": "RR.paths.code",
+   "severity": "MAJOR",
+   "finding": "machine-specific absolute paths in code, scripts and configs",
+   "evidence": "{\"scripts/run_arc_windows.ps1\": 1, \"scripts/run_confirm_extraction_windows.ps1\": 1, \"scripts/run_confirm_prep_windows.ps1\": 1, \"scripts/run_control_audit_windows.ps1\": 1, \"scripts/run_extraction_windows.ps1\": 1, \"scripts/run_gate2_rehearsal_windows.ps1\": 1, \"scripts/run_hellaswag_id_audit_windows.ps1\": 1, \"scripts/run_phase1_prep_windows.ps1\": 1, \"scripts/run_phase3_allocate_windows.ps1\": 1, \"scripts/run_phase3_da_windows.ps1\": 1, \"scripts/run_phase3_extraction_windows.ps1\": 2, \"scripts/run_phase3_inventory_windows.ps1\": 1, \"scripts/setup_windows.ps1\": 1, \"tests/test_dt_truncation.py\": 1}",
+   "remedy": "replace by paths relative to REPO_ROOT or a documented environment variable; the .ps1 runners assume $HOME\\Projects\\lookahead-halting"
+  },
+  {
+   "id": "RR.paths.docs",
+   "severity": "PASS",
+   "finding": "machine-specific paths in documentation/README (informational)",
+   "evidence": "{\"results/audit/post_rebuild/step4_release_readiness.json\": 1, \"results/audit/rerun_windows/console.txt\": 16, \"results/audit/step4_release_readiness.json\": 1, \"results/dt2_console.txt\": 2, \"results/dt_truncation_console.txt\": 2, \"results/gate0/stock_smoke.json\": 18, \"results/gate2/extraction_check_confirm.json\": 2, \"results/gate2/extraction_check_confirm_smoke.json\": 2, \"results/phase1/extraction_check.json\": 2, \"results/phase1/extraction_check_smoke.json\": 2, \"results/phase3/extraction_check_phase3_dev.json\": 2, \"results/phase3/extraction_check_phase3_dev_smoke.json\": 2, \"results/phase3/extra",
+   "remedy": "keep in the decision log; remove from README/paper-facing text"
+  },
+  {
+   "id": "RR.windows_only",
+   "severity": "PASS",
+   "finding": "all one-command runners are Windows PowerShell scripts; there is no POSIX equivalent",
+   "evidence": "23 .ps1 runners, 0 .sh",
+   "remedy": "add a Makefile / run_all.sh that executes the same python entry points (the Python scripts themselves ran unchanged on Linux in this audit)"
+  },
+  {
+   "id": "RR.readme",
+   "severity": "PASS",
+   "finding": "README describes the project as of Phase 0 (old working title, 'Next: Phase 1'); it has no reproduction instructions for the paper",
+   "evidence": "README.md mentions 'Gate 0', 'Next: Phase 1' and the title 'Predicting the Value of Another Thought\u2026'",
+   "remedy": "rewrite: paper title, one table 'claim -> command -> artifact -> hash', environment, hardware, expected runtimes, what cannot be rerun and why"
+  },
+  {
+   "id": "RR.license",
+   "severity": "MAJOR",
+   "finding": "no LICENSE file",
+   "evidence": "no LICENSE/COPYING in the repository",
+   "remedy": "add a licence (and a data licence note for derived features)"
+  },
+  {
+   "id": "RR.citation",
+   "severity": "MINOR",
+   "finding": "no CITATION.cff / release tag for the paper version",
+   "evidence": "tags: c1-protocol gate1-final phase3-a1 phase3-a2 phase3-plan-v1.1",
+   "remedy": "tag the submission commit (e.g. paper-v1); the cloud session cannot push tags, so tag from the laptop"
+  },
+  {
+   "id": "RR.pins",
+   "severity": "PASS",
+   "finding": "requirements.txt pins only transformers and lm_eval; numpy/scipy/scikit-learn/pandas/pyarrow/torch are unpinned",
+   "evidence": "unpinned: ['numpy', 'scipy', 'pandas', 'pyarrow', 'scikit-learn', 'matplotlib', 'pyyaml', 'pytest', 'safetensors', 'huggingface_hub>=0.34,<1.0', 'accelerate', 'datasets']; actual environment recorded in results/gate0/environment.json: Python 3.12.10, torch 2.11.0+cu128, numpy 2.5.4, scikit-learn 1.9.1",
+   "remedy": "generate a lock file (pip freeze) from the laptop environment and commit it; state the tested range. This audit reproduced results on numpy 2.2.6 / scikit-learn 1.7.2 / Python 3.10 with max deviations of 1e-5 (see reproducibility section)"
+  },
+  {
+   "id": "RR.gpu",
+   "severity": "INFO",
+   "finding": "feature extraction needs a CUDA GPU (RTX 5050 laptop, bf16); GPU runs are not bitwise reproducible",
+   "evidence": "D-t2: 16/20 questions differ across default repeats; deterministic mode removes differences",
+   "remedy": "document `torch.use_deterministic_algorithms(True)` + CUBLAS_WORKSPACE_CONFIG=:4096:8 as the reproducibility mode; state that stored features, not re-extraction, are the reproducible unit"
+  },
+  {
+   "id": "RR.features",
+   "severity": "BLOCKER",
+   "finding": "the per-question extracted features (hidden states, option scores; ~0.9 GB for development, TEST separately) are git-ignored and not released",
+   "evidence": "ignored: data/extracted/, data/extracted_confirm/, *.npy, *.parquet; results/*.json hold only summaries",
+   "remedy": "release the development and (after the paper is accepted or at submission, with the sealed-TEST rule documented) TEST feature tables on Zenodo/Hugging Face with the recorded SHA-256 (256 development files are hash-pinned in frozen.json); without them every number requires GPU re-extraction"
+  },
+  {
+   "id": "RR.test_unrepro",
+   "severity": "MAJOR",
+   "finding": "C1 TEST numbers and their bootstrap intervals cannot be recomputed by anyone without the TEST feature files",
+   "evidence": "test_report.json pins 70 TEST file hashes but the files are not distributed",
+   "remedy": "release the TEST per-question (exit-loop, correctness) arrays after unsealing so the 10,000-resample intervals can be regenerated; keep the one-time-run marker as evidence"
+  },
+  {
+   "id": "RR.datasets",
+   "severity": "INFO",
+   "finding": "benchmark datasets are downloaded from the Hugging Face hub at pinned revisions recorded in the manifests",
+   "evidence": "data/manifests/*.json, results/phase3/inventory.json",
+   "remedy": "state dataset licences in the README"
+  },
+  {
+   "id": "RR.untracked",
+   "severity": "MINOR",
+   "finding": "untracked or modified files exist in the working tree used for this audit",
+   "evidence": "[\" M docs/PAPER_DRAFT.md\", \" M paper/README.md\", \" M paper/body.tex\", \" M paper/main_anon.pdf\", \" M paper/main_preprint.pdf\", \" M paper/main_preprint.tex\", \"?? results/audit/final/\"]",
+   "remedy": "commit or remove before tagging the release"
+  },
+  {
+   "id": "RR.entrypoints",
+   "severity": "PASS",
+   "finding": "every analysis in the paper has a committed entry point",
+   "evidence": "7 entry points present",
+   "remedy": "map each to a paper table/figure in the README"
+  },
+  {
+   "id": "RR.figure_script",
+   "severity": "PASS",
+   "finding": "the script that draws Figure 1 is committed",
+   "evidence": "present",
+   "remedy": "commit the plotting script (it reads results/c1/test_report.json) so Figure 1 is regenerable"
+  },
+  {
+   "id": "RR.table_script",
+   "severity": "MINOR",
+   "finding": "tables in the paper are typed by hand from JSON; no generator script",
+   "evidence": "docs/PAPER_NUMBER_AUDIT.md and this audit's scripts/step4_numeric_audit.py recompute them",
+   "remedy": "ship scripts/step4_numeric_audit.py as `make check-numbers`"
+  },
+  {
+   "id": "RR.sealed",
+   "severity": "INFO",
+   "finding": "the TEST set is spent; a future reader cannot rerun the confirmatory study on fresh data from this repository alone",
+   "evidence": "docs/C1_REPORT.md; marker TEST_OPENED.json",
+   "remedy": "state this in the README; point to the pre-registration (tag c1-protocol)"
+  },
+  {
+   "id": "RR.anonymous_mirror",
+   "severity": "MAJOR",
+   "finding": "TMLR double-blind review needs an anonymous code mirror; the GitHub repository is private and its owner handle appears in remotes/docs",
+   "evidence": "origin: github.com/lonewolf15116/lookahead-halting",
+   "remedy": "create an anonymised snapshot (anonymous.4open.science or a zip) without .git history, DECISIONS.md author references and the local paths above"
+  }
+ ]
+}
