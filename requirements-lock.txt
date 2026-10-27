@@ -1,0 +1,16 @@
+# Exact versions recorded by scripts/check_environment.py on the machine that produced every result in the paper
+# (results/gate0/environment.json): Windows 11, Python 3.12.10, CUDA build 12.8, NVIDIA GeForce RTX 5050 Laptop GPU.
+# torch is the CUDA 12.8 wheel (pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128).
+# Not recorded at the time and therefore unpinned here: matplotlib, pytest, safetensors, lm_eval (pinned in requirements.txt).
+# Run `pip freeze > requirements-freeze.txt` on that machine to capture the complete list.
+torch==2.11.0
+transformers==4.54.1
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+pandas==3.0.6
+pyarrow==26.0.0
+huggingface-hub==0.36.2
+accelerate==1.15.0
+datasets==5.0.1
+PyYAML==6.0.3

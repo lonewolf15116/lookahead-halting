@@ -13,7 +13,7 @@ sandbox without `lmodern`, using a Times substitute (mathptmx/helvet); rebuild l
 
 ## TODO items
 - `main_preprint.tex`: replace placeholder email `TODO@aston.ac.uk`.
-- `body.tex` start: the italic "Merged draft v1 ..." note from the Markdown is carried over verbatim above the abstract; remove before submission/arXiv if not wanted (it mentions `docs/PAPER_NUMBER_AUDIT.md`).
+- `body.tex` start: the italic evidence-label legend is intentional and kept.
 - `body.tex` end: "Statement on AI assistance" is a DRAFT for the author to edit.
 - `refs.bib`: Fu2025, Olszowiec2026, Pappone2025 list surnames only (as in the Markdown); years of Fu2025/Graves2016/etc. taken from the Markdown entries/keys. Check bib details against the sources.
 - `main_*.tex`: `\month`, `\year`, `\openreview` are TMLR placeholders (only used for the accepted version).

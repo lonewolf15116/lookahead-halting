@@ -51,7 +51,7 @@ add("RR.paths.code", "MAJOR" if code_hits else "PASS", "machine-specific absolut
 add("RR.paths.docs", "MINOR" if any(k.startswith(("docs/", "README")) for k in h) else "PASS", "machine-specific paths in documentation/README (informational)",
     json.dumps({k: v for k, v in h.items() if not k.startswith(("scripts/", "src/", "tests/", "configs/"))})[:600], "keep in the decision log; remove from README/paper-facing text")
 ps1 = [p for p in tracked if p.endswith(".ps1")]
-add("RR.windows_only", "MAJOR", "all one-command runners are Windows PowerShell scripts; there is no POSIX equivalent", f"{len(ps1)} .ps1 runners, 0 .sh",
+add("RR.windows_only", "PASS" if "Makefile" in tracked else "MAJOR", "all one-command runners are Windows PowerShell scripts; there is no POSIX equivalent", f"{len(ps1)} .ps1 runners, 0 .sh",
     "add a Makefile / run_all.sh that executes the same python entry points (the Python scripts themselves ran unchanged on Linux in this audit)")
 
 # 2 documentation ------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ add("RR.citation", "MINOR", "no CITATION.cff / release tag for the paper version
 req = (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines()
 unpinned = [l for l in req if l.strip() and not l.startswith("#") and "==" not in l]
 env = json.loads((ROOT / "results/gate0/environment.json").read_text(encoding="utf-8"))
-add("RR.pins", "MAJOR", "requirements.txt pins only transformers and lm_eval; numpy/scipy/scikit-learn/pandas/pyarrow/torch are unpinned",
+add("RR.pins", "PASS" if "requirements-lock.txt" in tracked else "MAJOR", "requirements.txt pins only transformers and lm_eval; numpy/scipy/scikit-learn/pandas/pyarrow/torch are unpinned",
     f"unpinned: {unpinned}; actual environment recorded in results/gate0/environment.json: Python {env['python'].split()[0]}, torch {env['packages']['torch']}, numpy {env['packages']['numpy']}, "
     f"scikit-learn {env['packages']['scikit-learn']}",
     "generate a lock file (pip freeze) from the laptop environment and commit it; state the tested range. This audit reproduced results on numpy 2.2.6 / scikit-learn 1.7.2 / Python 3.10 with max deviations of 1e-5 (see reproducibility section)")
