@@ -1,6 +1,7 @@
 # X1: Correctness flips at matched saving
 
-- Protocol rev 1, FROZEN at commit (see DECISIONS); NOT RUN.
+- Protocol **rev 2** (pre-run amendment of rev 1, frozen at commit 54942ad). NOT RUN.
+- Rev 2 changes only the readings (section 5) and the bootstrap definition. Section 8 records both; where rev 1 and rev 2 differ, rev 2 governs.
 - Status: exploratory [E], development data only. Approved in principle by the reviewer (Step 3, 2026-10-27).
 - This protocol must be frozen, by commit hash, before any X1 number is computed.
 - It changes no frozen artifact, no C1 result and no [C] claim. TEST is not read.
@@ -72,7 +73,7 @@ For each fold, benchmark, method and level, with n = the held-out questions of b
   - Thresholds and interpolation weights are held fixed at their full-sample values, so the intervals are conditional on the matching.
   - Two-sided 95% intervals. No multiplicity adjustment; the readings below are pre-declared instead.
 
-**Pre-declared readings.** The first matching row applies, and the evaluation is on the 4 core levels:
+**Pre-declared readings (rev 1, SUPERSEDED by section 8.1; kept for the record).**
 
 | Reading | Condition | What the paper may say |
 |---|---|---|
@@ -111,3 +112,46 @@ The readings are about the hypothesis only. None of them changes or strengthens 
 - **Recorded with the output:** the git commit, this protocol's sha256, the sha256 of the code files and the fold fingerprints, to be checked against E1's.
 - **Deviations.** Any change after the freeze is a new revision with its own commit, logged in DECISIONS before any rerun. Results are never discarded.
 - **Order.** First the reviewer's GO on this protocol and on D1, then implementation and tests, then the run. Reporting follows the pre-declared reading.
+
+## 8. Rev 2: pre-run amendment (reviewer conditional GO, 2026-10-27)
+
+Made before any X1 number was computed. D1 is approved: gains, losses and net loss at matched saving are reported only as parts of the flip decomposition, labelled [E]. X1 is never described as a matched-loss frontier or as a test of which signal is better at equal accuracy.
+
+### 8.1 Readings (replace the rev 1 table)
+
+These are evaluated on the 4 core levels {0.15, 0.20, 0.25, 0.30}, with the macro at each level taken over the benchmarks included there. Per core level ℓ:
+- **F(ℓ), flip reduction:** pooled macro Δφ(ℓ) < 0 with 95% upper bound < 0, **and** Δφ(ℓ) < 0 in ≥ 4 of the 5 folds.
+- **K(ℓ), cancelling-flip reduction:** pooled macro Δκ(ℓ) < 0 with 95% upper bound < 0.
+- **L(ℓ), losses explain the reduction:** Δl(ℓ) < 0 with 95% upper bound < 0, **and** |Δl(ℓ)| > |Δg(ℓ)| (point estimates), **and** K(ℓ) does not hold.
+
+The rows are evaluated in order, and the first that matches applies, so the readings are mutually exclusive.
+
+| Order | Reading | Condition | What the paper may say |
+|---|---|---|---|
+| 1 | **FLIP-SUPPORTED** | F(ℓ) and K(ℓ) both hold at ≥ 3 core levels | "On development data, at matched saving, π1-x produced fewer correctness flips than native-pb, including fewer cancelling flips. This is consistent with the screen's flip penalty contributing to the rule dependence [E]." Not called a causal explanation. |
+| 2 | **FLIP REDUCTION, CANCELLING NOT DEMONSTRATED** | F(ℓ) holds at ≥ 3 core levels (row 1 failed) | "At matched saving, π1-x produced fewer correctness flips than native-pb, but a reduction in cancelling flips was not demonstrated [E]." The stronger sentence "the reduction was mainly in losses, a difference in net loss" is added **only if** L(ℓ) holds at ≥ 3 of the levels where F(ℓ) holds. If added, the paper notes that this touches the matched-saving trade-off, which X1 does not test as a frontier. |
+| 3 | **NOT SUPPORTED** | F(ℓ) holds at **no** core level, **and** the pooled macro point estimate Δφ(ℓ) ≥ 0 at ≥ 3 of the 4 core levels | "We examined the flip hypothesis on development data and did not find support for it [E]." §7.3 keeps the property and states that the hypothesis was not supported. |
+| 4 | **MIXED** | Anything else | Inconclusive. Per-level and per-fold values are reported, with no mechanism statement. |
+
+**Pre-registration commitment.** These rules are final for X1. They are not revised after results are seen. Any later change would be a new, labelled post hoc analysis, and the rev 2 reading stays the reported one.
+
+### 8.2 Bootstrap: exact resampling unit (replaces the rev 1 uncertainty paragraph)
+
+- **Unit.** One held-out development question.
+- **Strata.** (benchmark, outer fold), for the primary benchmarks.
+- **Draws.**
+  - In replicate r = 1..2,000, each stratum gets one multinomial count vector over its held-out questions, of size n_stratum with equal probabilities.
+  - Generator: `default_rng([31, 1])`, with strata processed in sorted (benchmark, fold) order.
+- **Pairing.** The **same** count vector is applied to every method (π1-x, native-pb, and the secondary methods), to **both** bracketing thresholds of every level, and to every measure (g, l, φ, κ, net). Every contrast is therefore paired at the question level.
+- **Fixed quantities.** Thresholds, bracketing pairs and interpolation weights are fixed at their full-sample values and are not re-matched within replicates. Fitted probe scores are the E1 held-out scores and are not refitted.
+- **Scope of the intervals.** They are conditional, percentile intervals. They reflect resampling of held-out questions only. They do not account for uncertainty in the threshold matching, in probe fitting or in the fold assignment.
+- **Fold criterion.** "Δφ < 0 in ≥ 4 of 5 folds" uses full-sample per-fold point estimates, with each fold's rates computed over its own held-out questions.
+
+### 8.3 Unchanged safeguards
+
+- No TEST access.
+- No change to any C1 artifact.
+- Output created exclusively.
+- The matching function receives no correctness data.
+- No revision of outcome criteria after results.
+- X2 remains deferred. X1 can inform whether X2 is worth doing, but cannot establish a matched-accuracy advantage.
