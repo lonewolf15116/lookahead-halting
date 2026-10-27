@@ -1,0 +1,87 @@
+{
+ "what": "c1freeze",
+ "environment_of_rerun": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "sklearn": "1.9.1",
+  "pandas": "3.0.6",
+  "pyarrow": "26.0.0"
+ },
+ "comparison": {
+  "n_common_leaves": 328,
+  "n_bit_identical": 328,
+  "n_numeric_differ": 0,
+  "max_abs_diff": 0.0,
+  "n_only_in_recomputed": 0,
+  "n_only_in_committed": 0,
+  "only_in_recomputed": [],
+  "only_in_committed": [],
+  "non_numeric_mismatches": [],
+  "n_non_numeric_mismatches": 0,
+  "largest_numeric_differences": []
+ },
+ "probe_weights_vs_committed_npz": [
+  {
+   "array": "loop1_mean",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop1_sd",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop1_coef",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop1_intercept",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop2_mean",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop2_sd",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop2_coef",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop2_intercept",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop3_mean",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop3_sd",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop3_coef",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  },
+  {
+   "array": "loop3_intercept",
+   "max_abs_diff": 0.0,
+   "bit_identical": true
+  }
+ ]
+}

@@ -23,6 +23,6 @@ foreach ($w in @('c1freeze', 'e1', 'x1')) {
 # post-rerun audits go to the rerun folder, never over the committed reports
 & $py scripts\step4_numeric_audit.py --out (Join-Path $out 'step4_numeric_audit.json') | Select-Object -First 1
 & $py scripts\step4_provenance_audit.py --out (Join-Path $out 'step4_provenance_audit.json') | Select-Object -First 1
-Get-ChildItem -Recurse $out -File | ForEach-Object { '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.FullName.Substring($Root.Length + 1) } | Set-Content (Join-Path $out 'SHA256SUMS.txt')
 Stop-Transcript | Out-Null
+Get-ChildItem -Recurse $out -File | ForEach-Object { '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.FullName.Substring($Root.Length + 1) } | Set-Content (Join-Path $out 'SHA256SUMS.txt')
 Write-Host "Done. Send results\audit\rerun_windows\ (console.txt, *_compare.json, SHA256SUMS.txt)."

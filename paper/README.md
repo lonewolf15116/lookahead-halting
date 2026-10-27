@@ -7,8 +7,7 @@ Generated from `docs/PAPER_DRAFT.md` (formatting-only conversion).
     latexmk -pdf main_preprint.tex   # named / arXiv version (tmlr [preprint])
     latexmk -pdf main_anon.tex       # anonymized TMLR submission version
 Both `\input{body.tex}` (shared body, incl. the AI-assistance statement) and use `refs.bib` with `tmlr.bst`.
-Requires a TeX Live with `lmodern` (loaded by `tmlr.sty`). The PDFs currently in this folder were built in a
-sandbox without `lmodern`, using a Times substitute (mathptmx/helvet); rebuild locally for the true TMLR fonts.
+Requires a TeX distribution with `latexmk` and `lmodern`. The PDFs in this folder were rebuilt on 2026-10-27 with the final Latin Modern fonts (TeX Live, pdfTeX 1.40.22); the only other embedded font is DejaVu Sans, from Figure 1. The preprint PDF still carries a placeholder e-mail until the real address is supplied.
 `figures/fig1_rule_dependent_operating_points.pdf` is a copy of `../figures/...`.
 
 ## TODO items

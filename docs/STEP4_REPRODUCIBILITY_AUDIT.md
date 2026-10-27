@@ -132,3 +132,48 @@ For D2, D3 and D5 the expected printed values hard-coded in the audit script wer
 Post-correction results: numeric 394 checks, 393 PASS, 1 NQ (D4), 0 FAIL; provenance 98 checks, 97 PASS, 1 NQ (D6), 0 FAIL; consistency 41 checks, 36 PASS, 3 NQ, **2 FAIL**. The two consistency FAILs (`C.tex_pdf.anon.numbers`, `C.tex_pdf.preprint.numbers`) are expected and genuine: the LaTeX now says 0.68 and 0.00275 while both PDFs still print 0.69 (the PDFs are built on the laptop). They clear when the PDFs are rebuilt. Markdown ↔ LaTeX agreement passes.
 
 Still open: **E1 Windows rerun** (D11); **PDF rebuild** with final fonts (D8, also clears the two FAILs above); **D9** the placeholder e-mail needs the real address for the preprint version (the anonymous version must stay without one); **D10** TODO comments in `paper/*.tex`, to be removed together with the rebuild; release items in §6 pending separate decisions (TEST arrays are not to be published without checking redistribution rights and the evaluation boundary; LICENSE and anonymous mirror need decisions). D6 and D7 remain documented, as the reviewer directed.
+
+---
+
+# Addendum B — E1/C1/X1 Windows rerun, PDF rebuild, final audit counts (2026-10-27)
+
+Earlier sections and Addendum A are unchanged. New reports are in `results/audit/rerun_windows/` and `results/audit/post_rebuild/`; earlier report folders are untouched.
+
+## B.1 Same-environment rerun (D11 closed)
+
+Run with `scripts/run_step4_rerun_windows.ps1` on the original Windows environment (Python 3.12.10, numpy 2.5.4, scipy 1.18.1, scikit-learn 1.9.1, pandas 3.0.6, pyarrow 26.0.0), at commit `6f833f1`, development data only, no sealed TEST file read, outputs written to a new folder (console log `results/audit/rerun_windows/console.txt`).
+
+| Rerun | Committed artifact | Leaves compared | Bit-identical | Numeric differences | Non-numeric mismatches |
+|---|---|---|---|---|---|
+| C1 freeze | `results/c1/frozen.json` | 328 | **328** | 0 | 0 |
+| E1 | `results/exploratory/e1_report.json` | 3,379 | **3,379** | 0 | 0 |
+| X1 | `results/exploratory/x1_flips.json` | 10,148 | **10,148** | 0 | 0 |
+
+All 12 probe-weight arrays are bit-identical to the committed `pi1x_models.npz`, and the model SHA-256 fingerprints match. Verdict: **bitwise reproduction in the original environment** (comparison excludes provenance, timestamps, timings and the GPU `rho` entries, which were not rerun). The earlier Linux rerun (Addendum summary in §4) remains **numerical agreement only** (max 1.2e-5 in probe weights, differing byte-hash fingerprints); the two must not be conflated. Not covered: E1/X1/C1-freeze reruns that start from GPU feature extraction (stored features are the reproducible unit).
+
+The same run executed the numeric and provenance audits on Windows: 394 checks (393 PASS, 1 NQ, 0 FAIL) and 98 checks (97 PASS, 1 NQ, 0 FAIL), identical to the Linux counts.
+
+Two defects of the runner were found by this run and fixed afterwards (no effect on any result): printing "−" crashed on a cp1252 console after the JSON had been written, and `SHA256SUMS.txt` could not be built because the transcript still held `console.txt` open. The scripts now force UTF-8 output and stop the transcript before hashing. `SHA256SUMS.txt` for this run therefore does not exist; file hashes can be recomputed from the committed copies.
+
+## B.2 PDF rebuild (D8, D10 partly)
+
+`latexmk` is not installed on the Windows laptop, so both PDFs were built in the linked laptop's Linux VM (TeX Live, pdfTeX 1.40.22, lmodern installed), from a copy of `paper/`; the repository on the laptop was not modified. Build logs: no undefined references or citations. Fonts (`results/audit/post_rebuild/*.pdffonts.txt`): Latin Modern (LMRoman, LMSans, LMMono, LMMath) plus DejaVu Sans (Figure 1) only; **no Nimbus/Times and no Inter**. D2, D3 and D4 render correctly (`3.3 flips per 100`, `0.68 pp`, `−0.00275` with the rounded-entries note; no `0.69 pp` remains). The anonymous PDF contains no author name, affiliation or handle. Both PDFs are 21 pages (the earlier 20 pages were with the Times substitute); the page-count expectation in the consistency script was updated accordingly and is the only expectation changed.
+
+## B.3 Final counts after rebuild (`results/audit/post_rebuild/`)
+
+| Audit | Checks | PASS | NQ | FAIL |
+|---|---|---|---|---|
+| Numerical | 394 | 393 | 1 (D4, by design) | 0 |
+| Provenance | 98 | 97 | 1 (D6) | 0 |
+| Manuscript consistency | 41 | 39 | 2 (placeholder e-mail D9, TODO comments D10) | 0 |
+
+Closed: D1 (retracted), D2, D3, D5, D8, D11. D4 qualified in the text. D6 and D7 remain documented.
+
+## B.4 Open items
+
+- **D9** placeholder e-mail in `main_preprint` awaits the address authorised by the author. The anonymous build is unaffected.
+- **D10** two TODO comments remain on purpose: the AI-assistance statement in `paper/body.tex` ("DRAFT --- author to review", printed in both PDFs) and the e-mail comment. The statement is the author's attestation, not an editorial note, so it is kept visible until the author supplies the final wording. Not scientific TODOs; none hides a methodological issue.
+- **Release readiness** (`step4_release_readiness.json`): resolved: README, pinned environment lock, Figure 1 script, portable commands. Open: BLOCKER feature files not released; MAJOR TEST arrays not recomputable by outsiders, machine-specific paths in the older Windows runners and one test, LICENSE, anonymous mirror (the last three and any TEST release await explicit decisions); MINOR release tag, hand-typed tables, untracked files in the working tree.
+- The PDFs must be rebuilt once more after the e-mail and the AI statement are final; use `make paper` or the VM procedure above.
+
+Close-out recommendation: the numerical, protocol and reproducibility gates are met (0 FAIL; same-environment bitwise reproduction; PDF consistency clean). Step 4 can close once the e-mail and AI statement are settled and the PDFs are rebuilt, with the open release items explicitly accepted or scheduled.

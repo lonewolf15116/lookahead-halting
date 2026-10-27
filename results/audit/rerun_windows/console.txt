@@ -1,0 +1,48 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261027143808
+Username: LAPTOP-T1JBL1VC\Mahesh Reddy
+RunAs User: LAPTOP-T1JBL1VC\Mahesh Reddy
+Configuration Name: 
+Machine: LAPTOP-T1JBL1VC (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\run_step4_rerun_windows.ps1
+Process ID: 30756
+PSVersion: 5.1.26100.9711
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9711
+BuildVersion: 10.0.26100.9711
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+
+
+
+
+c1freeze took 0.2 min
+
+e1 took 2.1 min
+
+x1 took 1.1 min
+394 checks, 393 PASS, 1 NEEDS QUALIFICATION, 0 FAIL -> C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\step4_numeric_audit.json
+98 checks, 97 PASS, 1 NEEDS QUALIFICATION, 0 FAIL -> C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\step4_provenance_audit.json
+PS>TerminatingError(Get-FileHash): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: The file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' cannot be read: The process cannot access the file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' because it is being used by another process."
+>> TerminatingError(Get-FileHash): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: The file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' cannot be read: The process cannot access the file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' because it is being used by another process."
+>> TerminatingError(Get-FileHash): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: The file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' cannot be read: The process cannot access the file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' because it is being used by another process."
+>> TerminatingError(Get-FileHash): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: The file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' cannot be read: The process cannot access the file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' because it is being used by another process."
+The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: The file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' cannot be read: The process cannot access the file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' because it is being used by another process.
+Get-FileHash : The file 'C:\Users\Mahesh Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt'
+cannot be read: The process cannot access the file 'C:\Users\Mahesh
+Reddy\Projects\lookahead-halting\results\audit\rerun_windows\console.txt' because it is being used by another process.
+At C:\Users\Mahesh Reddy\Projects\lookahead-halting\scripts\run_step4_rerun_windows.ps1:26 char:69
++ ... t { '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.T ...
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ReadError: (C:\Users\Mahesh...ows\console.txt:PSObject) [Write-Error], WriteErrorExcepti
+   on
+    + FullyQualifiedErrorId : FileReadError,Get-FileHash
+
+**********************
+Windows PowerShell transcript end
+End time: 20261027144141
+**********************

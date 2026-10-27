@@ -21,6 +21,7 @@ import sys
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = Path(__file__).resolve().parents[1]
 BENCH = ["openbookqa", "commonsense_qa", "hellaswag"]
 SHORT = {"openbookqa": "OBQA", "commonsense_qa": "CSQA", "hellaswag": "HS"}

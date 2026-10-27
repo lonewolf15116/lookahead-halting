@@ -5,11 +5,13 @@
 Each finding has a severity (BLOCKER / MAJOR / MINOR / INFO), the evidence and a proposed remedy. Exit code is always 0 (this is an inventory).
 """
 import argparse
+import sys
 import json
 import re
 import subprocess
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = Path(__file__).resolve().parents[1]
 F = []
 

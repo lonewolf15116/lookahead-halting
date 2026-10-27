@@ -1,0 +1,261 @@
+{
+ "script": "scripts/step4_manuscript_consistency.py",
+ "n_checks": 41,
+ "n_pass": 39,
+ "n_needs_qualification": 2,
+ "n_fail": 0,
+ "salient_tokens": {
+  "md": 436,
+  "tex": 413,
+  "pdf_anon": 455,
+  "pdf_preprint": 455
+ },
+ "checks": [
+  {
+   "id": "C.md_tex.numbers",
+   "claim": "Markdown and LaTeX body contain the same multiset of salient numbers (436 tokens; Markdown heading numbers excluded)",
+   "status": "PASS",
+   "evidence": "differences: {}; heading-number tokens only in Markdown: 23"
+  },
+  {
+   "id": "C.tex_pdf.anon.numbers",
+   "claim": "LaTeX body and the anon PDF contain the same salient numbers (allowed: section-heading numbers, and numbers that occur as text inside Figure 1)",
+   "status": "PASS",
+   "evidence": "unexplained: {}; heading-number-only differences: 23; figure-text tokens used: 10"
+  },
+  {
+   "id": "C.tex_pdf.preprint.numbers",
+   "claim": "LaTeX body and the preprint PDF contain the same salient numbers (allowed: section-heading numbers, and numbers that occur as text inside Figure 1)",
+   "status": "PASS",
+   "evidence": "unexplained: {}; heading-number-only differences: 23; figure-text tokens used: 10"
+  },
+  {
+   "id": "C.pdf.anon_vs_preprint",
+   "claim": "the anonymous and the preprint PDF contain identical salient numbers",
+   "status": "PASS",
+   "evidence": "{}"
+  },
+  {
+   "id": "C.md_tex.integers",
+   "claim": "Markdown and LaTeX body contain the same multiset of integers with 2+ digits (84 tokens)",
+   "status": "PASS",
+   "evidence": "differences: {}"
+  },
+  {
+   "id": "C.tex_pdf.anon.integers",
+   "claim": "LaTeX body and the anon PDF contain the same integers with 2+ digits (allowed extras in the PDF: page numbers 1-30, citation years 2010-2026, text inside Figure 1)",
+   "status": "PASS",
+   "evidence": "unexplained: {}"
+  },
+  {
+   "id": "C.tex_pdf.preprint.integers",
+   "claim": "LaTeX body and the preprint PDF contain the same integers with 2+ digits (allowed extras in the PDF: page numbers 1-30, citation years 2010-2026, text inside Figure 1)",
+   "status": "PASS",
+   "evidence": "unexplained: {}"
+  },
+  {
+   "id": "C.labels.counts",
+   "claim": "evidence-label counts [C]/[S]/[P]/[E] agree in Markdown, LaTeX and both PDFs",
+   "status": "PASS",
+   "evidence": "md {'C': 10, 'S': 42, 'P': 20, 'E': 23}; tex {'C': 10, 'S': 42, 'P': 20, 'E': 23}; anon {'C': 10, 'S': 42, 'P': 20, 'E': 23}; pre {'C': 10, 'S': 42, 'P': 20, 'E': 23}"
+  },
+  {
+   "id": "C.labels.confirmatory_scope",
+   "claim": "every [C] label is attached to the single pre-registered primary comparison (π1-x vs native-pb, bootstrap-screened rule)",
+   "status": "PASS",
+   "evidence": "10 [C] occurrences; contexts: n? Selection Rules Matter in Looped Language Models  *Evidence labels used throughout: [C] confirmatory, [S] p || macro saving, 95% CI    [+0.049, +0.057], over OpenBookQA, CommonsenseQA and HellaSwag [C]. Under the point-on || −0.018] | [S] | | **Bootstrap-screened, TEST** | **+0.053** | **[+0.049, +0.057]** | **[C], verdict PASS** | | || was at least $\\delta = 0.02$, and the lower bound was above 0, so the verdict was PASS [C]. The macro saving w || e benchmarks, the screened-rule difference π1-x − native-pb is +0.053 [+0.049, +0.057] [C] and the point-only  ||  between successive loops. For (a) the primary comparison in section 5.1 is the answer [C]: under the bootstra ||  rule, π1-x saved more loops than Ouro's native gate on the three primary benchmarks** [C]. The difference     || lection rules, on this model, the preferred method differed** [S], contrasted with the [C] result. Under the p || T (−0.022 [−0.026, −0.018] [S]). Under the bootstrap-screened rule, π1-x was preferred [C]. Each rule selects  ||  points were chosen with a bootstrap-screened accuracy rule: +0.053 gross macro saving [C], +0.038 net (estima"
+  },
+  {
+   "id": "C.labels.x1",
+   "claim": "no sentence about X1 calls it pre-registered or labels it [C]/[S] (it is a protocol-frozen exploratory analysis, label [E])",
+   "status": "PASS",
+   "evidence": "4 X1 sentences; offending: []"
+  },
+  {
+   "id": "C.labels.x1_confirm",
+   "claim": "X1 is never described as confirming anything except in the negated 'not four independent confirmations'",
+   "status": "PASS",
+   "evidence": "[]"
+  },
+  {
+   "id": "C.xref.sections",
+   "claim": "every 'Section N.M' cross-reference in the Markdown points to an existing heading",
+   "status": "PASS",
+   "evidence": "referenced ['3.2', '3.3', '3.4', '3.5', '3.6', '4.3', '4.4', '5', '5.1', '5.2', '5.3', '5.4', '6.1', '7.3', '7.4', '7.5']; missing []"
+  },
+  {
+   "id": "C.captions.tables",
+   "claim": "Markdown has captions for Tables 1-7",
+   "status": "PASS",
+   "evidence": "['1', '2', '3', '4', '5', '6', '7']"
+  },
+  {
+   "id": "C.xref.tables",
+   "claim": "every referenced table has a caption",
+   "status": "PASS",
+   "evidence": "referenced ['1', '2', '3', '4', '5', '6', '7']"
+  },
+  {
+   "id": "C.captions.pdf.anon",
+   "claim": "anon PDF contains captions Table 1-7 and Figure 1",
+   "status": "PASS",
+   "evidence": "['1', '2', '3', '4', '5', '6', '7']"
+  },
+  {
+   "id": "C.captions.pdf.preprint",
+   "claim": "preprint PDF contains captions Table 1-7 and Figure 1",
+   "status": "PASS",
+   "evidence": "['1', '2', '3', '4', '5', '6', '7']"
+  },
+  {
+   "id": "C.figure",
+   "claim": "one figure in the Markdown, included in the LaTeX body",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "C.figure.files",
+   "claim": "figure files exist (figures/ and paper/figures/)",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "C.figure.copy",
+   "claim": "paper/figures holds the figure used by the LaTeX build",
+   "status": "PASS",
+   "evidence": "['fig1_rule_dependent_operating_points.pdf', 'fig1_rule_dependent_operating_points.png']"
+  },
+  {
+   "id": "C.cites.md",
+   "claim": "every citation key used in the Markdown has a reference-list entry",
+   "status": "PASS",
+   "evidence": "used 20, defined 20, missing []"
+  },
+  {
+   "id": "C.cites.md_unused",
+   "claim": "every Markdown reference-list entry is cited",
+   "status": "PASS",
+   "evidence": "uncited: []"
+  },
+  {
+   "id": "C.cites.tex",
+   "claim": "every \\cite key in body.tex exists in refs.bib",
+   "status": "PASS",
+   "evidence": "cited 20, bib 20, missing []"
+  },
+  {
+   "id": "C.cites.bib_unused",
+   "claim": "every refs.bib entry is cited in body.tex",
+   "status": "PASS",
+   "evidence": "uncited: []"
+  },
+  {
+   "id": "C.cites.md_vs_bib",
+   "claim": "Markdown reference keys and refs.bib keys are the same set (up to case/punctuation)",
+   "status": "PASS",
+   "evidence": "only md: []; only bib: []"
+  },
+  {
+   "id": "C.pdf.anon.undefined",
+   "claim": "anon PDF has no unresolved references or citations",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "C.pdf.anon.cites",
+   "claim": "citations render (informational)",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "C.pdf.preprint.undefined",
+   "claim": "preprint PDF has no unresolved references or citations",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "C.pdf.preprint.cites",
+   "claim": "citations render (informational)",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "C.build.logs",
+   "claim": "LaTeX logs report no undefined references/citations",
+   "status": "PASS",
+   "evidence": "{\"main_anon\": {\"undefined_refs\": 0, \"overfull\": 0, \"pages\": [\"20\"]}, \"main_preprint\": {\"undefined_refs\": 0, \"overfull\": 0, \"pages\": [\"20\"]}}"
+  },
+  {
+   "id": "C.pages.anon",
+   "claim": "anon PDF has 21 pages (final fonts)",
+   "status": "PASS",
+   "evidence": "Pages:           21"
+  },
+  {
+   "id": "C.pages.preprint",
+   "claim": "preprint PDF has 21 pages (final fonts)",
+   "status": "PASS",
+   "evidence": "Pages:           21"
+  },
+  {
+   "id": "C.fonts",
+   "claim": "PDFs are built with the final TMLR fonts (Computer Modern / lmodern), not the temporary Times stand-in used in the sandbox",
+   "status": "PASS",
+   "evidence": "fonts embedded: DejaVuSans, LMMathExtension10-Regular, LMMathItalic10-Regular, LMMathItalic6-Regular, LMMathItalic7-Regular, LMMathItalic9-Regular, LMMathSymbols10-Regular, LMMathSymbols6-Regular, LMMathSymbols7-Regular, LMMathSymbols9-Regular, LMMono10-Regular, LMRoman10-Bold, LMRoman10-Italic, LMRoman10-Regular, "
+  },
+  {
+   "id": "A.source",
+   "claim": "identifying strings are absent from the sources compiled into the anonymous build",
+   "status": "PASS",
+   "evidence": "{}"
+  },
+  {
+   "id": "A.pdf.text",
+   "claim": "identifying strings are absent from the anonymous PDF text",
+   "status": "PASS",
+   "evidence": "[]"
+  },
+  {
+   "id": "A.pdf.meta",
+   "claim": "anonymous PDF metadata has no author/title strings",
+   "status": "PASS",
+   "evidence": "Title:            | Subject:          | Keywords:         | Author:           | Creator:         LaTeX with hyperref | Producer:        pdfTeX-1.40.22 | CreationDate:    Tue Oct 27 09:13:40 2026 GMT | ModDate:         Tue Oct 27 09:13:40 2026 GMT | Custom Metadata: yes | Metadata Stream: no | Tagged"
+  },
+  {
+   "id": "A.figure.meta",
+   "claim": "figure files embed no identifying path/author strings",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "A.preprint.author",
+   "claim": "the preprint PDF carries the author block (expected) — placeholder e-mail still present",
+   "status": "NEEDS QUALIFICATION",
+   "evidence": "TODO@aston.ac.uk in main_preprint.pdf"
+  },
+  {
+   "id": "A.todo",
+   "claim": "TODO markers remain in the LaTeX sources (comments only; none in the anonymous PDF text)",
+   "status": "NEEDS QUALIFICATION",
+   "evidence": "['paper/body.tex: % DRAFT text supplied by the project owner; %TODO author to review and edit.', 'paper/main_preprint.tex: % %TODO: replace the placeholder email below with the real address.', 'paper/main_preprint.tex: \\\\author{\\\\name Mahesh Reddy Pagadala \\\\email \\\\texttt{TODO@aston.ac.uk} \\\\\\\\']"
+  },
+  {
+   "id": "A.pdf.todo",
+   "claim": "no TODO/placeholder text in the anonymous PDF body",
+   "status": "PASS",
+   "evidence": ""
+  },
+  {
+   "id": "A.openreview",
+   "claim": "TMLR template placeholders (\\month/\\year/openreview id) are unset in the .tex mains (TMLR sets them at acceptance)",
+   "status": "PASS",
+   "evidence": "MM/YYYY/XXXX expected before acceptance"
+  },
+  {
+   "id": "A.ai_statement",
+   "claim": "the manuscript contains an AI-assistance / authorship statement (to be written by the author)",
+   "status": "PASS",
+   "evidence": "AI assist"
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "what": "x1",
+ "environment_of_rerun": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "sklearn": "1.9.1",
+  "pandas": "3.0.6",
+  "pyarrow": "26.0.0"
+ },
+ "comparison": {
+  "n_common_leaves": 10148,
+  "n_bit_identical": 10148,
+  "n_numeric_differ": 0,
+  "max_abs_diff": 0.0,
+  "n_only_in_recomputed": 0,
+  "n_only_in_committed": 0,
+  "only_in_recomputed": [],
+  "only_in_committed": [],
+  "non_numeric_mismatches": [],
+  "n_non_numeric_mismatches": 0,
+  "largest_numeric_differences": []
+ }
+}

@@ -14,6 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS = []
 
@@ -190,7 +191,8 @@ for n in ("main_anon", "main_preprint"):
 ok(all(v["undefined_refs"] == 0 for v in logs.values()), "C.build.logs", "LaTeX logs report no undefined references/citations", json.dumps(logs))
 for name, p in (("anon", "main_anon.pdf"), ("preprint", "main_preprint.pdf")):
     info = subprocess.run(["pdfinfo", str(ROOT / "paper" / p)], capture_output=True, text=True).stdout
-    ok("Pages:           20" in info, f"C.pages.{name}", f"{name} PDF has 20 pages", re.findall(r"Pages:\s+\d+", info)[0])
+    # expectation updated 2026-10-27: 20 pages was the count of the earlier Times-substitute build; the final Latin Modern build has 21 (a layout fact, not a content change)
+    ok("Pages:           21" in info, f"C.pages.{name}", f"{name} PDF has 21 pages (final fonts)", re.findall(r"Pages:\s+\d+", info)[0])
 fonts = subprocess.run(["pdffonts", str(ROOT / "paper/main_anon.pdf")], capture_output=True, text=True).stdout
 ok("Nimbus" not in fonts, "C.fonts", "PDFs are built with the final TMLR fonts (Computer Modern / lmodern), not the temporary Times stand-in used in the sandbox",
    "fonts embedded: " + ", ".join(sorted({l.split()[0].split('+')[-1] for l in fonts.splitlines()[2:]}))[:300], fail="NEEDS QUALIFICATION")
