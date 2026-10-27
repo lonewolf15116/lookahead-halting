@@ -71,4 +71,12 @@ The paper may also need a single disclosure sentence in §4.4 or §7.5, saying t
 
 ## Bearing on X2
 
-X1 points to a difference in flips at no demonstrated difference in net loss. That suggests a matched-loss frontier (X2) would not show a clear π1-x advantage. OpenBookQA even points the other way at the higher saving levels. This is a reason X2 may be of limited value, not a result about it. X2 remains deferred.
+This section was corrected after review. Matched saving (X1) and matched accuracy loss (X2) answer different questions, so X1 does not predict what X2 would find, and no inference about X2 is drawn from it. X2 remains deferred.
+
+## Closure (2026-10-27)
+
+- **Output committed:** commit `01c77c1`, made from the laptop. The full sha256 of the committed `results/exploratory/x1_flips.json` is `457617c7c8bd7c1878c5635644ec10a304d41557e83f78182b15bebbc56a6ded`, identical to the staged run output. The output is not to be amended.
+- **Manuscript:** the reviewer-approved wording is applied.
+  - §7.3 calls X1 a "protocol-frozen exploratory analysis". It carries the qualifications for CommonsenseQA, r-kl and matched saving against matched loss; the caution that the intervals are conditional on matching and fitting; and the statement that the result satisfies the pre-declared exploratory decision rule rather than providing four independent confirmations.
+  - §4.4 discloses X1 as a development-only follow-up whose protocol was frozen before the run.
+- **X1 is CLOSED.**
