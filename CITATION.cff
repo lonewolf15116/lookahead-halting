@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this code or the results, please cite the paper."
+title: "When Does Adaptive Halting Win? Selection Rules Matter in Looped Language Models"
+type: software
+authors:
+  - family-names: Pagadala
+    given-names: Mahesh Reddy
+    email: mahesh15116@gmail.com
+license: MIT

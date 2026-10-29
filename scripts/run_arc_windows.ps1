@@ -4,7 +4,7 @@
 # Order: install, tests, the two probes, a 25-question smoke test (a few minutes), then the full test set
 # (about an hour on the RTX 5050). Keep the laptop plugged in and awake. Resumable: run it again to continue.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 

@@ -5,7 +5,7 @@
 # with exemplar recording (the same work as prepare_phase1.py, roughly 10-20 min) and downloads the unused splits.
 # Exit 2 from the real build means the audit failed: stop and send results\gate2\confirmation_audit.json.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

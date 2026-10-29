@@ -3,7 +3,7 @@
 # Uses the real Ouro tokenizer so the Phase 1 question-set hashes are verified too. Refuses to overwrite an earlier inventory.
 # Exit 3 from the inventory = it wrote a report with UNRESOLVED pools (not an error): send results\phase3\inventory.json and docs\PHASE3_INVENTORY.md.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

@@ -16,7 +16,7 @@ Code, frozen protocols and result artifacts for a frozen Ouro-1.4B study (4 loop
 | 3 | C1 TEST statistics and bootstrap intervals | the sealed TEST feature files | **Not recomputable by outsiders**; the TEST set is spent (opened once, `results/c1/TEST_OPENED.json`). The results are verified against pinned file hashes and the sealing-time bundle hash |
 | 4 | Feature extraction from the model | CUDA GPU (RTX 5050 8 GB, bf16) | Not bitwise reproducible (GPU nondeterminism, see manuscript 3.6); stored features are the reproducible unit |
 
-Data availability: benchmark datasets are public (Hugging Face hub, revisions recorded in `data/manifests/` and `results/phase3/inventory.json`; check each dataset's licence before redistribution). Extracted features are not yet redistributed. Whether and when to release them (including any TEST arrays) is an open decision pending a check of dataset redistribution rights and of the evaluation boundary. **No licence has been chosen yet**, so no reuse rights are granted by default.
+Data availability: benchmark datasets are public (Hugging Face hub, revisions recorded in `data/manifests/` and `results/phase3/inventory.json`; check each dataset's licence before redistribution). Extracted features are not yet redistributed. Whether and when to release them (including any TEST arrays) is an open decision pending a check of dataset redistribution rights and of the evaluation boundary; the TEST arrays are not planned for release. Code and documentation authored here are released under the MIT licence (`LICENSE`); the benchmark datasets and the Ouro model keep their own licences, and nothing from them is redistributed here.
 
 ## Environment
 
@@ -45,6 +45,8 @@ export PYTHONPATH=src            # Windows: $env:PYTHONPATH = "src"
 | Truncation / determinism diagnostics | `python scripts/dt_truncation_check.py`, `python scripts/dt2_determinism_check.py` | `results/diagnostics/` |
 | Reruns on development data into a new folder | `make rerun-dev` / `scripts\run_step4_rerun_windows.ps1` | `results/audit/rerun_*/` |
 | Unit tests | `python -m pytest -q` (401 passed, 4 skipped at audit time) | |
+| Anonymous code package for double-blind review | `python scripts/make_anonymous_package.py` | `anonymous_code_package.zip` (not committed; see `docs/PUBLICATION_CHECKLIST.md`) |
+| arXiv source bundle | `python scripts/make_submission_packages.py arxiv --out dist` | `dist/arxiv_source.zip` |
 | Paper PDFs | `scripts\build_paper_windows.ps1` or `make paper` | `paper/main_anon.pdf`, `paper/main_preprint.pdf` |
 
 **Warning:** `c1_freeze.py`, `e1_run.py` and `x1_flip_check.py` write to the committed artifact paths shown above. To check reproducibility without overwriting anything use `scripts/step4_rerun_dev.py` (writes to a new folder). `c1_test_run.py` refuses to run again (one-time marker).

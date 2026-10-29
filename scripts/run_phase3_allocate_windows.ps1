@@ -2,7 +2,7 @@
 #   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_phase3_allocate_windows.ps1"
 # Exit 3 = RETURN_FOR_REVIEW (HellaSwag pool below 750): send results\phase3\allocation.json. Refuses to overwrite earlier outputs.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

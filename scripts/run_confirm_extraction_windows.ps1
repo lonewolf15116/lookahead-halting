@@ -7,7 +7,7 @@
 # every check passes, the full extraction (data\extracted_confirm) + checks. Re-running resumes; completed parts are kept.
 # Extraction refuses to start unless data\manifests\confirmation.json, confirmation_ids.csv and the passed audit match.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

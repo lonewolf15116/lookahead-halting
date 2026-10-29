@@ -1,7 +1,7 @@
 # Gate 2 shuffled-control audit + fixed-depth analysis. Train and validation only, CPU, a few minutes.
 #   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_control_audit_windows.ps1"
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 & $py scripts\gate2_control_audit.py --root .

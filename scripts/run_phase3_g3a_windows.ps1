@@ -1,7 +1,7 @@
 # Phase 3 G3a (D1-D4) on development data. ONLY AFTER the reviewer's implementation sign-off. CPU only; TEST is never read.
 #   powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\run_phase3_g3a_windows.ps1"
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 Add-Type -Namespace Lh3g -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint esFlags);'

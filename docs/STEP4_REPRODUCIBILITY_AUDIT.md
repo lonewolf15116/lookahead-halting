@@ -197,3 +197,25 @@ Earlier sections and Addenda A and B are unchanged. Final reports: `results/audi
 | Manuscript consistency | 41 | 41 | 0 | 0 |
 
 **Step 4 status.** All discrepancies are closed or documented (D1 retracted; D2, D3, D5, D8, D9, D10, D11 closed; D4, D6, D7 documented). Reproducibility evidence: Windows bitwise reproduction of C1 freeze, E1 and X1 on development data; Linux numerical agreement only. Not established: GPU feature-extraction reproducibility; independent recomputation of the sealed TEST intervals. Open release items, none of them executed: licence (MIT recommended, not authorised), anonymous code mirror (not authorised), TEST-array release (deferred pending rights and evaluation-integrity checks), release of development feature files (blocker for third-party reproduction; a data-availability statement must say they are not publicly regenerable until released), a release tag, and machine-specific paths in the older Windows runners.
+
+---
+
+# Addendum D — publication preparation (2026-10-29)
+
+Earlier sections and Addenda A to C are unchanged. Reports: `results/audit/publication/`. No frozen artifact, protocol or result was modified; no TEST data was read.
+
+**Author decisions applied (2026-10-29):** venues TMLR and arXiv; code licence MIT; anonymised zip as the code package for TMLR. Nothing was uploaded, posted, made public or tagged.
+
+**Added:** `LICENSE` (MIT) and `CITATION.cff`; a "Reproducibility and data availability" section in both manuscript sources (identical statement, code link only in the preprint build via `\codeavailability`; the anonymous build refers to supplementary material); `scripts/make_anonymous_package.py` (anonymised code zip: tracked files only, no history, frozen/code/result files never edited — files with an identifying string are omitted and listed, documentation redacted, archive scanned, deterministic); `scripts/make_submission_packages.py` (arXiv source bundle, test-compiled from the shipped `.bbl`); the older Windows runners now locate the repository from their own path; `docs/PUBLICATION_CHECKLIST.md` (files, pre-submission steps, suggested arXiv metadata). Two availability sections written in parallel (one by another process editing this working tree, one by me) were reconciled by keeping the former and removing mine.
+
+**Rebuild.** Both PDFs rebuilt from the committed sources: Latin Modern + DejaVu Sans only, no undefined references, 21 pages each; the anonymous PDF contains no name, e-mail, institution or repository link (the only "GitHub" strings are a cited third-party issue); the preprint shows the e-mail and the repository URL. The arXiv bundle compiles from its `.bbl` with plain `pdflatex` (21 pages). The consistency script's hard-coded page count was replaced by a check that both PDFs have the same page count.
+
+**Anonymous package check.** 259 files, 26 omitted, 5 documentation files redacted; in a clean extraction the numeric audit gives 393/394 PASS (1 NQ, D4) and the sampled unit tests pass (66 passed, 2 skipped). Checks that need git history (provenance audit, `tests/test_c1_test.py`) cannot run there, as documented in its `ANONYMIZATION_NOTES.md`.
+
+| Audit | Checks | PASS | NQ | FAIL |
+|---|---|---|---|---|
+| Numerical | 394 | 393 | 1 (D4) | 0 |
+| Provenance | 98 | 97 | 1 (D6) | 0 |
+| Manuscript consistency | 40 | 40 | 0 | 0 |
+
+**Remaining release limitations (accepted, documented in the paper and README):** development feature files not released (third parties cannot rerun levels 2 to 4 from the repository alone); TEST arrays not released; release tag and public repository are the author's actions; machine paths remain only in comments, usage examples and one test fixture.

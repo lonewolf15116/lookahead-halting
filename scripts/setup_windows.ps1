@@ -2,7 +2,7 @@
 #   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\setup_windows.ps1"
 # Safe to run again: it skips what exists. Results go to results\gate0\ inside the repo folder.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 function Check($what) {

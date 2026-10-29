@@ -3,7 +3,7 @@
 # results\diagnostics\dt_truncation_report.json exclusively (the run refuses to overwrite; there is no re-run to "fix" a result).
 #   powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\run_dt_truncation_windows.ps1"
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

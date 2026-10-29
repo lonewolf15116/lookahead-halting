@@ -7,7 +7,7 @@
 # Stage full: full DEV+ and TEST extraction + checks (about 80 GPU-minutes in total). Re-running resumes; completed parts are kept.
 param([Parameter(Mandatory = $true)][ValidateSet('build', 'full')][string]$Stage)
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

@@ -3,7 +3,7 @@
 #   powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\run_c1_freeze_windows.ps1" -ProtocolSha <sha256 of the approved docs/C1_PROTOCOL.md>
 param([Parameter(Mandatory = $true)][string]$ProtocolSha)
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

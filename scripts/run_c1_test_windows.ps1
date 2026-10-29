@@ -2,7 +2,7 @@
 #   powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\run_c1_test_windows.ps1" -ApprovedCodeSha <sha256 from the review>
 param([Parameter(Mandatory = $true)][string]$ApprovedCodeSha)
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 function Check($what) { if ($LASTEXITCODE -ne 0) { throw "$what failed (exit $LASTEXITCODE). Stop here and send the output." } }

@@ -100,7 +100,7 @@ add("RR.table_script", "MINOR", "tables in the paper are typed by hand from JSON
     "ship scripts/step4_numeric_audit.py as `make check-numbers`")
 add("RR.sealed", "INFO", "the TEST set is spent; a future reader cannot rerun the confirmatory study on fresh data from this repository alone", "docs/C1_REPORT.md; marker TEST_OPENED.json",
     "state this in the README; point to the pre-registration (tag c1-protocol)")
-add("RR.anonymous_mirror", "MAJOR", "TMLR double-blind review needs an anonymous code mirror; the GitHub repository is private and its owner handle appears in remotes/docs", "origin: github.com/lonewolf15116/lookahead-halting",
+add("RR.anonymous_mirror", "PASS" if "scripts/make_anonymous_package.py" in tracked else "MAJOR", "TMLR double-blind review needs an anonymous code mirror; the GitHub repository is private and its owner handle appears in remotes/docs", "origin: github.com/lonewolf15116/lookahead-halting",
     "create an anonymised snapshot (anonymous.4open.science or a zip) without .git history, DECISIONS.md author references and the local paths above")
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", default=str(ROOT / "results/audit/step4_release_readiness.json"))

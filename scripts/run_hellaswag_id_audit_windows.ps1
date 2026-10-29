@@ -1,7 +1,7 @@
 # Phase 3: HellaSwag repeated-id audit (reviewer request). CPU only, ~4 min. Reads the dataset and manifests only.
 #   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_hellaswag_id_audit_windows.ps1"
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

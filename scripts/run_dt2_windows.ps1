@@ -2,7 +2,7 @@
 # Two separate processes, because CUBLAS_WORKSPACE_CONFIG must be set before CUDA initialises. Outputs are created exclusively.
 #   powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\run_dt2_windows.ps1"
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

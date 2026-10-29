@@ -2,7 +2,7 @@
 # reviewer's implementation review. CPU only; the sealed TEST data is never read.
 #   powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\run_x1_windows.ps1"
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 Add-Type -Namespace LhX1 -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint esFlags);'

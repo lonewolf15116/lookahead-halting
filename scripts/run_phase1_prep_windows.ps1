@@ -5,7 +5,7 @@
 # largest, roughly 10-20 min), pilot on ARC-C (GPU, roughly 15-25 min). No full extraction happens here.
 # Keep the laptop plugged in and awake. Each step can be re-run on its own.
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'

@@ -575,6 +575,12 @@ Future work needs new held-out data:
 - Ouro-2.6B;
 - a truncated implementation with measured end-to-end time on held-out data.
 
+## Reproducibility and data availability
+
+The code, the pre-registered and exploratory protocols, the decision log, the result artifacts and the audit reports are in the project repository (https://github.com/lonewolf15116/lookahead-halting; an anonymised copy accompanies the review version). A script recomputes the reported numbers from the committed result artifacts on a CPU. The development-stage computations (the frozen selections, the held-out diagnostics and the correctness-flip analysis) were recomputed from the stored development features, bit for bit, in the original software environment, and to numerical agreement on a second platform.
+
+Some components cannot be reproduced from the repository. The extracted per-question features are not released; regenerating them needs a CUDA GPU and the pinned model revision, and GPU extraction is not bitwise reproducible (Section 3.6). The sealed test features are not released and the test set has been used once, so the test statistics and their bootstrap intervals are verified against pinned file hashes and the recorded hash of the code that produced them, not independently recomputed. The benchmarks are public and are not redistributed here; the manifests contain identifiers only.
+
 ## Statement on AI assistance
 
 AI-assisted tools were used for code development, test generation, manuscript drafting and editing, and reproducibility auditing. AI-assisted methodological review was also used to identify potential weaknesses and refine the interpretation and presentation of results.

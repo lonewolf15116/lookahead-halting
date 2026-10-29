@@ -1,0 +1,28 @@
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+UFOKDR+LMSans10-Bold                 Type 1            Custom           yes yes yes    142  0
+KXFDVI+LMRoman10-Bold                Type 1            Custom           yes yes yes    143  0
+XOADHF+LMMono10-Italic               Type 1            Custom           yes yes yes    144  0
+QIURRV+LMRoman9-Italic               Type 1            Custom           yes yes yes    145  0
+TPRMOI+LMRoman10-Italic              Type 1            Custom           yes yes yes    146  0
+XQVZMK+LMRoman10-Regular             Type 1            Custom           yes yes yes    147  0
+MDAWPT+LMMathItalic10-Regular        Type 1            Custom           yes yes yes    148  0
+CSGANG+LMMathSymbols10-Regular       Type 1            Custom           yes yes yes    149  0
+XQVZMK+LMRoman10-Regular             Type 1            Custom           yes yes yes    150  0
+XQVZMK+LMRoman10-Regular             Type 1            Custom           yes yes yes    206  0
+GDIBWY+LMMathSymbols7-Regular        Type 1            Custom           yes yes yes    207  0
+DXYAMW+LMRoman7-Regular              Type 1            Custom           yes yes yes    208  0
+QCAGRI+LMMono10-Regular              Type 1            Custom           yes yes yes    240  0
+LMZKQE+LMMathItalic7-Regular         Type 1            Custom           yes yes yes    241  0
+UVRIMP+LMMathExtension10-Regular     Type 1            Custom           yes yes yes    242  0
+HQLLNQ+LMRoman9-Regular              Type 1            Custom           yes yes yes    261  0
+XJHYAI+LMMathItalic9-Regular         Type 1            Custom           yes yes yes    262  0
+SXPVNQ+LMMathItalic6-Regular         Type 1            Custom           yes yes yes    263  0
+HQLLNQ+LMRoman9-Regular              Type 1            Custom           yes yes yes    264  0
+YOUWWR+LMRoman6-Regular              Type 1            Custom           yes yes yes    265  0
+JAUONY+LMMathSymbols9-Regular        Type 1            Custom           yes yes yes    266  0
+ONAHZY+LMMathSymbols6-Regular        Type 1            Custom           yes yes yes    267  0
+DXYAMW+LMRoman7-Regular              Type 1            Custom           yes yes yes    278  0
+YOUWWR+LMRoman6-Regular              Type 1            Custom           yes yes yes    284  0
+BMDIKN+LMRoman9-Bold                 Type 1            Custom           yes yes yes    300  0
+EGXWUM+DejaVuSans                    CID TrueType      Identity-H       yes yes yes    325  0

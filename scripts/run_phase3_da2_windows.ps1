@@ -6,7 +6,7 @@
 # Option 2 (only after reviewer approval): add  -Mode stream-gpu  (bf16 weights on the GPU, float64 per module call; ~4 GB RAM)
 param([ValidateSet('full-cpu', 'stream-gpu')][string]$Mode = 'full-cpu')
 $ErrorActionPreference = 'Stop'
-$Root = Join-Path $HOME 'Projects\lookahead-halting'
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 $py = Join-Path $Root '.venv\Scripts\python.exe'
 $env:HF_HUB_DISABLE_SYMLINKS_WARNING = '1'
