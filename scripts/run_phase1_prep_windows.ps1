@@ -1,6 +1,6 @@
 # Phase 1, steps 1-4 on Windows: tests, synthetic data, question build + token counts + split manifest, packed pilot.
 # Run from PowerShell:
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_phase1_prep_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_phase1_prep_windows.ps1"
 # Order: tests (~1-2 min), synthetic sets (seconds), prepare (CPU; first run downloads the datasets, MMLU is the
 # largest, roughly 10-20 min), pilot on ARC-C (GPU, roughly 15-25 min). No full extraction happens here.
 # Keep the laptop plugged in and awake. Each step can be re-run on its own.

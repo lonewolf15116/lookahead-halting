@@ -2,7 +2,7 @@
 # or analyses correctness, transitions, savings or accuracy; the verifier prints only PASS/FAIL, question counts and
 # record status counts.
 # Run from PowerShell:
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_confirm_extraction_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_confirm_extraction_windows.ps1"
 # Order: tests, a 40-question-per-benchmark smoke extraction + checks (data\extracted_confirm_smoke), then, only if
 # every check passes, the full extraction (data\extracted_confirm) + checks. Re-running resumes; completed parts are kept.
 # Extraction refuses to start unless data\manifests\confirmation.json, confirmation_ids.csv and the passed audit match.

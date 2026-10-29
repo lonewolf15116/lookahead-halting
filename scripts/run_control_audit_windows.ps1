@@ -1,5 +1,5 @@
 # Gate 2 shuffled-control audit + fixed-depth analysis. Train and validation only, CPU, a few minutes.
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_control_audit_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_control_audit_windows.ps1"
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root

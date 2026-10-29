@@ -1,8 +1,8 @@
 # Phase 3 A1: build the DEV+ and sealed TEST questions, then extract them (GPU). TEST outcomes stay sealed: nothing here
 # prints or analyses correctness, transitions, savings or accuracy; the verifier prints only PASS/FAIL, counts and record status.
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_phase3_extraction_windows.ps1" -Stage build
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_phase3_extraction_windows.ps1" -Stage build
 #   ... reviewer verifies the build report and smoke checks ...
-#   & "$HOME\Projects\lookahead-halting\scripts\run_phase3_extraction_windows.ps1" -Stage full
+#   & ".\scripts\run_phase3_extraction_windows.ps1" -Stage full
 # Stage build: tests, question build (CPU, refuses to overwrite), 40-question smoke extraction + checks for DEV+ and TEST.
 # Stage full: full DEV+ and TEST extraction + checks (about 80 GPU-minutes in total). Re-running resumes; completed parts are kept.
 param([Parameter(Mandatory = $true)][ValidateSet('build', 'full')][string]$Stage)

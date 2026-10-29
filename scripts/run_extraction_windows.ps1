@@ -1,7 +1,7 @@
 # Phase 1 extraction on Windows: tests, a small end-to-end extraction and its acceptance checks, then (only if
 # every check passes) the full extraction (about 4 h on the RTX 5050) and the same checks on it.
 # Run from PowerShell:
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_extraction_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_extraction_windows.ps1"
 # Keep the laptop plugged in. The script asks Windows not to sleep while it runs. If it stops for any reason,
 # run it again: completed parts are kept and the run continues where it stopped.
 $ErrorActionPreference = 'Stop'

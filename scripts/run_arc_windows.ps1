@@ -1,6 +1,6 @@
 # Finish Gate 0 on Windows: clean probe records, then ARC-Challenge 25-shot at loops 1-4 against the Ouro paper.
 # Run from PowerShell:
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_arc_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_arc_windows.ps1"
 # Order: install, tests, the two probes, a 25-question smoke test (a few minutes), then the full test set
 # (about an hour on the RTX 5050). Keep the laptop plugged in and awake. Resumable: run it again to continue.
 $ErrorActionPreference = 'Stop'

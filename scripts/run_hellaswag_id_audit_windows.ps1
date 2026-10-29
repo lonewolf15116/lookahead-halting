@@ -1,5 +1,5 @@
 # Phase 3: HellaSwag repeated-id audit (reviewer request). CPU only, ~4 min. Reads the dataset and manifests only.
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_hellaswag_id_audit_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_hellaswag_id_audit_windows.ps1"
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root

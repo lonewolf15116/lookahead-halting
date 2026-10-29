@@ -1,5 +1,5 @@
 # Phase 0 setup and first look at Ouro on Windows. Run from PowerShell:
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\setup_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\setup_windows.ps1"
 # Safe to run again: it skips what exists. Results go to results\gate0\ inside the repo folder.
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot

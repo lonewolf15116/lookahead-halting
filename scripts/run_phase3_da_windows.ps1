@@ -1,7 +1,7 @@
 # Phase 3 D-a (reviewer Numerical Fidelity Review, 2026-10-26): float32 packed-vs-context-only check on PIQA and Social IQa,
 # 100 unused TRAIN rows each (never DEV+ or TEST). Prints only per-benchmark state differences and PASS/FAIL; no labels,
 # predictions or accuracy. About 5 GPU-minutes.
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_phase3_da_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_phase3_da_windows.ps1"
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root

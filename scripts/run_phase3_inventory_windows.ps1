@@ -1,5 +1,5 @@
 # Phase 3 fresh-data inventory and audit. CPU only, reads datasets and manifests, no model outputs. Needs internet (Hugging Face).
-#   Set-ExecutionPolicy -Scope Process Bypass -Force; & "$HOME\Projects\lookahead-halting\scripts\run_phase3_inventory_windows.ps1"
+#   Set-ExecutionPolicy -Scope Process Bypass -Force; & ".\scripts\run_phase3_inventory_windows.ps1"
 # Uses the real Ouro tokenizer so the Phase 1 question-set hashes are verified too. Refuses to overwrite an earlier inventory.
 # Exit 3 from the inventory = it wrote a report with UNRESOLVED pools (not an error): send results\phase3\inventory.json and docs\PHASE3_INVENTORY.md.
 $ErrorActionPreference = 'Stop'
