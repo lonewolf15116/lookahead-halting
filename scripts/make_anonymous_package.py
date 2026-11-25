@@ -68,9 +68,11 @@ def main():
     if bad or badbin:
         sys.exit(f"identifying strings remain: {bad + badbin}")
     notes = ["# Anonymisation notes", "", "This package is a snapshot of the tracked files at one git revision, without history.",
-             "Frozen protocols, results, source code and pinned data manifests are byte-identical to the repository (their hashes are pinned).",
-             "Documentation was redacted textually (names, handle, e-mail, institution). The preprint build target and citation file are omitted.",
-             "The provenance audit's git-history checks cannot run without `.git`; every other check runs. Reruns need the (unreleased) development features.", "",
+             "Included frozen protocols, results, source code and pinned data manifests are byte-identical to the selected git revision; excluded artifacts are listed below.",
+             "Documentation was redacted textually (names, handle, e-mail, institution). The named preprint build target and citation file are omitted.",
+             "The archive has no `.git` history; some provenance tests also require identifying artifacts omitted below and cannot complete from this anonymous snapshot.",
+             "Clean-extraction diagnostic (2026-11-25, Windows): with scikit-learn installed, 228 tests passed, 45 skipped and 1 failed (missing excluded Gate 2 provenance JSON), when tests/test_c1_test.py was omitted. The C1 test module separately fails setup because an excluded Phase 3 provenance JSON is absent. These are partial test results, not a complete suite pass.",
+             "Full experimental reruns also require unreleased development features. The anonymous LICENSE contains a review-only anonymized copyright line; the original attribution is retained in the named repository and must be restored in non-anonymous redistribution.", "",
              f"Redacted documentation files ({len(redacted)}): " + ", ".join(f"`{n}`" for n in redacted), "",
              f"Excluded files ({len(excluded)}):", ""] + [f"- `{n}`: {why}" for n, why in excluded]
     kept["ANONYMIZATION_NOTES.md"] = ("\n".join(notes) + "\n").encode()
